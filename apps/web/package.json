@@ -1,0 +1,31 @@
+{
+  "name": "@exkart/web",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "tsc -b && vite build",
+    "typecheck": "tsc -b --noEmit",
+    "preview": "vite preview --host 0.0.0.0"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.3.0",
+    "@vitejs/plugin-react": "^4.5.1",
+    "framer-motion": "^12.40.0",
+    "lucide-react": "^0.513.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "react-hot-toast": "^2.6.0",
+    "react-router-dom": "^7.6.2",
+    "recharts": "^3.8.1",
+    "tailwindcss": "^4.3.0",
+    "zustand": "^5.0.5"
+  },
+  "devDependencies": {
+    "@types/react": "^19.1.6",
+    "@types/react-dom": "^19.1.5",
+    "typescript": "^5.8.3",
+    "vite": "^6.3.5"
+  }
+}

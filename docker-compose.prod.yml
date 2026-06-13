@@ -1,0 +1,61 @@
+version: "3.9"
+
+# ─── MudraKart Production Compose ────────────────────────────────────────────
+#
+#  Services:
+#    api   — Fastify API on port 4000 (exposed on 4000)
+#    web   — Nginx SPA on port 80 (exposed on 3000)
+#
+#  Prerequisites:
+#    1. Create .env file (see .env.example)
+#    2. Run `docker compose up -d`
+#
+# ─────────────────────────────────────────────────────────────────────────────
+
+services:
+  api:
+    build:
+      context: ./apps/api
+      dockerfile: Dockerfile
+    container_name: mudrakart-api
+    restart: unless-stopped
+    env_file: ./apps/api/.env
+    environment:
+      NODE_ENV: production
+      PORT: 4000
+    ports:
+      - "4000:4000"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:4000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.mudrakart-api.rule=Host(`api.mudrakart.in`)"
+      - "traefik.http.routers.mudrakart-api.entrypoints=websecure"
+      - "traefik.http.routers.mudrakart-api.tls.certresolver=letsencrypt"
+
+  web:
+    build:
+      context: ./apps/web
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: ${VITE_API_URL:-https://api.mudrakart.in}
+    container_name: mudrakart-web
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    depends_on:
+      api:
+        condition: service_healthy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.mudrakart-web.rule=Host(`mudrakart.in`) || Host(`www.mudrakart.in`)"
+      - "traefik.http.routers.mudrakart-web.entrypoints=websecure"
+      - "traefik.http.routers.mudrakart-web.tls.certresolver=letsencrypt"
+
+networks:
+  default:
+    name: mudrakart-network
