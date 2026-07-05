@@ -1,0 +1,64 @@
+flowchart TD
+    %% External Entities
+    Customer((Customer))
+    Admin((Admin))
+    GoogleOAuth((Google OAuth))
+    PaymentGateway((Payment Gateway))
+    EmailProvider((Email Provider))
+
+    %% Processes (System Services)
+    AuthProcess("1.0\nAuthentication & Security")
+    CatalogProcess("2.0\nCatalog & Products")
+    OrderProcess("3.0\nOrder Management")
+    PaymentProcess("4.0\nPayment Processing")
+    AdminProcess("5.0\nAdmin Operations")
+
+    %% Data Stores
+    DB_User[(D1: Users, Passkeys & Tokens)]
+    DB_Product[(D2: Products & Categories)]
+    DB_Order[(D3: Orders & OrderItems)]
+    DB_Payment[(D4: Payments)]
+
+    %% Data Flows - Authentication
+    Customer -- "Credentials, TOTP, Passkey" --> AuthProcess
+    AuthProcess -- "Auth State, Tokens" --> Customer
+    GoogleOAuth -- "OAuth Code/Profile" --> AuthProcess
+    AuthProcess -- "Email Auth Link" --> EmailProvider
+    AuthProcess -- "Read/Write User Data" --> DB_User
+
+    %% Data Flows - Catalog
+    Customer -- "Search & Filter queries" --> CatalogProcess
+    CatalogProcess -- "Product details" --> Customer
+    CatalogProcess -- "Read Product Data" --> DB_Product
+
+    %% Data Flows - Orders
+    Customer -- "Cart items, Checkout request" --> OrderProcess
+    OrderProcess -- "Order Status updates" --> Customer
+    OrderProcess -- "Order confirmation" --> EmailProvider
+    OrderProcess -- "Read/Write Order Data" --> DB_Order
+    OrderProcess -- "Check stock" --> DB_Product
+    OrderProcess -- "Read User Address" --> DB_User
+
+    %% Data Flows - Payments
+    Customer -- "Payment details" --> PaymentProcess
+    PaymentProcess -- "Payment status" --> Customer
+    PaymentProcess -- "Charge request / Verify Signature" --> PaymentGateway
+    PaymentGateway -- "Webhook / Success Event" --> PaymentProcess
+    PaymentProcess -- "Write Payment Record" --> DB_Payment
+    PaymentProcess -- "Update Order Status" --> DB_Order
+
+    %% Data Flows - Admin
+    Admin -- "Dashboard queries, Entity updates" --> AdminProcess
+    AdminProcess -- "Metrics, Action results" --> Admin
+    AdminProcess -- "Manage Users" --> DB_User
+    AdminProcess -- "Manage Catalog" --> DB_Product
+    AdminProcess -- "Manage Orders" --> DB_Order
+    AdminProcess -- "Manage Payments" --> DB_Payment
+
+    classDef entity fill:#f9f,stroke:#333,stroke-width:2px;
+    classDef process fill:#bbf,stroke:#333,stroke-width:2px,shape:circle;
+    classDef datastore fill:#ffb,stroke:#333,stroke-width:2px;
+
+    class Customer,Admin,GoogleOAuth,PaymentGateway,EmailProvider entity;
+    class AuthProcess,CatalogProcess,OrderProcess,PaymentProcess,AdminProcess process;
+    class DB_User,DB_Product,DB_Order,DB_Payment datastore;
