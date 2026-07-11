@@ -14,6 +14,7 @@ import OrderDetailPage from "./pages/OrderDetailPage";
 import ProfilePage from "./pages/ProfilePage";
 import WishlistPage from "./pages/WishlistPage";
 import TermsPage from "./pages/TermsPage";
+import MembersPage from "./pages/MembersPage";
 import AdminPage from "./pages/AdminPage";
 import NotFoundPage from "./pages/NotFoundPage";
 
@@ -27,6 +28,7 @@ export default function App() {
         <Route path="/product/:slug" element={<ProductPage />} />
         <Route path="/auth" element={<AuthPage />} />
         <Route path="/terms" element={<TermsPage />} />
+          <Route path="/members" element={<MembersPage />} />
 
         <Route path="/cart" element={<CartPage />} />
         <Route

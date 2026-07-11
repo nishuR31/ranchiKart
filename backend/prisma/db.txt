@@ -1,0 +1,513 @@
+============================================================
+RANCHIKART DATABASE SCHEMA DOCUMENTATION
+============================================================
+
+DATABASE
+--------
+Provider : PostgreSQL
+ORM      : Prisma ORM
+
+============================================================
+TABLE : User
+============================================================
+
+Primary Key
+------------
+id
+
+Columns
+-------
+id                  String (PK)
+email               String (Unique)
+name                String (Nullable)
+passwordHash        String (Nullable)
+role                Role Enum
+avatarUrl           String (Nullable)
+gender              String (Nullable)
+phone               String (Nullable)
+isEmailVerified     Boolean
+coins               Integer
+isBanned            Boolean
+banReason           String (Nullable)
+lastLogin           DateTime
+refreshToken        String (Nullable)
+totpSecret          String (Nullable)
+isTotpEnabled       Boolean
+createdAt           DateTime
+updatedAt           DateTime
+
+Relationships
+-------------
+User
+ ├── 1 -----> Many Orders
+ ├── 1 -----> Many Reviews
+ ├── 1 -----> Many Wishlist Items
+ ├── 1 -----> Many Saved Addresses
+ ├── 1 -----> Many Passkey Credentials
+ └── 1 -----> Many Admin Logs
+
+Indexes
+-------
+UNIQUE(email)
+INDEX(email)
+
+============================================================
+TABLE : PasskeyCredential
+============================================================
+
+Primary Key
+------------
+id
+
+Foreign Keys
+------------
+userId -> User.id
+
+Columns
+-------
+id
+userId
+credentialID (Unique)
+credentialPublicKey
+counter
+transports
+createdAt
+updatedAt
+
+Relationships
+-------------
+Many Passkeys -----> One User
+
+Indexes
+-------
+UNIQUE(credentialID)
+INDEX(userId)
+
+============================================================
+TABLE : Category
+============================================================
+
+Primary Key
+------------
+id
+
+Foreign Keys
+------------
+parentId -> Category.id (Optional)
+
+Columns
+-------
+id
+slug
+name
+description
+imageUrl
+kind
+parentId
+createdAt
+updatedAt
+
+Relationships
+-------------
+Category
+ ├── 1 -----> Many Products
+ ├── 1 -----> Many Coupons
+ ├── 1 -----> Many Child Categories
+ └── Many ---> One Parent Category
+
+Indexes
+-------
+UNIQUE(slug)
+INDEX(slug)
+INDEX(parentId)
+
+============================================================
+TABLE : Product
+============================================================
+
+Primary Key
+------------
+id
+
+Foreign Keys
+------------
+categoryId -> Category.id
+
+Columns
+-------
+id
+categoryId
+slug
+name
+description
+kind
+imageUrl
+gallery
+basePrice
+currency
+stock
+isActive
+isFeatured
+tags
+highlights
+specifications
+rating
+reviewCount
+replacementDays
+returnEligible
+warrantyText
+dispatchDays
+minWidthMm
+maxWidthMm
+minHeightMm
+maxHeightMm
+defaultWidthMm
+defaultHeightMm
+options
+createdAt
+updatedAt
+
+Relationships
+-------------
+Many Products ------> One Category
+
+One Product
+ ├── Many Variants
+ ├── Many Reviews
+ ├── Many Wishlist Entries
+ └── Many Order Items
+
+Indexes
+-------
+UNIQUE(slug)
+INDEX(slug)
+INDEX(categoryId)
+INDEX(isActive)
+INDEX(isFeatured)
+
+============================================================
+TABLE : ProductVariant
+============================================================
+
+Primary Key
+------------
+id
+
+Foreign Keys
+------------
+productId -> Product.id
+
+Columns
+-------
+id
+productId
+name
+sku
+priceDelta
+attributes
+stock
+createdAt
+updatedAt
+
+Relationships
+-------------
+Many Variants -----> One Product
+One Variant -------> Many OrderItems
+
+Indexes
+-------
+UNIQUE(sku)
+INDEX(productId)
+
+============================================================
+TABLE : Review
+============================================================
+
+Primary Key
+------------
+id
+
+Foreign Keys
+------------
+productId -> Product.id
+userId    -> User.id
+orderId   -> Order.id (Optional)
+
+Columns
+-------
+id
+productId
+userId
+orderId
+rating
+title
+body
+isVerified
+helpfulCount
+createdAt
+updatedAt
+
+Relationships
+-------------
+Many Reviews -----> One Product
+Many Reviews -----> One User
+Optional ---------> One Order
+
+Indexes
+-------
+UNIQUE(productId,userId)
+INDEX(productId)
+INDEX(userId)
+INDEX(orderId)
+
+============================================================
+TABLE : Wishlist
+============================================================
+
+Primary Key
+------------
+id
+
+Foreign Keys
+------------
+userId -> User.id
+productId -> Product.id
+
+Columns
+-------
+id
+userId
+productId
+createdAt
+
+Relationships
+-------------
+Many Wishlist -----> One User
+Many Wishlist -----> One Product
+
+Indexes
+-------
+UNIQUE(userId,productId)
+INDEX(userId)
+
+============================================================
+TABLE : Coupon
+============================================================
+
+Primary Key
+------------
+id
+
+Foreign Keys
+------------
+categoryId -> Category.id (Optional)
+
+Columns
+-------
+id
+code
+description
+type
+value
+minOrderAmount
+maxUses
+usedCount
+isActive
+expiresAt
+categoryId
+createdAt
+updatedAt
+
+Relationships
+-------------
+One Coupon ------> Many Orders
+Many Coupons ----> One Category
+
+Indexes
+-------
+UNIQUE(code)
+INDEX(code)
+INDEX(categoryId)
+
+============================================================
+TABLE : SavedAddress
+============================================================
+
+Primary Key
+------------
+id
+
+Foreign Keys
+------------
+userId -> User.id
+
+Columns
+-------
+id
+userId
+label
+fullName
+phone
+line1
+line2
+city
+state
+pincode
+isDefault
+createdAt
+updatedAt
+
+Relationships
+-------------
+Many Addresses -----> One User
+
+Indexes
+-------
+INDEX(userId)
+
+============================================================
+TABLE : Order
+============================================================
+
+Primary Key
+------------
+id
+
+Foreign Keys
+------------
+userId -> User.id
+couponId -> Coupon.id (Optional)
+
+Columns
+-------
+id
+userId
+status
+paymentMethod
+subtotal
+shippingFee
+discountAmount
+total
+address
+trackingId
+notes
+couponId
+createdAt
+updatedAt
+
+Relationships
+-------------
+Many Orders -----> One User
+
+One Order
+ ├── Many OrderItems
+ ├── Many Payments
+ └── Optional Coupon
+
+Indexes
+-------
+INDEX(userId)
+INDEX(status)
+INDEX(createdAt)
+INDEX(couponId)
+
+============================================================
+TABLE : OrderItem
+============================================================
+
+Primary Key
+------------
+id
+
+Foreign Keys
+------------
+orderId -> Order.id
+productId -> Product.id
+variantId -> ProductVariant.id (Optional)
+
+Columns
+-------
+id
+orderId
+productId
+variantId
+quantity
+unitPrice
+total
+customWidthMm
+customHeightMm
+customText
+customization
+
+Relationships
+-------------
+Many OrderItems -----> One Order
+Many OrderItems -----> One Product
+Optional -----------> One Variant
+
+============================================================
+TABLE : Payment
+============================================================
+
+Primary Key
+------------
+id
+
+Foreign Keys
+------------
+orderId -> Order.id
+
+Columns
+-------
+id
+orderId
+provider
+status
+amount
+currency
+providerOrderId
+providerPaymentId
+providerSignature
+rawResponse
+createdAt
+updatedAt
+
+Relationships
+-------------
+Many Payments -----> One Order
+
+Indexes
+-------
+UNIQUE(providerOrderId)
+INDEX(orderId)
+
+============================================================
+TABLE : AdminLog
+============================================================
+
+Primary Key
+------------
+id
+
+Foreign Keys
+------------
+adminId -> User.id
+
+Columns
+-------
+id
+adminId
+action
+entity
+entityId
+meta
+createdAt
+
+Relationships
+-------------
+Many Logs -----> One Admin(User)
+
+Indexes
+-------
+INDEX(adminId)
+INDEX(entity)

@@ -1,46 +1,43 @@
-# ─── Stage 1: Build ─────────────────────────────────────────────────────────
-FROM node:22-alpine AS builder
+# ---------- Dependencies ----------
+FROM oven/bun:1 AS deps
 
-WORKDIR /app
+WORKDIR /backend
 
-# Install dependencies first (cache layer)
-COPY package.json package-lock.json ./
-RUN npm ci --prefer-offline
+COPY package.json bun.lock ./
 
-# Copy source
-COPY prisma ./prisma
-COPY src ./src
-COPY tsconfig.json ./
+RUN bun install --frozen-lockfile
 
-# Generate Prisma client
-RUN npx prisma generate
 
-# Build TypeScript
-RUN npm run build
+# ---------- Build ----------
+FROM oven/bun:1 AS builder
 
-# ─── Stage 2: Production runner ──────────────────────────────────────────────
-FROM node:22-alpine AS runner
+WORKDIR /backend
 
-WORKDIR /app
+COPY --from=deps /backend/node_modules ./node_modules
+COPY . .
 
-# Only install production deps
-COPY package.json package-lock.json ./
-RUN npm ci --omit=dev --prefer-offline
+RUN bunx prisma generate
 
-# Copy built assets + prisma schema
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/prisma ./prisma
-COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
-COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
+RUN bun run build
 
-# Runtime env (override at deploy time)
+
+# ---------- Runtime ----------
+FROM oven/bun:1-slim
+
+WORKDIR /backend
+
 ENV NODE_ENV=production
-ENV PORT=4000
+ENV PORT=3000
 
-EXPOSE 4000
+COPY package.json bun.lock ./
 
-# Healthcheck
-HEALTHCHECK --interval=30s --timeout=5s --start-period=20s \
-  CMD wget -qO- http://localhost:4000/health || exit 1
+RUN bun install --production --frozen-lockfile
 
-CMD ["node", "dist/server.js"]
+COPY --from=builder /backend/dist ./dist
+COPY --from=builder /backend/prisma ./prisma
+COPY --from=builder /backend/node_modules/.prisma ./node_modules/.prisma
+COPY --from=builder /backend/node_modules/@prisma ./node_modules/@prisma
+
+EXPOSE 3000
+
+CMD ["bun", "run", "dist/index.js"]

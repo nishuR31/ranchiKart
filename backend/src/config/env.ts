@@ -27,6 +27,8 @@ const envSchema = z.object({
   RAZORPAY_KEY_ID: z.string().optional().or(z.literal("")),
   RAZORPAY_KEY_SECRET: z.string().optional().or(z.literal("")),
   RAZORPAY_WEBHOOK_SECRET: z.string().optional().or(z.literal("")),
+  RAZORPAY_KEY_ID_TEST: z.string().optional().or(z.literal("")),
+  RAZORPAY_KEY_SECRET_TEST: z.string().optional().or(z.literal("")),
 
   // Email/SMTP (optional — silent no-op without keys)
   SMTP_HOST: z.string().optional().or(z.literal("")),

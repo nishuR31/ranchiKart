@@ -134,6 +134,7 @@ export default function Layout() {
           <div>
             <h4>Company</h4>
             <Link to="/terms">Terms &amp; Policies</Link>
+            <Link to="/members">Team Members</Link>
             <a href={`mailto:${import.meta.env.VITE_EMAIL}`}>{import.meta.env.VITE_EMAIL}</a>
             <span>Ranchi, Jharkhand 834001</span>
           </div>

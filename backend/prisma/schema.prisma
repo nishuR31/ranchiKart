@@ -201,23 +201,31 @@ model ProductVariant {
 }
 
 model Review {
-  id        String   @id @default(cuid())
-  productId String
-  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  orderId   String?
-  rating    Int      // 1-5
-  title     String?
-  body      String
-  isVerified Boolean @default(false)
-  helpfulCount Int   @default(0)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id             String   @id @default(cuid())
+
+  productId      String
+  product        Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  orderId        String?
+  order          Order?   @relation(fields: [orderId], references: [id], onDelete: SetNull)
+
+  rating         Int
+  title          String?
+  body           String
+
+  isVerified     Boolean  @default(false)
+  helpfulCount   Int      @default(0)
+
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   @@unique([productId, userId])
   @@index([productId])
   @@index([userId])
+  @@index([orderId])
 }
 
 model Wishlist {
@@ -250,6 +258,7 @@ model Coupon {
   updatedAt      DateTime   @updatedAt
 
   @@index([code])
+  @@index([categoryId])
 }
 
 model SavedAddress {
@@ -284,6 +293,8 @@ model Order {
   address        Json
   trackingId     String?
   notes          String?
+    reviews Review[]
+
   couponId       String?
   coupon         Coupon?       @relation(fields: [couponId], references: [id])
   items          OrderItem[]
@@ -291,9 +302,10 @@ model Order {
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
 
-  @@index([userId])
+ @@index([userId])
   @@index([status])
   @@index([createdAt])
+  @@index([couponId])
 }
 
 model OrderItem {
