@@ -8,6 +8,7 @@ import {
   getStoredRefreshToken,
   removeRefreshToken,
   blacklistToken,
+  removeAccessToken,
 } from "../utils/jwt.js";
 import { sendWelcomeEmail, sendPasswordlessLoginEmail } from "../config/email.js";
 import UserRepository from "../repositories/userRepository.js";
@@ -21,7 +22,7 @@ import {
 } from "../utils/errors.js";
 import { User, PasskeyCredential } from "@prisma/client";
 import { prisma } from "../config/prisma.js";
-import env from "../env.js";
+import env from "../config/env.js";
 import { generateTotpSecret, generateTotpQrCode, verifyTotpToken } from "../utils/totp.js";
 import {
   createPasskeyRegistrationOptions,
@@ -56,7 +57,7 @@ export default class AuthService {
       passwordHash,
     });
 
-    sendWelcomeEmail(user.email, user.name ?? "User").catch(() => {});
+    sendWelcomeEmail(user.email, user.name ?? "User").catch(() => { });
 
     const tokens = generateTokenPair({ id: user.id, email: user.email, role: user.role });
     await storeRefreshToken(user.id, tokens.refreshToken!);
@@ -115,6 +116,7 @@ export default class AuthService {
     await blacklistToken(accessToken);
     await removeRefreshToken(userId);
     await userRepo.updateRefreshToken(userId, null);
+    await removeAccessToken(userId);
   }
 
   async refreshTokens(refreshToken: string) {

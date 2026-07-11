@@ -1,16 +1,15 @@
 import { Redis } from "ioredis";
 import env from "./env.js";
-import valkey from "./valkey.js";
 const redis = env.REDIS_URL
   ? new Redis(env.REDIS_URL, {
-      lazyConnect: true,
-      maxRetriesPerRequest: 5,
-      enableOfflineQueue: true,
-      retryStrategy: (times) => {
-        const delay = Math.min(times * 200, 2000); // max 2 seconds
-        return delay;
-      },
-    })
+    lazyConnect: true,
+    maxRetriesPerRequest: 5,
+    enableOfflineQueue: true,
+    retryStrategy: (times) => {
+      const delay = Math.min(times * 200, 2000); // max 2 seconds
+      return delay;
+    },
+  })
   : null;
 
 redis?.on("error", (error) => {
@@ -36,22 +35,9 @@ export async function connectRedis() {
     await redis.connect();
     return redis;
   } catch (error) {
-    console.warn("Redis unavailable, trying Valkey...");
+    console.warn("Redis unavailable, fallback to in memory caching...", error);
+    return null;
 
-    try {
-      await valkey();
-
-      const newValkey = new Redis("redis://127.0.0.1:6379");
-
-      await newValkey.connect();
-
-      console.log("Connected to Valkey.");
-
-      return newValkey;
-    } catch (e) {
-      console.error("Failed to start/connect Valkey:", e);
-      return null;
-    }
   }
 }
 

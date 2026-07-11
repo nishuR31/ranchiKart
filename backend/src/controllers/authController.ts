@@ -20,6 +20,7 @@ import {
   ValidationError,
 } from "../utils/errors.js";
 import { sendPasswordlessLoginEmail } from "../config/email.js";
+import cookieOption from "../utils/cookieOptions.js";
 
 const authService = new AuthService();
 
@@ -45,11 +46,7 @@ export const register = asyncHandler(async (req: FastifyRequest, res: FastifyRep
 
   try {
     const result = await authService.register(body);
-    res.cookie("refreshToken", result.tokens.refreshToken!, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "lax",
-    });
+    res.cookie("refreshToken", result.tokens.refreshToken!, cookieOption("refresh"));
     return sendSuccess(res, "User registered successfully", code("created") as number, result);
   } catch (err: any) {
     return handleError(err, res);
@@ -73,11 +70,7 @@ export const login = asyncHandler(async (req: FastifyRequest, res: FastifyReply)
         userId: result.user.id,
       });
     }
-    res.cookie("refreshToken", result.tokens!.refreshToken!, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "lax",
-    });
+    res.cookie("refreshToken", result.tokens!.refreshToken!, cookieOption("refresh"));
     return sendSuccess(res, "Login successful", code("ok") as number, result);
   } catch (err: any) {
     return handleError(err, res);
@@ -98,11 +91,7 @@ export const refreshToken = asyncHandler(async (req: FastifyRequest, res: Fastif
 
   try {
     const tokens = await authService.refreshTokens(token);
-    res.cookie("refreshToken", tokens.refreshToken!, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "lax",
-    });
+    res.cookie("refreshToken", tokens.refreshToken!, cookieOption("refresh"));
     return sendSuccess(res, "Token refreshed", code("ok") as number, {
       accessToken: tokens.accessToken,
     });
@@ -164,11 +153,7 @@ export const googleCallback = asyncHandler(async (req: FastifyRequest, res: Fast
 
   try {
     const result = await authService.loginWithGoogleCode(oauthCode);
-    res.cookie("refreshToken", result.tokens.refreshToken!, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "lax",
-    });
+    res.cookie("refreshToken", result.tokens.refreshToken!, cookieOption("refresh"));
     return sendSuccess(res, "Google login successful", code("ok") as number, result);
   } catch (err: any) {
     return handleError(err, res);
@@ -193,11 +178,7 @@ export const verifyMagicLink = asyncHandler(async (req: FastifyRequest, res: Fas
   const { token } = z.object({ token: z.string() }).parse(req.query);
   try {
     const result = await authService.verifyMagicLink(token);
-    res.cookie("refreshToken", result.tokens.refreshToken!, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "lax",
-    });
+    res.cookie("refreshToken", result.tokens.refreshToken!, cookieOption("refresh"));
     return sendSuccess(res, "Magic link login successful", code("ok") as number, result);
   } catch (err: any) {
     return handleError(err, res);
@@ -295,11 +276,7 @@ export const verifyPasskeyAuthentication = asyncHandler(
     try {
       const result = await authService.verifyPasskeyAuthenticationResponse(userId, req.body);
       res.clearCookie("passkey_auth_user");
-      res.cookie("refreshToken", result.tokens.refreshToken!, {
-        httpOnly: true,
-        secure: true,
-        sameSite: "lax",
-      });
+      res.cookie("refreshToken", result.tokens.refreshToken!, cookieOption("refresh"));
       return sendSuccess(res, "Passkey login successful", code("ok") as number, result);
     } catch (err: any) {
       return handleError(err, res);

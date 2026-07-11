@@ -1,6 +1,6 @@
 import jwt, { Secret } from "jsonwebtoken";
 import redis from "../config/redis.js";
-import env from "../env.js";
+import env from "../config/env.js";
 
 // Types
 export interface JwtPayload {
@@ -71,7 +71,7 @@ export async function blacklistToken(token: string) {
     if (!decoded?.exp) return;
     const ttl = decoded.exp - Math.floor(Date.now() / 1000);
     if (ttl > 0) await redis?.setex(`blacklist:${token}`, ttl, "1");
-  } catch {}
+  } catch { }
 }
 
 export async function blacklistTokens(token: string, opts: { mode: "access" | "refresh" }) {
@@ -81,7 +81,7 @@ export async function blacklistTokens(token: string, opts: { mode: "access" | "r
     if (!decoded?.exp) return;
     const ttl = decoded.exp - Math.floor(Date.now() / 1000);
     if (ttl > 0) await redis?.setex(`blacklist:${token}`, ttl, "1");
-  } catch {}
+  } catch { }
 }
 
 export async function removeRefreshToken(userId: string) {

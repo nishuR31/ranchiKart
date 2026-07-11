@@ -29,15 +29,15 @@ const app: FastifyInstance = Fastify({
     level: env.NODE_ENV === "development" ? "info" : "warn",
     ...(env.NODE_ENV === "development"
       ? {
-          transport: {
-            target: "pino-pretty",
-            options: {
-              colorize: true,
-              translateTime: "SYS:standard",
-              ignore: "pid,hostname",
-            },
+        transport: {
+          target: "pino-pretty",
+          options: {
+            colorize: true,
+            translateTime: "SYS:standard",
+            ignore: "pid,hostname",
           },
-        }
+        },
+      }
       : {}),
   },
 });
@@ -56,7 +56,23 @@ app.setErrorHandler((error: FastifyError, _request, reply) => {
 });
 
 // Security & compression
-await app.register(helmet, { contentSecurityPolicy: false, crossOriginEmbedderPolicy: false });
+await app.register(helmet, {
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      imgSrc: ["'self'", "data:"],
+      fontSrc: ["'self'"],
+      connectSrc: ["'self'", env.WEB_ORIGIN],
+      objectSrc: ["'none'"],
+      baseUri: ["'self'"],
+    },
+  },
+  crossOriginEmbedderPolicy: true,
+  referrerPolicy: { policy: "no-referrer" },
+  permissionsPolicy: { features: {} },
+});
 await app.register(compress, { global: true });
 await app.register(cookie);
 // CORS
@@ -70,11 +86,11 @@ await app.register(cors, {
 await app.register(swagger, {
   openapi: {
     info: {
-      title: "exKArt API",
+      title: "Backend",
       description:
-        "Production-ready e-commerce API for custom stamps, stationery, and boards. Built with Fastify + Prisma + PostgreSQL.",
-      version: "1.0.0",
-      contact: { name: "exKArt Team", email: "api@exkart.in" },
+        "Production-ready e-commerce API for Ranchi and scalable global marketplace. Built with Fastify + Prisma + PostgreSQL.",
+      version: "1.3.4",
+      contact: { name: "Backend Team", email: "[EMAIL_ADDRESS]" },
     },
     servers: [{ url: `http://localhost:${env.API_PORT}`, description: "Development" }],
     components: {
