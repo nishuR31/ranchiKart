@@ -1,18 +1,18 @@
 {
-  "name": "exkart",
-  "version": "0.1.0",
+  "name": "RanchiKart",
+  "version": "2.1.0",
   "private": true,
   "workspaces": [
-    "apps/api",
-    "apps/web"
+    "frontend",
+    "backend"
   ],
   "scripts": {
-    "dev": "concurrently \"npm run dev -w apps/api\" \"npm run dev -w apps/web\"",
-    "build": "npm run build -w apps/api && npm run build -w apps/web",
-    "typecheck": "npm run typecheck -w apps/api && npm run typecheck -w apps/web",
-    "db:generate": "npm run db:generate -w apps/api",
-    "db:migrate": "npm run db:migrate -w apps/api",
-    "db:seed": "npm run db:seed -w apps/api"
+    "dev": "concurrently \"bun run dev -w frontend\" \"bun run dev -w backend\"",
+    "build": "bun run build -w frontend && bun run build -w backend",
+    "typecheck": "bun run typecheck -w frontend && bun run typecheck -w backend",
+    "db:generate": "bun run db:generate -w backend",
+    "db:migrate": "bun run db:migrate -w backend",
+    "db:seed": "bun run db:seed -w backend"
   },
   "devDependencies": {
     "concurrently": "^9.1.2",

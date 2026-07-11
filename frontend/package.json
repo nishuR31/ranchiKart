@@ -8,7 +8,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "img": "bun run scripts/image.js && find public -name \"*.png\" -exec optipng -o7 {} \\;",
-    "docker:prod": "docker build -t prod -f Dockerfile_Prod .",
+    "docker:prod": "docker build -t prod -f Dockerfile .",
     "docker:dev": "docker build -t dev -f Dockerfile_Dev .",
     "sitemap": "bun run scripts/sitemap.js"
   },
