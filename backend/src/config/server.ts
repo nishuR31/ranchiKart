@@ -13,16 +13,17 @@ import prisma from "./prisma.js";
 import redis from "./redis.js";
 
 // Route imports
-import { authRoutes } from "../routes/auth.js";
-import { catalogRoutes } from "../routes/catalog.js";
-import { healthRoutes } from "../routes/health.js";
-import { orderRoutes } from "../routes/orders.js";
-import { paymentRoutes } from "../routes/payments.js";
-import { reviewRoutes } from "../routes/reviews.js";
-import { wishlistRoutes } from "../routes/wishlist.js";
-import { couponRoutes } from "../routes/coupons.js";
-import { adminRoutes } from "../routes/admin.js";
-import { userRoutes } from "../routes/users.js";
+// import { authRoutes } from "../routes/auth.js";
+// import { catalogRoutes } from "../routes/catalog.js";
+// import { healthRoutes } from "../routes/health.js";
+// import { orderRoutes } from "../routes/orders.js";
+// import { paymentRoutes } from "../routes/payments.js";
+// import { reviewRoutes } from "../routes/reviews.js";
+// import { wishlistRoutes } from "../routes/wishlist.js";
+// import { couponRoutes } from "../routes/coupons.js";
+// import { adminRoutes } from "../routes/admin.js";
+// import { userRoutes } from "../routes/users.js";
+import rootRoutes from "../routes/index.js";
 
 const app: FastifyInstance = Fastify({
   logger: {
@@ -71,7 +72,7 @@ await app.register(helmet, {
   },
   crossOriginEmbedderPolicy: true,
   referrerPolicy: { policy: "no-referrer" },
-  permissionsPolicy: { features: {} },
+  // permissionsPolicy: { features: {} },
 });
 await app.register(compress, { global: true });
 await app.register(cookie);
@@ -108,16 +109,17 @@ await app.register(swaggerUi, {
 await app.register(sensible);
 
 // Routes registration
-await app.register(healthRoutes);
-await app.register(authRoutes);
-await app.register(catalogRoutes);
-await app.register(orderRoutes);
-await app.register(paymentRoutes);
-await app.register(reviewRoutes);
-await app.register(wishlistRoutes);
-await app.register(couponRoutes);
-await app.register(adminRoutes);
-await app.register(userRoutes);
+// await app.register(healthRoutes);
+// await app.register(authRoutes);
+// await app.register(catalogRoutes);
+// await app.register(orderRoutes);
+// await app.register(paymentRoutes);
+// await app.register(reviewRoutes);
+// await app.register(wishlistRoutes);
+// await app.register(couponRoutes);
+// await app.register(adminRoutes);
+// await app.register(userRoutes);
+await app.register(rootRoutes);
 
 // Graceful shutdown
 const shutdown = async () => {

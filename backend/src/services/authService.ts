@@ -139,7 +139,7 @@ export default class AuthService {
   // === Google OAuth ===
 
   private assertGoogleConfig() {
-    if (!env.GOOGLE_CLIENT_ID || !env.GOOGLE_CLIENT_SECRET || !env.GOOGLE_REDIRECT_URI) {
+    if (!env.GOOGLE_CLIENT_ID || !env.GOOGLE_CLIENT_SECRET || !env.GOOGLE_CALLBACK_URL) {
       throw new InternalServerError("Google OAuth is not configured.");
     }
   }
@@ -152,7 +152,7 @@ export default class AuthService {
     this.assertGoogleConfig();
     const url = new URL("https://accounts.google.com/o/oauth2/v2/auth");
     url.searchParams.set("client_id", env.GOOGLE_CLIENT_ID!);
-    url.searchParams.set("redirect_uri", env.GOOGLE_REDIRECT_URI!);
+    url.searchParams.set("redirect_uri", env.GOOGLE_CALLBACK_URL!);
     url.searchParams.set("response_type", "code");
     url.searchParams.set("scope", "openid email profile");
     url.searchParams.set("state", state);
@@ -168,7 +168,7 @@ export default class AuthService {
         code,
         client_id: env.GOOGLE_CLIENT_ID!,
         client_secret: env.GOOGLE_CLIENT_SECRET!,
-        redirect_uri: env.GOOGLE_REDIRECT_URI!,
+        redirect_uri: env.GOOGLE_CALLBACK_URL!,
         grant_type: "authorization_code",
       }),
     });

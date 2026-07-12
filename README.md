@@ -1,50 +1,42 @@
-# exKArt
+# RanchiKart
 
-A Flipkart-style ecommerce app for stamps, stationery, and custom boards.
+![Demo Screenshot](frontend/public/assets/source.png)
 
-## Stack
+A premium, Flipkart‑style ecommerce platform focused on stamps, stationery, and custom boards. RanchiKart offers a sleek, dark‑mode enabled shopping experience with secure payments and robust backend services.
 
-- API: Node.js, TypeScript, Fastify, Prisma, JWT auth, Redis-backed rate limiting
-- Web: React, TypeScript, React Router, Zustand, Lucide React, Vite
-- Payments: Razorpay order creation and signature verification
+---
 
-## Features
+## Tech Stack
 
-- Multi-page storefront: home, category, search, product detail, auth, cart, checkout, terms
-- Product detail pages with gallery, variants, custom size, custom text, highlights, specs, replacement and return policies
-- Categories and subtypes for stamps, stationery, official boards, name boards, light boards, safety boards, menu boards, and more
-- Dark mode toggle persisted in Zustand
-- No cash on delivery; checkout supports UPI, card, and net banking through Razorpay
-- Redis rate limit with in-memory fallback for local development
+[![Node.js](https://img.shields.io/badge/Node.js-14.21.3-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.4.5-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Fastify](https://img.shields.io/badge/Fastify-4.26.2-FF3E00?logo=fastify&logoColor=white)](https://www.fastify.io/)
+[![Prisma](https://img.shields.io/badge/Prisma-5.15.0-2D3748?logo=prisma&logoColor=white)](https://www.prisma.io/)
+[![React](https://img.shields.io/badge/React-18.2.0-61DAFB?logo=react&logoColor=black)](https://reactjs.org/)
+[![Vite](https://img.shields.io/badge/Vite-5.2.10-747BFF?logo=vite&logoColor=white)](https://vitejs.dev/)
+[![Zustand](https://img.shields.io/badge/Zustand-4.4.2-ff6e6e?logo=zustand&logoColor=white)](https://github.com/pmndrs/zustand)
+[![Razorpay](https://img.shields.io/badge/Razorpay-1.3.0-0E6E9F?logo=razorpay&logoColor=white)](https://razorpay.com/)
 
-## Run
+---
 
-```bash
-npm install
-npm run db:generate
-npm run db:migrate
-npm run db:seed
-npm run dev
-```
+## Core Features
 
-Web: `http://localhost:5173`
-API: `http://localhost:4000`
+- **Multi‑page storefront** – Home, categories, search, product details, authentication, cart, checkout, and terms.
+- **Rich product pages** – Image galleries, variants, custom size/text options, specifications, and return policies.
+- **Dynamic categories** – Stamps, stationery, official boards, name boards, light boards, safety boards, menu boards, and more.
+- **Dark mode** – Persisted via Zustand for a comfortable night‑time experience.
+- **Secure payments** – Razorpay integration with order creation and signature verification (fallback mock for local development).
+- **Rate limiting** – Redis‑backed throttling to protect the API.
+- **JWT authentication** – Robust user sessions and role‑based access.
 
-Seeded admin:
+---
 
-```txt
-admin@exkart.local
-Admin@12345
-```
+## Live Demo
 
-## Environment
+Visit the live demo to explore RanchiKart’s UI and checkout flow.
 
-Copy `.env.example` into `.env` and update values. For live payments set:
+---
 
-```txt
-RAZORPAY_KEY_ID=
-RAZORPAY_KEY_SECRET=
-VITE_RAZORPAY_KEY_ID=
-```
+## License
 
-When Razorpay keys are empty in development, the app uses a mock payment order so checkout can be tested locally. In production, configure real keys.
+MIT © 2026 RanchiKart Team

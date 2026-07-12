@@ -4,10 +4,21 @@ import {
   generateAuthenticationOptions,
   verifyAuthenticationResponse,
 } from "@simplewebauthn/server";
-import env from "../env.js";
+import {
+  generateRegistrationOptions,
+  verifyRegistrationResponse,
+  generateAuthenticationOptions,
+  verifyAuthenticationResponse,
+} from "@simplewebauthn/server";
+
+import type {
+  VerifiedRegistrationResponse,
+  VerifiedAuthenticationResponse,
+} from "@simplewebauthn/server";
+import env from "../config/env.js";
 
 // RP (Relying Party) settings
-const rpName = env.BUSINESS_NAME || "MudraKart";
+const rpName = env.BUSINESS_NAME || "RanchiKart";
 // In production, this should be your actual domain (e.g., 'mudrakart.in')
 // Since WEB_ORIGIN could be 'http://localhost:5173', we extract the hostname.
 const rpID = new URL(env.WEB_ORIGIN).hostname;

@@ -1,6 +1,6 @@
 {
-  "name": "@exkart/api",
-  "version": "0.1.0",
+  "name": "@ranchiKart/api",
+  "version": "2.1.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -10,9 +10,9 @@
     "dev": "bun run --watch src/index.ts",
     "start": "bun run src/index.ts",
     "build": "tsc -p tsconfig.json",
-    "db:generate": "prisma generate",
-    "db:push": "prisma db push",
-    "db": "prisma db push && prisma generate",
+    "db:gen": "bunx prisma generate",
+    "db:push": "bunx prisma db push",
+    "db": "bun run db:gen && bun run db:push",
     "db:migrate": "PRISMA_SCHEMA_ENGINE_LOG_LEVEL=trace RUST_LOG=trace prisma migrate dev --name init",
     "db:seed": "bun prisma/seed.ts"
   },
@@ -34,6 +34,7 @@
     "dotenv": "^16.5.0",
     "fast-jwt": "^6.2.4",
     "fastify": "^5.3.3",
+    "fastify-plugin": "^6.0.0",
     "ioredis": "^5.6.1",
     "jsonwebtoken": "^9.0.3",
     "nodemailer": "^8.0.11",

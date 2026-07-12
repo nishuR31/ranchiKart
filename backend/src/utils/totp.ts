@@ -1,6 +1,6 @@
 import { generateSecret, verify, generateURI } from "otplib";
 import QRCode from "qrcode";
-import env from "../env.js";
+import env from "../config/env.js";
 
 /**
  * Generate a new TOTP secret string.
@@ -13,7 +13,7 @@ export function generateTotpSecret(): string {
  * Generate a QR code data URI for the given email and secret.
  */
 export async function generateTotpQrCode(email: string, secret: string): Promise<string> {
-  const issuer = env.BUSINESS_NAME || "MudraKart";
+  const issuer = env.BUSINESS_NAME || "Ranchi Kart";
   const otpauthUrl = generateURI({
     issuer,
     label: email,

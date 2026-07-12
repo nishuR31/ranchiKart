@@ -35,7 +35,12 @@ const envSchema = z.object({
   SMTP_PORT: z.coerce.number().int().positive().default(587),
   SMTP_USER: z.string().optional().or(z.literal("")),
   SMTP_PASS: z.string().optional().or(z.literal("")),
-  SMTP_FROM: z.string().default(`${process.env.BUSINESS_NAME || "lunkart"} <noreply@exkart.in>`),
+  SMTP_FROM: z.string().default(`${process.env.BUSINESS_NAME || "RanchiKart"} <${process.env.SMTP_USER}>`),
+
+  //Google OAuth
+  GOOGLE_CLIENT_ID: z.string().optional().or(z.literal("")),
+  GOOGLE_CLIENT_SECRET: z.string().optional().or(z.literal("")),
+  GOOGLE_CALLBACK_URL: z.string().url().optional().or(z.literal("")),
 
   // Admin
   ADMIN_EMAIL: z.string().email().optional(),

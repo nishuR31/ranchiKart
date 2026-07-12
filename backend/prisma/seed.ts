@@ -989,10 +989,10 @@ async function main() {
 
   // ── Users ──────────────────────────────────────────────────────────────
   const adminUser = await prisma.user.upsert({
-    where: { email: "admin@mudrakart.in" },
+    where: { email: "admin@ranchikart.in" },
     update: {},
     create: {
-      email: "admin@mudrakart.in",
+      email: "admin@ranchikart.in",
       name: "Arjun Sharma",
       role: "ADMIN",
       phone: "+91-9876543210",
@@ -1002,10 +1002,10 @@ async function main() {
   });
 
   const managerUser = await prisma.user.upsert({
-    where: { email: "manager@mudrakart.in" },
+    where: { email: "manager@ranchikart.in" },
     update: {},
     create: {
-      email: "manager@mudrakart.in",
+      email: "manager@ranchikart.in",
       name: "Priya Menon",
       role: "MANAGER",
       phone: "+91-9123456789",
@@ -1015,10 +1015,10 @@ async function main() {
   });
 
   const regularUser = await prisma.user.upsert({
-    where: { email: "user@mudrakart.in" },
+    where: { email: "user@ranchikart.in" },
     update: {},
     create: {
-      email: "user@mudrakart.in",
+      email: "user@ranchikart.in",
       name: "Rahul Kumar",
       role: "USER",
       phone: "+91-9988776655",
@@ -1028,10 +1028,10 @@ async function main() {
   });
 
   const user2 = await prisma.user.upsert({
-    where: { email: "test@mudrakart.in" },
+    where: { email: "test@ranchikart.in" },
     update: {},
     create: {
-      email: "test@mudrakart.in",
+      email: "test@ranchikart.in",
       name: "Sneha Patel",
       role: "USER",
       phone: "+91-8877665544",
@@ -1297,9 +1297,9 @@ async function main() {
 
   console.log("\n🎉 Seed complete!");
   console.log("─────────────────────────────────────");
-  console.log("👤 Admin:   admin@mudrakart.in   / Admin@MudraKart#2025");
-  console.log("👤 Manager: manager@mudrakart.in / Manager@MudraKart#2025");
-  console.log("👤 User:    user@mudrakart.in    / User@MudraKart#2025");
+  console.log("👤 Admin:   admin@ranchikart.in   / Admin@MudraKart#2025");
+  console.log("👤 Manager: manager@ranchikart.in / Manager@MudraKart#2025");
+  console.log("👤 User:    user@ranchikart.in    / User@MudraKart#2025");
   console.log("─────────────────────────────────────");
 }
 

@@ -1,10 +1,9 @@
 // import { NextFunction, Request, Response } from "express";
 
-import {FastifyReply,FastifyRequest} from "fastify";
+import { FastifyReply, FastifyRequest } from "fastify";
 
-import { AppError } from "../utils/error.js";
-import logger from "../config/logger.js";
-import { NODE_ENV } from "../config/env.js";
+import { AppError } from "../utils/errors.js";
+import env from "../config/env.js";
 import { sendError } from "../utils/response.js";
 
 export default function errorHandler(
@@ -18,15 +17,8 @@ export default function errorHandler(
 
   const { message, statusCode, name, stack, details } = err;
 
-  logger.info(`${name || "Error"}: ${message}`, {
-    details,
-    statusCode,
-    stack,
-    url: req.originalUrl,
-    method: req.method,
-  });
 
-  const errDetails = NODE_ENV === "development" ? { name, stack, details } : undefined;
+  const errDetails = env.NODE_ENV === "development" ? { name, stack, details } : undefined;
 
   sendError(res, message, statusCode, errDetails);
 }
