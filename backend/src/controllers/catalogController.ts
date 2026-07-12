@@ -1,5 +1,5 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import { ProductKind } from "@prisma/client";
+import { ProductKind } from "../../prisma/generated/client/index.js";
 import { z } from "zod";
 import CatalogService from "../services/catalogService.js";
 import asyncHandler from "../utils/asyncHandler.js";

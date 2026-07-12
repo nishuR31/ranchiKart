@@ -1,5 +1,5 @@
 import { prisma } from "../config/prisma.js";
-import { Prisma } from "@prisma/client";
+import { Prisma } from "../../prisma/generated/client/index.js";
 import { AppError, ConflictError, InternalServerError, NotFoundError } from "../utils/errors.js";
 
 function handlePrismaError(error: any, modelName: string, operation: string): never {

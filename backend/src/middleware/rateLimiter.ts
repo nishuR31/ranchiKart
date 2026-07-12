@@ -1,6 +1,5 @@
-import rateLimit, { FastifyRateLimitOptions } from '@fastify/rate-limit';
-import { FastifyInstance } from 'fastify';
-
+import rateLimit, { FastifyRateLimitOptions } from "@fastify/rate-limit";
+import { FastifyInstance } from "fastify";
 
 /**
  * Fastify plugin to register rate limiting globally.
@@ -9,7 +8,7 @@ import { FastifyInstance } from 'fastify';
 export default async function rateLimiter(fastify: FastifyInstance, opts: FastifyRateLimitOptions) {
   await fastify.register(rateLimit, {
     max: 100, // default max requests per window per IP
-    timeWindow: '1 minute',
+    timeWindow: "1 minute",
     allowList: [], // add trusted IPs if needed
     ...opts,
     errorResponseBuilder(req, context) {
@@ -17,9 +16,8 @@ export default async function rateLimiter(fastify: FastifyInstance, opts: Fastif
         success: false,
         message: "Too many requests",
         error: "Too many requests",
-        retryAfter: context.after
-
-      }
+        retryAfter: context.after,
+      };
     },
   });
 }

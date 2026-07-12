@@ -1,4 +1,4 @@
-import type { Product, ProductVariant } from "@prisma/client";
+import type { Product, ProductVariant } from "../../prisma/generated/client/index.js";
 
 export function assertSize(product: Product, width?: number, height?: number) {
   if (!width && !height) return;

@@ -1,4 +1,4 @@
-import { Coupon } from "@prisma/client";
+import { Coupon } from "../../prisma/generated/client/index.js";
 import BaseRepository from "./baseRepository.js";
 import { prisma } from "../config/prisma.js";
 

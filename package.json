@@ -9,6 +9,7 @@
   "scripts": {
     "dev": "concurrently \"bun run dev -w frontend\" \"bun run dev -w backend\"",
     "build": "bun run build -w frontend && bun run build -w backend",
+    "i": "cd frontend && bun i && cd ../backend && bun i && cd ..",
     "typecheck": "bun run typecheck -w frontend && bun run typecheck -w backend",
     "db:generate": "bun run db:generate -w backend",
     "db:migrate": "bun run db:migrate -w backend",

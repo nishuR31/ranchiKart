@@ -4,18 +4,14 @@ import {
   generateAuthenticationOptions,
   verifyAuthenticationResponse,
 } from "@simplewebauthn/server";
-import {
-  generateRegistrationOptions,
-  verifyRegistrationResponse,
-  generateAuthenticationOptions,
-  verifyAuthenticationResponse,
-} from "@simplewebauthn/server";
 
 import type {
   VerifiedRegistrationResponse,
   VerifiedAuthenticationResponse,
 } from "@simplewebauthn/server";
+
 import env from "../config/env.js";
+
 
 // RP (Relying Party) settings
 const rpName = env.BUSINESS_NAME || "RanchiKart";
@@ -46,7 +42,7 @@ export async function createPasskeyRegistrationOptions(
   });
 }
 
-export async function verifyPasskeyRegistration(response: any, expectedChallenge: string) {
+export async function verifyPasskeyRegistration(response: any, expectedChallenge: string): Promise<VerifiedRegistrationResponse> {
   return verifyRegistrationResponse({
     response,
     expectedChallenge,

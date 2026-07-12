@@ -1,4 +1,4 @@
-import { OrderStatus, type Prisma, ProductKind } from "@prisma/client";
+import { OrderStatus, type Prisma, ProductKind } from "../../prisma/generated/client/index.js";
 import { prisma } from "../config/prisma.js";
 import { sendOrderStatusUpdate } from "../config/email.js";
 import { NotFoundError, BadRequestError } from "../utils/errors.js";
@@ -111,7 +111,14 @@ export default class AdminService {
     };
   }
 
-  async getOrders(options: PaginationOptions & { status?: OrderStatus; search?: string; from?: string; to?: string }) {
+  async getOrders(
+    options: PaginationOptions & {
+      status?: OrderStatus;
+      search?: string;
+      from?: string;
+      to?: string;
+    },
+  ) {
     const where: Prisma.OrderWhereInput = {
       status: options.status,
       createdAt: {
@@ -138,7 +145,11 @@ export default class AdminService {
     return { orders, total, page: options.page, limit: options.limit };
   }
 
-  async updateOrderStatus(adminId: string, orderId: string, data: { status: OrderStatus; trackingId?: string; notes?: string }) {
+  async updateOrderStatus(
+    adminId: string,
+    orderId: string,
+    data: { status: OrderStatus; trackingId?: string; notes?: string },
+  ) {
     const order = await prisma.order.findUnique({
       where: { id: orderId },
       include: { user: true },
@@ -205,7 +216,9 @@ export default class AdminService {
     };
   }
 
-  async getProducts(options: PaginationOptions & { search?: string; isActive?: boolean; kind?: ProductKind }) {
+  async getProducts(
+    options: PaginationOptions & { search?: string; isActive?: boolean; kind?: ProductKind },
+  ) {
     const where: Prisma.ProductWhereInput = {
       isActive: options.isActive,
       kind: options.kind,
@@ -303,9 +316,9 @@ export default class AdminService {
       role: options.role,
       OR: options.search
         ? [
-            { name: { contains: options.search, mode: "insensitive" } },
-            { email: { contains: options.search, mode: "insensitive" } },
-          ]
+          { name: { contains: options.search, mode: "insensitive" } },
+          { email: { contains: options.search, mode: "insensitive" } },
+        ]
         : undefined,
     };
 

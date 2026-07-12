@@ -1,6 +1,6 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
-import { OrderStatus, ProductKind } from "@prisma/client";
+import { OrderStatus, ProductKind } from "../../prisma/generated/client/index.js";
 import { code } from "status-map";
 import AdminService from "../services/adminService.js";
 import asyncHandler from "../utils/asyncHandler.js";

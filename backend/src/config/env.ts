@@ -35,7 +35,9 @@ const envSchema = z.object({
   SMTP_PORT: z.coerce.number().int().positive().default(587),
   SMTP_USER: z.string().optional().or(z.literal("")),
   SMTP_PASS: z.string().optional().or(z.literal("")),
-  SMTP_FROM: z.string().default(`${process.env.BUSINESS_NAME || "RanchiKart"} <${process.env.SMTP_USER}>`),
+  SMTP_FROM: z
+    .string()
+    .default(`${process.env.BUSINESS_NAME || "RanchiKart"} <${process.env.SMTP_USER}>`),
 
   //Google OAuth
   GOOGLE_CLIENT_ID: z.string().optional().or(z.literal("")),

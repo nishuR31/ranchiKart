@@ -1,4 +1,4 @@
-import { Review } from "@prisma/client";
+import { Review } from "../../prisma/generated/client/index.js";
 import BaseRepository from "./baseRepository.js";
 import { prisma } from "../config/prisma.js";
 

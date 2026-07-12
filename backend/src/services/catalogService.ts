@@ -1,7 +1,7 @@
 import { prisma } from "../config/prisma.js";
 import { getOrSet, invalidate } from "../config/cache.js";
 import { NotFoundError } from "../utils/errors.js";
-import type { Prisma, ProductKind } from "@prisma/client";
+import { ProductKind, type Prisma } from "../../prisma/generated/client/index.js";
 
 const SORT_OPTIONS = ["newest", "price_asc", "price_desc", "rating"] as const;
 
@@ -47,9 +47,9 @@ export default class CatalogService {
 
     const category = query.category
       ? await prisma.category.findUnique({
-          where: { slug: query.category },
-          include: { children: true },
-        })
+        where: { slug: query.category },
+        include: { children: true },
+      })
       : null;
     const categoryIds = category
       ? [category.id, ...category.children.map((c: any) => c.id)]
@@ -79,11 +79,11 @@ export default class CatalogService {
       rating: query.minRating !== undefined ? { gte: query.minRating } : undefined,
       ...(query.q
         ? {
-            OR: [
-              { name: { contains: query.q, mode: "insensitive" as const } },
-              { description: { contains: query.q, mode: "insensitive" as const } },
-            ],
-          }
+          OR: [
+            { name: { contains: query.q, mode: "insensitive" as const } },
+            { description: { contains: query.q, mode: "insensitive" as const } },
+          ],
+        }
         : {}),
     };
 
@@ -109,11 +109,11 @@ export default class CatalogService {
       isActive: true,
       ...(query.q
         ? {
-            OR: [
-              { name: { contains: query.q, mode: "insensitive" as const } },
-              { description: { contains: query.q, mode: "insensitive" as const } },
-            ],
-          }
+          OR: [
+            { name: { contains: query.q, mode: "insensitive" as const } },
+            { description: { contains: query.q, mode: "insensitive" as const } },
+          ],
+        }
         : {}),
     };
     const products = await prisma.product.findMany({

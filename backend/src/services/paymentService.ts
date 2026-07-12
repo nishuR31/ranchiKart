@@ -1,4 +1,4 @@
-import { OrderStatus, PaymentProvider, PaymentStatus, type Prisma } from "@prisma/client";
+import { OrderStatus, PaymentProvider, PaymentStatus, type Prisma } from "../../prisma/generated/client/index.js";
 import { prisma } from "../config/prisma.js";
 import {
   getRazorpayClient,
@@ -41,19 +41,19 @@ export default class PaymentService {
 
     const gatewayOrder = client
       ? await client.orders.create({
-          amount: order.total,
-          currency: "INR",
-          receipt,
-          notes: { orderId: order.id },
-        })
+        amount: order.total,
+        currency: "INR",
+        receipt,
+        notes: { orderId: order.id },
+      })
       : {
-          id: `mock_${order.id}`,
-          amount: order.total,
-          currency: "INR",
-          receipt,
-          status: "created",
-          mock: true,
-        };
+        id: `mock_${order.id}`,
+        amount: order.total,
+        currency: "INR",
+        receipt,
+        status: "created",
+        mock: true,
+      };
 
     const payment = await prisma.payment.create({
       data: {

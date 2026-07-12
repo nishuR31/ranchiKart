@@ -1,4 +1,4 @@
-import { Order, OrderStatus } from "@prisma/client";
+import { Order, OrderStatus } from "../../prisma/generated/client/index.js";
 import BaseRepository from "./baseRepository.js";
 import { prisma } from "../config/prisma.js";
 

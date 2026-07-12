@@ -1,4 +1,4 @@
-import { OrderStatus, PaymentMethod, type Prisma } from "@prisma/client";
+import { OrderStatus, PaymentMethod, type Prisma } from "../../prisma/generated/client/index.js";
 import { prisma } from "../config/prisma.js";
 import { assertSize, unitPrice } from "../config/pricing.js";
 import { sendOrderConfirmation } from "../config/email.js";

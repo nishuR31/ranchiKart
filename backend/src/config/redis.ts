@@ -2,14 +2,14 @@ import { Redis } from "ioredis";
 import env from "./env.js";
 const redis = env.REDIS_URL
   ? new Redis(env.REDIS_URL, {
-    lazyConnect: true,
-    maxRetriesPerRequest: 5,
-    enableOfflineQueue: true,
-    retryStrategy: (times) => {
-      const delay = Math.min(times * 200, 2000); // max 2 seconds
-      return delay;
-    },
-  })
+      lazyConnect: true,
+      maxRetriesPerRequest: 5,
+      enableOfflineQueue: true,
+      retryStrategy: (times) => {
+        const delay = Math.min(times * 200, 2000); // max 2 seconds
+        return delay;
+      },
+    })
   : null;
 
 redis?.on("error", (error) => {
@@ -37,7 +37,6 @@ export async function connectRedis() {
   } catch (error) {
     console.warn("Redis unavailable, fallback to in memory caching...", error);
     return null;
-
   }
 }
 

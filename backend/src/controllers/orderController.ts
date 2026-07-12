@@ -1,6 +1,6 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
-import { OrderStatus, PaymentMethod } from "@prisma/client";
+import { OrderStatus, PaymentMethod } from "../../prisma/generated/client/index.js";
 import OrderService from "../services/orderService.js";
 import asyncHandler from "../utils/asyncHandler.js";
 import {

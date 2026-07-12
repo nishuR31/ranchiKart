@@ -1,4 +1,4 @@
-import { Product } from "@prisma/client";
+import { Product } from "../../prisma/generated/client/index.js";
 import BaseRepository from "./baseRepository.js";
 import { prisma } from "../config/prisma.js";
 

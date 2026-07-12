@@ -20,7 +20,7 @@ import {
   ValidationError,
   InternalServerError,
 } from "../utils/errors.js";
-import { User, PasskeyCredential } from "@prisma/client";
+import { User, PasskeyCredential } from "../../prisma/generated/client/index.js";
 import { prisma } from "../config/prisma.js";
 import env from "../config/env.js";
 import { generateTotpSecret, generateTotpQrCode, verifyTotpToken } from "../utils/totp.js";
