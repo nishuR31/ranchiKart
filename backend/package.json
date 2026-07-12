@@ -10,7 +10,7 @@
     "dev": "bun run --watch src/index.ts",
     "start": "bun run src/index.ts",
     "run":"bun run dist/index.js",
-    "build": "tsc -p tsconfig.json",
+    "build": "bunx tsc -p tsconfig.json",
     "db:gen": "bunx prisma generate",
     "db:push": "bunx prisma db push",
     "db": "bun run db:gen && bun run db:push",
