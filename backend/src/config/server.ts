@@ -93,7 +93,10 @@ await app.register(swagger, {
       version: "1.3.4",
       contact: { name: "Backend Team", email: env.SMTP_USER },
     },
-    servers: [{ url: `http://localhost:${env.API_PORT}`, description: "Development" }],
+    servers: [
+      { url: `http://localhost:${env.API_PORT}`, description: "Development" },
+      { url: `https://ranchikart.onrender.com`, description: "Production" }
+    ],
     components: {
       securitySchemes: { bearerAuth: { type: "http", scheme: "bearer", bearerFormat: "JWT" } },
     },
