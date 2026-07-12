@@ -8,8 +8,8 @@ const __dirname: string = path.dirname(__filename);
 
 export async function publicRoutes(app: FastifyInstance) {
     app.register(fastifyStatic, {
-        root: path.join(__dirname, "../public"),
-        prefix: "/public/",
+        root: path.join(__dirname, "../../public"),
+        prefix: "/",
     });
 
 }

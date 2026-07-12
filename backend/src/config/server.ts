@@ -4,6 +4,7 @@ import cors from "@fastify/cors";
 import cookie from "@fastify/cookie";
 import sensible from "@fastify/sensible";
 import helmet from "@fastify/helmet";
+import { publicRoutes } from "../routes/public.js";
 import compress from "@fastify/compress";
 import swagger from "@fastify/swagger";
 import swaggerUi from "@fastify/swagger-ui";
@@ -128,6 +129,7 @@ app.get("/", async (req: FastifyRequest, reply: FastifyReply) => {
 // await app.register(couponRoutes);
 // await app.register(adminRoutes);
 // await app.register(userRoutes);
+await app.register(publicRoutes);
 await app.register(rootRoutes);
 
 // Graceful shutdown
