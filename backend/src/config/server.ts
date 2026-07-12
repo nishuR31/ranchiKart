@@ -91,7 +91,7 @@ await app.register(swagger, {
       description:
         "Production-ready e-commerce API for Ranchi and scalable global marketplace. Built with Fastify + Prisma + PostgreSQL.",
       version: "1.3.4",
-      contact: { name: "Backend Team", email: "[EMAIL_ADDRESS]" },
+      contact: { name: "Backend Team", email: env.SMTP_USER },
     },
     servers: [{ url: `http://localhost:${env.API_PORT}`, description: "Development" }],
     components: {
