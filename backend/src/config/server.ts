@@ -30,15 +30,15 @@ const app: FastifyInstance = Fastify({
     level: env.NODE_ENV === "development" ? "info" : "warn",
     ...(env.NODE_ENV === "development"
       ? {
-          transport: {
-            target: "pino-pretty",
-            options: {
-              colorize: true,
-              translateTime: "SYS:standard",
-              ignore: "pid,hostname",
-            },
+        transport: {
+          target: "pino-pretty",
+          options: {
+            colorize: true,
+            translateTime: "SYS:standard",
+            ignore: "pid,hostname",
           },
-        }
+        },
+      }
       : {}),
   },
 });
@@ -107,6 +107,12 @@ await app.register(swaggerUi, {
 
 // Plugins
 await app.register(sensible);
+app.get("/", async (req: FastifyRequest, reply: FastifyReply) => {
+  return reply.send({
+    message: "Server fired up",
+    url: `${req.protocol}://${req.hostname}${req.url}`,
+  });
+});
 
 // Routes registration
 // await app.register(healthRoutes);
