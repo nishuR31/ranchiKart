@@ -1,5 +1,5 @@
 import Fastify from "fastify";
-import type { FastifyInstance, FastifyError } from "fastify";
+import type { FastifyInstance, FastifyError, FastifyRequest, FastifyReply } from "fastify";
 import cors from "@fastify/cors";
 import cookie from "@fastify/cookie";
 import sensible from "@fastify/sensible";
