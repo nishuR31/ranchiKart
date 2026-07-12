@@ -1,12 +1,15 @@
 import app from "./config/server.js";
 import env from "./config/env.js";
 
-const PORT = process.env.PORT || env.API_PORT;
-const HOST = process.env.HOST || env.HOST;
+const PORT = Number(process.env.PORT) || Number(env.API_PORT);
+let HOST = "0.0.0.0";
 
 const startServer = async () => {
   try {
-    await app.listen({ port: env.API_PORT, host: HOST });
+    await app.listen({
+      port: PORT,
+      host: HOST,
+    });
     app.log.info(` API Docs: /api/v1/docs`);
   } catch (err: any) {
     app.log.error(err?.message || err);
