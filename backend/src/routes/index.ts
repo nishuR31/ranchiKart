@@ -10,7 +10,7 @@ import { wishlistRoutes } from "./wishlist.js";
 import { couponRoutes } from "./coupons.js";
 import type { FastifyInstance } from "fastify";
 import { pingRoutes } from "./ping.js";
-import publicRoutes from "./public.js";
+import { publicRoutes } from "./public.js";
 
 function routes(app: FastifyInstance) {
   app.register(adminRoutes);
@@ -27,6 +27,6 @@ function routes(app: FastifyInstance) {
   app.register(publicRoutes);
 }
 
-export default function rootRoutes(app: FastifyInstance) {
-  app.register(routes, { prefix: "/api/v1" });
+export default async function rootRoutes(app: FastifyInstance) {
+  await app.register(routes, { prefix: "/api/v1" });
 }
