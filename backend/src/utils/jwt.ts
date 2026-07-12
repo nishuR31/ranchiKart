@@ -17,10 +17,10 @@ export interface TokenPair {
 }
 
 // Constants (using env values)
-const JWT_ACCESS_SECRET = env.JWT_SECRET_ACCESS;
-const JWT_REFRESH_SECRET = env.JWT_SECRET_REFRESH; // using same secret for simplicity
-const JWT_ACCESS_EXPIRY = env.JWT_EXPIRES_IN_ACCESS;
-const JWT_REFRESH_EXPIRY = env.JWT_EXPIRES_IN_REFRESH; // could be different, but reuse
+const JWT_ACCESS_SECRET = env.JWT_SECRET_ACCESS as Secret;
+const JWT_REFRESH_SECRET = env.JWT_SECRET_REFRESH as Secret; // using same secret for simplicity
+const JWT_ACCESS_EXPIRY = env.JWT_EXPIRES_IN_ACCESS as jwt.SignOptions;
+const JWT_REFRESH_EXPIRY = env.JWT_EXPIRES_IN_REFRESH as jwt.SignOptions; // could be different, but reuse
 
 // Token generation
 export function generateTokenPair(payload: JwtPayload): TokenPair {
@@ -71,7 +71,7 @@ export async function blacklistToken(token: string) {
     if (!decoded?.exp) return;
     const ttl = decoded.exp - Math.floor(Date.now() / 1000);
     if (ttl > 0) await redis?.setex(`blacklist:${token}`, ttl, "1");
-  } catch {}
+  } catch { }
 }
 
 export async function blacklistTokens(token: string, opts: { mode: "access" | "refresh" }) {
@@ -81,7 +81,7 @@ export async function blacklistTokens(token: string, opts: { mode: "access" | "r
     if (!decoded?.exp) return;
     const ttl = decoded.exp - Math.floor(Date.now() / 1000);
     if (ttl > 0) await redis?.setex(`blacklist:${token}`, ttl, "1");
-  } catch {}
+  } catch { }
 }
 
 export async function removeRefreshToken(userId: string) {

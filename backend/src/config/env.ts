@@ -5,14 +5,14 @@ const envSchema = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
   API_PORT: z.coerce.number().int().positive().default(4000),
   WEB_ORIGIN: z.string().url().default("http://localhost:5173"),
-  BUSINESS_NAME: z.string().default("lunkart"),
+  BUSINESS_NAME: z.string().default("RanchiKart"),
   // Database
   DATABASE_URL: z.string().min(1),
   DIRECT_URL: z.string().optional(),
 
   // Auth
-  JWT_SECRET_ACCESS: z.string().min(16),
-  JWT_SECRET_REFRESH: z.string().min(16),
+  JWT_SECRET_ACCESS: z.string().min(16).optional(),
+  JWT_SECRET_REFRESH: z.string().min(16).optional(),
   JWT_EXPIRES_IN_ACCESS: z.string().default("15m"),
   JWT_EXPIRES_IN_REFRESH: z.string().default("7d"),
 
