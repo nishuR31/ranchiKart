@@ -1,10 +1,13 @@
 import app from "./config/server.js";
 import env from "./config/env.js";
 
+const PORT = process.env.PORT || env.API_PORT;
+const HOST = process.env.HOST || env.HOST;
+
 const startServer = async () => {
   try {
-    await app.listen({ port: env.API_PORT, host: "0.0.0.0" });
-    app.log.info(`📖 API Docs: http://localhost:${env.API_PORT}/docs`);
+    await app.listen({ port: env.API_PORT, host: HOST });
+    app.log.info(` API Docs: /api/v1/docs`);
   } catch (err: any) {
     app.log.error(err?.message || err);
     process.exit(1);
