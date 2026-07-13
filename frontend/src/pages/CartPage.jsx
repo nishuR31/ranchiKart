@@ -41,10 +41,10 @@ export default function CartPage() {
         <div className="cart-items">
           {cart.items.map((item) => (
             <div key={item.id} className="cart-item">
-              <img src={item.product.images?.[0]} alt={item.product.title} />
+              <img src={item.product.imageUrl} alt={item.product.name} />
               <div className="cart-item-info">
-                <Link to={`/product/${item.product.slug}`}>{item.product.title}</Link>
-                <div className="cart-item-price">{formatINR(item.product.price)}</div>
+                <Link to={`/product/${item.product.slug}`}>{item.product.name}</Link>
+                <div className="cart-item-price">{formatINR(item.product.basePrice)}</div>
                 <div className="qty-stepper">
                   <button onClick={() => updateCartItem(item.id, Math.max(1, item.quantity - 1))}>−</button>
                   <span>{item.quantity}</span>
@@ -57,7 +57,7 @@ export default function CartPage() {
                   </button>
                 </div>
               </div>
-              <div className="cart-item-total">{formatINR(item.product.price * item.quantity)}</div>
+              <div className="cart-item-total">{formatINR(item.product.basePrice * item.quantity)}</div>
               <button className="icon-btn" onClick={() => removeCartItem(item.id)} title="Remove">
                 <Trash2 size={18} />
               </button>

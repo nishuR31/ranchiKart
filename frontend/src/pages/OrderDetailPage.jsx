@@ -4,14 +4,15 @@ import api, { extractError } from "../lib/api";
 import { formatINR } from "../lib/money";
 import useShopStore from "../store/useShopStore";
 
-const TIMELINE = ["PLACED", "CONFIRMED", "SHIPPED", "OUT_FOR_DELIVERY", "DELIVERED"];
+const TIMELINE = ["PENDING_PAYMENT", "PAID", "PROCESSING", "SHIPPED", "DELIVERED"];
 const STATUS_LABEL = {
-  PLACED: "Placed",
-  CONFIRMED: "Confirmed",
+  PENDING_PAYMENT: "Pending Payment",
+  PAID: "Paid",
+  PROCESSING: "Processing",
   SHIPPED: "Shipped",
-  OUT_FOR_DELIVERY: "Out for Delivery",
   DELIVERED: "Delivered",
   CANCELLED: "Cancelled",
+  REFUNDED: "Refunded",
 };
 
 export default function OrderDetailPage() {
@@ -43,7 +44,7 @@ export default function OrderDetailPage() {
   if (loading || !order) return <div className="loading-block">Loading order…</div>;
 
   const stepIndex = TIMELINE.indexOf(order.status);
-  const cancellable = !["SHIPPED", "OUT_FOR_DELIVERY", "DELIVERED", "CANCELLED"].includes(order.status);
+  const cancellable = !["SHIPPED", "DELIVERED", "CANCELLED", "REFUNDED"].includes(order.status);
 
   return (
     <div className="order-detail-page">
@@ -68,8 +69,8 @@ export default function OrderDetailPage() {
           <h3>Items</h3>
           {order.items.map((item) => (
             <div key={item.id} className="order-item-row">
-              <span>{item.title} × {item.quantity}</span>
-              <span>{formatINR(item.price * item.quantity)}</span>
+              <span>{item.product?.name || "Product"} × {item.quantity}</span>
+              <span>{formatINR(item.unitPrice * item.quantity)}</span>
             </div>
           ))}
         </div>
@@ -77,14 +78,14 @@ export default function OrderDetailPage() {
         <div className="cart-summary">
           <h3>Payment Summary</h3>
           <div className="summary-row"><span>Subtotal</span><span>{formatINR(order.subtotal)}</span></div>
-          {order.discount > 0 && <div className="summary-row"><span>Discount</span><span>-{formatINR(order.discount)}</span></div>}
-          <div className="summary-row"><span>Delivery Fee</span><span>{order.deliveryFee === 0 ? "FREE" : formatINR(order.deliveryFee)}</span></div>
+          {order.discountAmount > 0 && <div className="summary-row"><span>Discount</span><span>-{formatINR(order.discountAmount)}</span></div>}
+          <div className="summary-row"><span>Delivery Fee</span><span>{order.shippingFee === 0 ? "FREE" : formatINR(order.shippingFee)}</span></div>
           <div className="summary-row total"><span>Total</span><span>{formatINR(order.total)}</span></div>
-          <div className="summary-row muted"><span>Payment</span><span>{order.paymentMethod} · {order.paymentStatus}</span></div>
+          <div className="summary-row muted"><span>Payment</span><span>{order.paymentMethod}</span></div>
           <h4>Delivering to</h4>
           <p className="address-text">
-            {order.addressSnapshot.fullName}, {order.addressSnapshot.line1}, {order.addressSnapshot.locality}, {order.addressSnapshot.city} - {order.addressSnapshot.pincode}
-            <br />Phone: {order.addressSnapshot.phone}
+            {order.address?.fullName}, {order.address?.line1}, {order.address?.city} - {order.address?.pincode}
+            <br />Phone: {order.address?.phone}
           </p>
           {cancellable && (
             <button className="btn btn-outline btn-full" onClick={cancelOrder}>Cancel Order</button>

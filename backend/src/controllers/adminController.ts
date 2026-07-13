@@ -296,3 +296,53 @@ export const getRevenueChart = asyncHandler(async (_req: FastifyRequest, res: Fa
   const data = await adminService.getRevenueChart();
   return sendSuccess(res, "Revenue chart fetched", code("ok") as number, data);
 });
+
+export const createCategory = asyncHandler(async (req: FastifyRequest, res: FastifyReply) => {
+  const body = z
+    .object({
+      slug: z.string().min(2).max(50),
+      name: z.string().min(2).max(50),
+      description: z.string().min(10).max(500),
+      kind: z.nativeEnum(ProductKind),
+      imageUrl: z.string().url(),
+      parentId: z.string().optional(),
+    })
+    .parse(req.body);
+
+  try {
+    const category = await adminService.createCategory(req.user!.id, body);
+    return sendSuccess(res, "Category created", code("created") as number, { category });
+  } catch (err: any) {
+    return handleError(err, res);
+  }
+});
+
+export const updateCategory = asyncHandler(async (req: FastifyRequest, res: FastifyReply) => {
+  const { id } = z.object({ id: z.string() }).parse(req.params);
+  const body = z
+    .object({
+      name: z.string().min(2).max(50).optional(),
+      description: z.string().min(10).max(500).optional(),
+      kind: z.nativeEnum(ProductKind).optional(),
+      imageUrl: z.string().url().optional(),
+      parentId: z.string().nullable().optional(),
+    })
+    .parse(req.body);
+
+  try {
+    const category = await adminService.updateCategory(req.user!.id, id, body);
+    return sendSuccess(res, "Category updated", code("ok") as number, { category });
+  } catch (err: any) {
+    return handleError(err, res);
+  }
+});
+
+export const deleteCategory = asyncHandler(async (req: FastifyRequest, res: FastifyReply) => {
+  const { id } = z.object({ id: z.string() }).parse(req.params);
+  try {
+    await adminService.deleteCategory(req.user!.id, id);
+    return sendSuccess(res, "Category deleted", code("ok") as number, null);
+  } catch (err: any) {
+    return handleError(err, res);
+  }
+});

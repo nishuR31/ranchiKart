@@ -12,7 +12,7 @@ export default function SearchPage() {
   useEffect(() => {
     async function load() {
       setLoading(true);
-      const { data } = await api.get("/products", { params: { q, pageSize: 24 } });
+      const { data } = await api.get("/products", { params: { q, limit: 24 } });
       setProducts(data.products);
       setLoading(false);
     }

@@ -43,14 +43,14 @@ function publicUser(user: User): PublicUser {
 export default class AuthService {
   // === Standard Email/Password Auth ===
 
-  async register(data: { email: string; name: string; password?: string }): Promise<{
+  async register(data: { email: string; name: string; password: string }): Promise<{
     user: PublicUser;
     tokens: { accessToken?: string; refreshToken?: string };
   }> {
     const existing = await userRepo.findByEmail(data.email.toLowerCase());
     if (existing) throw new ConflictError("A user with this email already exists.");
 
-    const passwordHash = data.password ? await bcrypt.hash(data.password, 10) : null;
+    const passwordHash = await bcrypt.hash(data.password, 10)
     const user = await userRepo.create({
       email: data.email.toLowerCase(),
       name: data.name,
@@ -62,6 +62,8 @@ export default class AuthService {
     const tokens = generateTokenPair({ id: user.id, email: user.email, role: user.role });
     await storeRefreshToken(user.id, tokens.refreshToken!);
     await userRepo.updateRefreshToken(user.id, tokens.refreshToken!);
+
+    console.log(tokens, user)
 
     return { user: publicUser(user), tokens };
   }

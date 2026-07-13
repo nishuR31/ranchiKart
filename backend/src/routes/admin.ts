@@ -2,7 +2,7 @@ import type { FastifyInstance } from "fastify";
 import { authenticate } from "../middleware/authMiddleware.js";
 import * as adminController from "../controllers/adminController.js";
 import { requireAdmin, requireManager } from "../middleware/requireRole.js";
-import { createProductSchema, updateProductSchema, createCouponSchema, updateCouponSchema, banUserSchema, updateUserRoleSchema, updateOrderStatusSchema, getLogsSchema, getOrdersSchema, getProductsSchema, getUsersSchema, getCouponsSchema, idParamSchema, deleteCouponSchema } from "../routeSchemas/adminSchemas.js";
+import { createProductSchema, updateProductSchema, createCouponSchema, updateCouponSchema, banUserSchema, updateUserRoleSchema, updateOrderStatusSchema, getLogsSchema, getOrdersSchema, getProductsSchema, getUsersSchema, getCouponsSchema, idParamSchema, deleteCouponSchema, createCategorySchema, updateCategorySchema } from "../routeSchemas/adminSchemas.js";
 
 export async function adminRoutes(app: FastifyInstance) {
   const adminGuard = { preHandler: [authenticate, requireAdmin] };
@@ -22,6 +22,11 @@ export async function adminRoutes(app: FastifyInstance) {
   app.put("/admin/products/:id", { ...adminGuard, schema: { params: idParamSchema, body: updateProductSchema } }, adminController.updateProduct);
   app.patch("/admin/products/:id/toggle", { ...managerGuard, schema: { params: idParamSchema } }, adminController.toggleProduct);
   app.patch("/admin/products/:id/featured", { ...managerGuard, schema: { params: idParamSchema } }, adminController.featureProduct);
+
+  // Categories
+  app.post("/admin/categories", { ...adminGuard, schema: { body: createCategorySchema } }, adminController.createCategory);
+  app.put("/admin/categories/:id", { ...adminGuard, schema: { params: idParamSchema, body: updateCategorySchema } }, adminController.updateCategory);
+  app.delete("/admin/categories/:id", { ...adminGuard, schema: { params: idParamSchema } }, adminController.deleteCategory);
 
   // Users
   app.get("/admin/users", { ...managerGuard, schema: { querystring: getUsersSchema } }, adminController.getUsers);

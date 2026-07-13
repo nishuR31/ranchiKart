@@ -2,12 +2,14 @@ import app from "./config/server.js";
 import env from "./config/env.js";
 import prisma from "./config/prisma.js";
 import redis from "./config/redis.js";
+import { connectRedis } from "./config/redis.js";
 
 const PORT = Number(process.env.PORT) || Number(env.API_PORT);
 let HOST = "0.0.0.0";
 
 const startServer = async () => {
   try {
+    await connectRedis();
     await app.listen({ port: PORT, host: HOST });
     console.log(`Server running on ${HOST}:${PORT}`);
     console.log(`API Docs: /docs`);
@@ -46,5 +48,6 @@ process.on("uncaughtException", (error: Error) => {
   console.error(`[FATAL] Uncaught Exception: ${error.message}\n${error.stack}`);
   process.exit(1);
 });
-await redis?.connect();
+
+
 startServer();

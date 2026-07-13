@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import useAuthStore from "../store/useAuthStore";
 import useShopStore from "../store/useShopStore";
@@ -8,10 +8,32 @@ export default function AuthPage() {
   const [mode, setMode] = useState("login");
   const [form, setForm] = useState({ name: "", email: "", password: "", phone: "" });
   const [loading, setLoading] = useState(false);
-  const { login, register } = useAuthStore();
+  const { login, register, fetchUser } = useAuthStore();
   const showToast = useShopStore((s) => s.showToast);
   const navigate = useNavigate();
   const location = useLocation();
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const token = params.get("token");
+    const error = params.get("error");
+
+    if (token) {
+      useAuthStore.setState({ token });
+      fetchUser().then(() => {
+        showToast("Logged in with Google!");
+        navigate("/", { replace: true });
+      });
+    } else if (error) {
+      showToast(error, "error");
+    }
+  }, [location, navigate, fetchUser, showToast]);
+
+  const handleGoogleLogin = () => {
+    window.location.href = import.meta.env.VITE_API_URL
+      ? `${import.meta.env.VITE_API_URL}/api/v1/auth/google/login`
+      : "http://localhost:3000/api/v1/auth/google/login";
+  };
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -70,6 +92,15 @@ export default function AuthPage() {
             {loading ? "Please wait…" : mode === "login" ? "Login" : "Create Account"}
           </button>
         </form>
+
+        <div className="oauth-separator">
+          <span>or</span>
+        </div>
+
+        <button className="btn btn-outline btn-full" onClick={handleGoogleLogin}>
+          Continue with Google
+        </button>
+
         <p className="auth-switch">
           {mode === "login" ? (
             <>Don't have an account? <button onClick={() => setMode("register")}>Sign up</button></>

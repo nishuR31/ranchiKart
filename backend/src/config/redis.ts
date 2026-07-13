@@ -10,6 +10,11 @@ const redis = env.REDIS_URL
     enableReadyCheck: true,
     enableOfflineQueue: true,
     retryStrategy: (times) => {
+      if (times > 3) {
+        redisFatalError = true;
+        console.warn("[Redis] Max retries reached — Redis disabled, falling back to in-memory cache.");
+        return null; // stop retrying
+      }
       const delay = Math.min(times * 200, 2000); // max 2 seconds
       return delay;
     },
@@ -25,18 +30,11 @@ redis?.on("error", (error: any) => {
       console.warn("[Redis] Auth failed — Redis disabled, falling back to in-memory cache.");
       redis!.disconnect();
     }
-    return; // swallow — don't let it bubble to uncaughtException
   }
-  console.error("[Redis] error:", msg);
 });
 
-redis?.on("connect", () => console.log("[Redis] connected"));
-redis?.on("reconnecting", () => {
-  if (!redisFatalError) console.log("[Redis] reconnecting…");
-});
-redis?.on("end", () => console.log("[Redis] connection ended"));
-redis?.on("close", () => {
-  if (!redisFatalError) console.log("[Redis] connection closed");
+redis?.on("connect", () => {
+  if (!redisFatalError) console.log("[Redis] connected");
 });
 
 export async function connectRedis() {

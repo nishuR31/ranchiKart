@@ -11,7 +11,7 @@ export default function ProductCard({ product }) {
   const toggleWishlist = useShopStore((s) => s.toggleWishlist);
   const token = useAuthStore((s) => s.token);
   const navigate = useNavigate();
-  const off = discountPercent(product.price, product.mrp);
+  const off = discountPercent(product.basePrice, product.specifications?.mrp);
 
   function handleAdd(e) {
     e.preventDefault();
@@ -31,17 +31,17 @@ export default function ProductCard({ product }) {
         <Heart size={16} />
       </button>
       <div className="product-card-image">
-        <img src={product.images?.[0]} alt={product.title} loading="lazy" />
+        <img src={product.imageUrl} alt={product.name} loading="lazy" />
       </div>
       <div className="product-card-body">
-        <div className="product-brand">{product.brand}</div>
-        <div className="product-title" title={product.title}>{product.title}</div>
-        <StarRating rating={product.rating} numReviews={product.numReviews} />
+        <div className="product-brand">{product.specifications?.brand || "RanchiKart"}</div>
+        <div className="product-title" title={product.name}>{product.name}</div>
+        <StarRating rating={product.rating} numReviews={product.reviewCount} />
         <div className="product-price-row">
-          <span className="price">{formatINR(product.price)}</span>
+          <span className="price">{formatINR(product.basePrice)}</span>
           {off > 0 && (
             <>
-              <span className="mrp">{formatINR(product.mrp)}</span>
+              <span className="mrp">{formatINR(product.specifications?.mrp)}</span>
               <span className="off">{off}% off</span>
             </>
           )}

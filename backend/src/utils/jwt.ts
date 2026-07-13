@@ -17,8 +17,8 @@ export interface TokenPair {
 }
 
 // Constants (using env values)
-const JWT_ACCESS_SECRET = env.JWT_SECRET_ACCESS as Secret;
-const JWT_REFRESH_SECRET = env.JWT_SECRET_REFRESH as Secret; // using same secret for simplicity
+const JWT_ACCESS_SECRET = env.JWT_ACCESS_SECRET as Secret;
+const JWT_REFRESH_SECRET = env.JWT_REFRESH_SECRET as Secret; // using same secret for simplicity
 const JWT_ACCESS_EXPIRY = env.JWT_EXPIRES_IN_ACCESS as jwt.SignOptions;
 const JWT_REFRESH_EXPIRY = env.JWT_EXPIRES_IN_REFRESH as jwt.SignOptions; // could be different, but reuse
 

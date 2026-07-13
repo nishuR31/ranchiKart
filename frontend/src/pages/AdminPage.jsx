@@ -20,7 +20,13 @@ const TABS = [
   { key: "coupons", label: "Coupons", icon: TagIcon },
 ];
 
-const ORDER_STATUSES = ["PLACED", "CONFIRMED", "SHIPPED", "OUT_FOR_DELIVERY", "DELIVERED", "CANCELLED"];
+const ORDER_STATUSES = ["PENDING_PAYMENT", "PAID", "PROCESSING", "SHIPPED", "DELIVERED", "CANCELLED", "REFUNDED"];
+
+const PRODUCT_KINDS = [
+  "EATABLE", "STATIONERY", "ELECTRONIC", "CLOTHING", "SHOE", "BAG", "ACCESSORY",
+  "JEWELLERY", "BEAUTY", "HEALTH", "SPORT", "HOME", "KITCHEN", "GARDEN", "PET",
+  "BABY", "TOY", "STAMP", "BOARD", "OTHER"
+];
 
 export default function AdminPage() {
   const [tab, setTab] = useState("dashboard");
@@ -87,8 +93,8 @@ function ProductsTab() {
   const [categories, setCategories] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({
-    title: "", slug: "", description: "", price: "", mrp: "", stock: 50,
-    brand: "RanchiKart", categoryId: "", images: "", isFeatured: false,
+    name: "", slug: "", description: "", basePrice: "", mrp: "", stock: 50,
+    brand: "RanchiKart", categoryId: "", imageUrl: "", isFeatured: false, kind: "OTHER",
   });
   const showToast = useShopStore((s) => s.showToast);
 
@@ -106,11 +112,22 @@ function ProductsTab() {
   async function createProduct(e) {
     e.preventDefault();
     try {
-      const images = form.images.split(",").map((s) => s.trim()).filter(Boolean);
-      await api.post("/admin/products", { ...form, images });
+      const payload = {
+        name: form.name,
+        slug: form.slug,
+        description: form.description,
+        basePrice: Number(form.basePrice),
+        stock: Number(form.stock),
+        categoryId: form.categoryId,
+        kind: form.kind,
+        imageUrl: form.imageUrl,
+        isFeatured: form.isFeatured,
+        specifications: { mrp: form.mrp, brand: form.brand }
+      };
+      await api.post("/admin/products", payload);
       showToast("Product created");
       setShowForm(false);
-      setForm((f) => ({ ...f, title: "", slug: "", description: "", price: "", mrp: "", images: "" }));
+      setForm((f) => ({ ...f, name: "", slug: "", description: "", basePrice: "", mrp: "", imageUrl: "" }));
       load();
     } catch (err) {
       showToast(extractError(err, "Could not create product"), "error");
@@ -138,17 +155,20 @@ function ProductsTab() {
 
       {showForm && (
         <form className="admin-form" onSubmit={createProduct}>
-          <input required placeholder="Title" value={form.title} onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))} />
+          <input required placeholder="Name" value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} />
           <input required placeholder="Slug (unique)" value={form.slug} onChange={(e) => setForm((f) => ({ ...f, slug: e.target.value }))} />
           <textarea placeholder="Description" value={form.description} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} />
-          <input required type="number" placeholder="Price" value={form.price} onChange={(e) => setForm((f) => ({ ...f, price: e.target.value }))} />
+          <input required type="number" placeholder="Base Price" value={form.basePrice} onChange={(e) => setForm((f) => ({ ...f, basePrice: e.target.value }))} />
           <input type="number" placeholder="MRP" value={form.mrp} onChange={(e) => setForm((f) => ({ ...f, mrp: e.target.value }))} />
           <input type="number" placeholder="Stock" value={form.stock} onChange={(e) => setForm((f) => ({ ...f, stock: e.target.value }))} />
           <input placeholder="Brand" value={form.brand} onChange={(e) => setForm((f) => ({ ...f, brand: e.target.value }))} />
           <select value={form.categoryId} onChange={(e) => setForm((f) => ({ ...f, categoryId: e.target.value }))}>
             {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
           </select>
-          <input placeholder="Image URLs, comma-separated" value={form.images} onChange={(e) => setForm((f) => ({ ...f, images: e.target.value }))} />
+          <select value={form.kind} onChange={(e) => setForm((f) => ({ ...f, kind: e.target.value }))}>
+            {PRODUCT_KINDS.map((k) => <option key={k} value={k}>{k}</option>)}
+          </select>
+          <input placeholder="Image URL" value={form.imageUrl} onChange={(e) => setForm((f) => ({ ...f, imageUrl: e.target.value }))} />
           <label className="checkbox-row">
             <input type="checkbox" checked={form.isFeatured} onChange={(e) => setForm((f) => ({ ...f, isFeatured: e.target.checked }))} />
             Featured
@@ -162,9 +182,9 @@ function ProductsTab() {
         <tbody>
           {products.map((p) => (
             <tr key={p.id}>
-              <td>{p.title}</td>
+              <td>{p.name}</td>
               <td>{p.category?.name}</td>
-              <td>{formatINR(p.price)}</td>
+              <td>{formatINR(p.basePrice)}</td>
               <td>{p.stock}</td>
               <td><button className="icon-btn" onClick={() => deleteProduct(p.id)}><Trash2 size={16} /></button></td>
             </tr>
@@ -177,7 +197,7 @@ function ProductsTab() {
 
 function CategoriesTab() {
   const [categories, setCategories] = useState([]);
-  const [form, setForm] = useState({ name: "", slug: "", icon: "Package" });
+  const [form, setForm] = useState({ name: "", slug: "", description: "", imageUrl: "", kind: "OTHER" });
   const showToast = useShopStore((s) => s.showToast);
 
   async function load() {
@@ -191,7 +211,7 @@ function CategoriesTab() {
     try {
       await api.post("/admin/categories", form);
       showToast("Category created");
-      setForm({ name: "", slug: "", icon: "Package" });
+      setForm({ name: "", slug: "", description: "", imageUrl: "", kind: "OTHER" });
       load();
     } catch (err) {
       showToast(extractError(err, "Could not create category"), "error");
@@ -214,7 +234,11 @@ function CategoriesTab() {
       <form className="admin-form inline" onSubmit={createCategory}>
         <input required placeholder="Name" value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} />
         <input required placeholder="Slug" value={form.slug} onChange={(e) => setForm((f) => ({ ...f, slug: e.target.value }))} />
-        <input placeholder="Lucide icon name (e.g. Package)" value={form.icon} onChange={(e) => setForm((f) => ({ ...f, icon: e.target.value }))} />
+        <input placeholder="Description" value={form.description} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} />
+        <input placeholder="Image URL" value={form.imageUrl} onChange={(e) => setForm((f) => ({ ...f, imageUrl: e.target.value }))} />
+        <select value={form.kind} onChange={(e) => setForm((f) => ({ ...f, kind: e.target.value }))}>
+          {PRODUCT_KINDS.map((k) => <option key={k} value={k}>{k}</option>)}
+        </select>
         <button className="btn btn-primary btn-sm" type="submit">Add</button>
       </form>
       <table className="admin-table">
@@ -262,7 +286,7 @@ function OrdersTab() {
           {orders.map((o) => (
             <tr key={o.id}>
               <td>{o.orderNumber}</td>
-              <td>{o.user.name}<br /><small>{o.addressSnapshot.locality}, {o.addressSnapshot.city}</small></td>
+              <td>{o.user.name}<br /><small>{o.address?.line1}, {o.address?.city}</small></td>
               <td>{formatINR(o.total)}</td>
               <td>{o.paymentMethod} · {o.paymentStatus}</td>
               <td>
@@ -280,7 +304,7 @@ function OrdersTab() {
 
 function CouponsTab() {
   const [coupons, setCoupons] = useState([]);
-  const [form, setForm] = useState({ code: "", type: "PERCENT", value: 10, minOrder: 0 });
+  const [form, setForm] = useState({ code: "", type: "PERCENT", value: 10, minOrderAmount: 0 });
   const showToast = useShopStore((s) => s.showToast);
 
   async function load() {
@@ -292,9 +316,13 @@ function CouponsTab() {
   async function createCoupon(e) {
     e.preventDefault();
     try {
-      await api.post("/admin/coupons", form);
+      await api.post("/admin/coupons", {
+        ...form,
+        value: Number(form.value),
+        minOrderAmount: Number(form.minOrderAmount)
+      });
       showToast("Coupon created");
-      setForm({ code: "", type: "PERCENT", value: 10, minOrder: 0 });
+      setForm({ code: "", type: "PERCENT", value: 10, minOrderAmount: 0 });
       load();
     } catch (err) {
       showToast(extractError(err, "Could not create coupon"), "error");
@@ -321,7 +349,7 @@ function CouponsTab() {
           <option value="FLAT">Flat (₹)</option>
         </select>
         <input required type="number" placeholder="Value" value={form.value} onChange={(e) => setForm((f) => ({ ...f, value: e.target.value }))} />
-        <input type="number" placeholder="Min Order" value={form.minOrder} onChange={(e) => setForm((f) => ({ ...f, minOrder: e.target.value }))} />
+        <input type="number" placeholder="Min Order" value={form.minOrderAmount} onChange={(e) => setForm((f) => ({ ...f, minOrderAmount: e.target.value }))} />
         <button className="btn btn-primary btn-sm" type="submit">Add</button>
       </form>
       <table className="admin-table">
@@ -332,7 +360,7 @@ function CouponsTab() {
               <td>{c.code}</td>
               <td>{c.type}</td>
               <td>{c.type === "PERCENT" ? `${c.value}%` : formatINR(c.value)}</td>
-              <td>{formatINR(c.minOrder)}</td>
+              <td>{formatINR(c.minOrderAmount)}</td>
               <td><button className="btn btn-outline btn-sm" onClick={() => toggleActive(c)}>{c.active ? "Active" : "Inactive"}</button></td>
               <td><button className="icon-btn" onClick={() => deleteCoupon(c.id)}><Trash2 size={16} /></button></td>
             </tr>

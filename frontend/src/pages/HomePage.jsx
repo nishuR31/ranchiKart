@@ -40,8 +40,8 @@ export default function HomePage() {
       setLoading(true);
       const [catRes, featRes, trendRes] = await Promise.all([
         api.get("/categories"),
-        api.get("/products", { params: { featured: true, pageSize: 8 } }),
-        api.get("/products", { params: { sort: "rating", pageSize: 8 } }),
+        api.get("/products", { params: { featured: true, limit: 8 } }),
+        api.get("/products", { params: { sort: "rating", limit: 8 } }),
       ]);
       setCategories(catRes.data.categories);
       setFeatured(featRes.data.products);

@@ -24,6 +24,23 @@ const _createProductZod = z.object({
   maxHeightMm: z.number().int().positive().optional(),
 });
 
+const _createCategoryZod = z.object({
+  slug: z.string().min(2).max(50),
+  name: z.string().min(2).max(50),
+  description: z.string().min(10).max(500),
+  kind: z.nativeEnum(ProductKind),
+  imageUrl: z.string().url(),
+  parentId: z.string().optional(),
+});
+
+const _updateCategoryZod = z.object({
+  name: z.string().min(2).max(50).optional(),
+  description: z.string().min(10).max(500).optional(),
+  kind: z.nativeEnum(ProductKind).optional(),
+  imageUrl: z.string().url().optional(),
+  parentId: z.string().nullable().optional(),
+});
+
 const _updateProductZod = z.object({
   name: z.string().min(2).optional(),
   description: z.string().min(10).optional(),
@@ -116,6 +133,8 @@ const opts = { $refStrategy: "none" } as const;
 
 export const createProductSchema    = zodToJsonSchema(_createProductZod,    opts);
 export const updateProductSchema    = zodToJsonSchema(_updateProductZod,    opts);
+export const createCategorySchema   = zodToJsonSchema(_createCategoryZod,   opts);
+export const updateCategorySchema   = zodToJsonSchema(_updateCategoryZod,   opts);
 export const createCouponSchema     = zodToJsonSchema(_createCouponZod,     opts);
 export const updateCouponSchema     = zodToJsonSchema(_updateCouponZod,     opts);
 export const banUserSchema          = zodToJsonSchema(_banUserZod,          opts);

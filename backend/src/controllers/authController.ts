@@ -40,12 +40,16 @@ export const register = asyncHandler(async (req: FastifyRequest, res: FastifyRep
     .object({
       email: z.string().email(),
       name: z.string().min(2).max(80),
-      password: z.string().min(8).max(120).optional(),
+      password: z.string().min(8).max(120),
     })
     .parse(req.body);
 
   try {
-    const result = await authService.register(body);
+    const result = await authService.register({
+      email: body.email,
+      name: body.name,
+      password: body.password,
+    });
     res.cookie("refreshToken", result.tokens.refreshToken!, cookieOption("refresh"));
     return sendSuccess(res, "User registered successfully", code("created") as number, result);
   } catch (err: any) {
@@ -143,20 +147,21 @@ export const getGoogleAuthUrl = asyncHandler(async (_req: FastifyRequest, res: F
 
 export const googleCallback = asyncHandler(async (req: FastifyRequest, res: FastifyReply) => {
   const { code: oauthCode, state, error } = req.query as any;
-  if (error) return unauthorizedError(res, `Google OAuth was denied. Error: ${error}`);
+  if (error) return res.redirect(`${env.WEB_ORIGIN}/auth?error=Google OAuth was denied`);
   if (!oauthCode || !state)
-    return unauthorizedError(res, "Missing Google OAuth callback parameters.");
+    return res.redirect(`${env.WEB_ORIGIN}/auth?error=Missing Google OAuth callback parameters`);
 
   const cookieState = req.cookies?.oauth_state;
-  if (!cookieState || cookieState !== state) return unauthorizedError(res, "Invalid OAuth state.");
+  if (!cookieState || cookieState !== state) return res.redirect(`${env.WEB_ORIGIN}/auth?error=Invalid OAuth state`);
   res.clearCookie("oauth_state");
 
   try {
     const result = await authService.loginWithGoogleCode(oauthCode);
     res.cookie("refreshToken", result.tokens.refreshToken!, cookieOption("refresh"));
-    return sendSuccess(res, "Google login successful", code("ok") as number, result);
+    // Redirect back to frontend with the access token in URL fragment or query parameter
+    return res.redirect(`${env.WEB_ORIGIN}/auth?token=${result.tokens.accessToken}`);
   } catch (err: any) {
-    return handleError(err, res);
+    return res.redirect(`${env.WEB_ORIGIN}/auth?error=${encodeURIComponent(err?.message || "Google login failed")}`);
   }
 });
 

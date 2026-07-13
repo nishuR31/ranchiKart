@@ -516,4 +516,74 @@ export default class AdminService {
       })),
     };
   }
+
+  async createCategory(adminId: string, data: any) {
+    const existing = await prisma.category.findUnique({ where: { slug: data.slug } });
+    if (existing) throw new BadRequestError("Category slug already exists");
+
+    const category = await prisma.category.create({ data });
+
+    await prisma.adminLog.create({
+      data: {
+        adminId,
+        action: "CREATE_CATEGORY",
+        entity: "Category",
+        entityId: category.id,
+        meta: { name: category.name, slug: category.slug },
+      },
+    });
+
+    return category;
+  }
+
+  async updateCategory(adminId: string, id: string, data: any) {
+    const category = await prisma.category.findUnique({ where: { id } });
+    if (!category) throw new NotFoundError("Category not found");
+
+    if (data.slug && data.slug !== category.slug) {
+      const existing = await prisma.category.findUnique({ where: { slug: data.slug } });
+      if (existing) throw new BadRequestError("Category slug already exists");
+    }
+
+    const updated = await prisma.category.update({ where: { id }, data });
+    
+    await prisma.adminLog.create({
+      data: {
+        adminId,
+        action: "UPDATE_CATEGORY",
+        entity: "Category",
+        entityId: id,
+        meta: data,
+      },
+    });
+
+    return updated;
+  }
+
+  async deleteCategory(adminId: string, id: string) {
+    const category = await prisma.category.findUnique({
+      where: { id },
+      include: { _count: { select: { products: true, children: true } } },
+    });
+    if (!category) throw new NotFoundError("Category not found");
+
+    if (category._count.products > 0) {
+      throw new BadRequestError(`Cannot delete category with ${category._count.products} products attached.`);
+    }
+    if (category._count.children > 0) {
+      throw new BadRequestError(`Cannot delete category with ${category._count.children} child categories.`);
+    }
+
+    await prisma.category.delete({ where: { id } });
+
+    await prisma.adminLog.create({
+      data: {
+        adminId,
+        action: "DELETE_CATEGORY",
+        entity: "Category",
+        entityId: id,
+        meta: { name: category.name, slug: category.slug },
+      },
+    });
+  }
 }

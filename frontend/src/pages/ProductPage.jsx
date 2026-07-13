@@ -16,6 +16,7 @@ export default function ProductPage() {
   const [activeImg, setActiveImg] = useState(0);
   const [qty, setQty] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [reviewForm, setReviewForm] = useState({ rating: 5, comment: "" });
   const [submittingReview, setSubmittingReview] = useState(false);
 
@@ -24,12 +25,18 @@ export default function ProductPage() {
 
   async function load() {
     setLoading(true);
-    const { data } = await api.get(`/products/${slug}`);
-    setProduct(data.product);
-    setRelated(data.related);
-    setActiveImg(0);
-    setQty(1);
-    setLoading(false);
+    setError(null);
+    try {
+      const { data } = await api.get(`/products/${slug}`);
+      setProduct(data.product);
+      setRelated(data.related);
+      setActiveImg(0);
+      setQty(1);
+    } catch (err) {
+      setError(extractError(err, "Product not found"));
+    } finally {
+      setLoading(false);
+    }
   }
 
   useEffect(() => {
@@ -37,9 +44,11 @@ export default function ProductPage() {
     window.scrollTo(0, 0);
   }, [slug]);
 
-  if (loading || !product) return <div className="loading-block">Loading product…</div>;
+  if (loading) return <div className="loading-block">Loading product…</div>;
+  if (error || !product) return <div className="loading-block">{error || "Product not found"}</div>;
 
-  const off = discountPercent(product.price, product.mrp);
+  const images = [product.imageUrl, ...(product.gallery || [])].filter(Boolean);
+  const off = discountPercent(product.basePrice, product.specifications?.mrp);
 
   async function handleAdd() {
     if (!token) return navigate("/auth");
@@ -78,10 +87,10 @@ export default function ProductPage() {
       <div className="product-detail">
         <div className="product-gallery">
           <div className="gallery-main">
-            <img src={product.images[activeImg]} alt={product.title} />
+            <img src={images[activeImg]} alt={product.name} />
           </div>
           <div className="gallery-thumbs">
-            {product.images.map((img, i) => (
+            {images.map((img, i) => (
               <button key={i} className={i === activeImg ? "active" : ""} onClick={() => setActiveImg(i)}>
                 <img src={img} alt="" />
               </button>
@@ -90,15 +99,15 @@ export default function ProductPage() {
         </div>
 
         <div className="product-info">
-          <div className="product-brand">{product.brand}</div>
-          <h1>{product.title}</h1>
-          <StarRating rating={product.rating} numReviews={product.numReviews} size={16} />
+          <div className="product-brand">{product.specifications?.brand || "RanchiKart"}</div>
+          <h1>{product.name}</h1>
+          <StarRating rating={product.rating} numReviews={product.reviewCount} size={16} />
 
           <div className="product-price-row large">
-            <span className="price">{formatINR(product.price)}</span>
+            <span className="price">{formatINR(product.basePrice)}</span>
             {off > 0 && (
               <>
-                <span className="mrp">{formatINR(product.mrp)}</span>
+                <span className="mrp">{formatINR(product.specifications?.mrp)}</span>
                 <span className="off">{off}% off</span>
               </>
             )}
@@ -135,12 +144,12 @@ export default function ProductPage() {
             </button>
           </div>
 
-          {product.specs && Object.keys(product.specs).length > 0 && (
+          {product.specifications && Object.keys(product.specifications).length > 0 && (
             <div className="specs-table">
               <h3>Specifications</h3>
               <table>
                 <tbody>
-                  {Object.entries(product.specs).map(([k, v]) => (
+                  {Object.entries(product.specifications).map(([k, v]) => (
                     <tr key={k}>
                       <td>{k}</td>
                       <td>{v}</td>

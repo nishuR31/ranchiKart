@@ -9,7 +9,7 @@ export default function CategoryPage() {
   const [products, setProducts] = useState([]);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
-  const [sort, setSort] = useState(searchParams.get("sort") || "popular");
+  const [sort, setSort] = useState(searchParams.get("sort") || "newest");
   const [page, setPage] = useState(Number(searchParams.get("page")) || 1);
 
   useEffect(() => {
@@ -20,7 +20,7 @@ export default function CategoryPage() {
     async function load() {
       setLoading(true);
       const { data } = await api.get("/products", {
-        params: { category: slug, sort, page, pageSize: 12 },
+        params: { category: slug, sort, page, limit: 12 },
       });
       setProducts(data.products);
       setTotalPages(data.totalPages);
@@ -45,7 +45,7 @@ export default function CategoryPage() {
             setSearchParams({ sort: e.target.value });
           }}
         >
-          <option value="popular">Popularity</option>
+          <option value="newest">Newest First</option>
           <option value="price_asc">Price: Low to High</option>
           <option value="price_desc">Price: High to Low</option>
           <option value="rating">Customer Rating</option>
