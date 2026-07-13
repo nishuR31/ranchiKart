@@ -14,8 +14,15 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+api.interceptors.response.use((response) => {
+  if (response.data && response.data.success !== undefined && 'data' in response.data) {
+    response.data = response.data.data;
+  }
+  return response;
+});
+
 export function extractError(err, fallback = "Something went wrong") {
-  return err?.response?.data?.error || fallback;
+  return err?.response?.data?.message || err?.response?.data?.error || fallback;
 }
 
 export default api;
