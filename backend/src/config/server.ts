@@ -1,5 +1,5 @@
 import Fastify from "fastify";
-import type { FastifyInstance, FastifyError, FastifyRequest, FastifyReply } from "fastify";
+import type { FastifyError, FastifyRequest, FastifyReply } from "fastify";
 import cors from "@fastify/cors";
 import cookie from "@fastify/cookie";
 import sensible from "@fastify/sensible";
@@ -10,8 +10,7 @@ import swagger from "@fastify/swagger";
 import swaggerUi from "@fastify/swagger-ui";
 import { ZodError } from "zod";
 import env from "./env.js"; // lib env
-import prisma from "./prisma.js";
-import redis from "./redis.js";
+
 
 // Route imports
 // import { authRoutes } from "../routes/auth.js";
