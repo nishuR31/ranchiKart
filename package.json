@@ -13,7 +13,8 @@
     "typecheck": "bun run typecheck -w frontend && bun run typecheck -w backend",
     "db:generate": "bun run db:generate -w backend",
     "db:migrate": "bun run db:migrate -w backend",
-    "db:seed": "bun run db:seed -w backend"
+    "db:seed": "bun run db:seed -w backend",
+    "git": "bun git.js"
   },
   "devDependencies": {
     "concurrently": "^9.1.2",

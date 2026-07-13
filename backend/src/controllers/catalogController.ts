@@ -27,6 +27,7 @@ const productQuerySchema = z.object({
   page: z.coerce.number().int().positive().optional(),
 });
 
+
 function handleError(err: any, res: FastifyReply) {
   if (err instanceof NotFoundError) return notFoundError(res, err.message);
   if (err instanceof ForbiddenError) return forbiddenError(res, err.message);

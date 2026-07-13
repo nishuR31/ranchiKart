@@ -221,6 +221,7 @@ export const disableTotp = asyncHandler(async (req: FastifyRequest, res: Fastify
 export const generatePasskeyRegistration = asyncHandler(
   async (req: FastifyRequest, res: FastifyReply) => {
     try {
+
       const options = await authService.generatePasskeyRegistrationOptions(req.user!.id);
       return sendSuccess(
         res,

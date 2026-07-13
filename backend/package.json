@@ -7,10 +7,10 @@
     "check": "bun run typecheck",
     "format": "bunx prettier --write .",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "dev": "bun run --watch src/index.ts",
+    "dev": "bun run src/index.ts",
     "start": "bun run src/index.ts",
     "run": "bun run dist/index.js",
-    "build": "bunx tsc -p tsconfig.json",
+    "build": "rm -rf dist/ && bunx tsc -p tsconfig.json",
     "db:gen": "bunx prisma generate",
     "db:push": "bunx prisma db push",
     "db": "bun run db:gen && bun run db:push",
@@ -44,7 +44,8 @@
     "qrcode": "^1.5.4",
     "razorpay": "^2.9.6",
     "status-map": "^1.0.7",
-    "zod": "^3.25.56"
+    "zod": "^3.25.56",
+    "zod-to-json-schema": "^3.25.2"
   },
   "devDependencies": {
     "@types/jsonwebtoken": "^9.0.10",

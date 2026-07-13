@@ -9,6 +9,11 @@ const transporter = smtpConfigured
       port: env.SMTP_PORT,
       secure: env.SMTP_PORT === 465,
       auth: { user: env.SMTP_USER, pass: env.SMTP_PASS },
+      // Prevent hanging at startup — nodemailer would otherwise try to
+      // verify the SMTP connection eagerly when the module is first imported.
+      connectionTimeout: 5000,   // 5 s to establish TCP connection
+      greetingTimeout: 5000,     // 5 s to receive SMTP greeting
+      socketTimeout: 10000,      // 10 s of inactivity before giving up
     })
   : null;
 
@@ -17,7 +22,12 @@ async function send(to: string, subject: string, html: string) {
     console.log(`[Email no-op] To: ${to} | Subject: ${subject}`);
     return;
   }
-  await transporter.sendMail({ from: env.SMTP_FROM, to, subject, html });
+  try {
+    await transporter.sendMail({ from: env.SMTP_FROM, to, subject, html });
+  } catch (err) {
+    // Email delivery is best-effort — log and continue, never crash the API
+    console.error(`[Email error] To: ${to} | Subject: ${subject} |`, err);
+  }
 }
 
 export async function sendWelcomeEmail(to: string, name: string) {

@@ -26,11 +26,11 @@ import redis from "./redis.js";
 // import { userRoutes } from "../routes/users.js";
 import rootRoutes from "../routes/index.js";
 
-const app: FastifyInstance = Fastify({
-  logger: {
-    level: env.NODE_ENV === "development" ? "info" : "warn",
-    ...(env.NODE_ENV === "development"
+const app = Fastify({
+  logger:
+    env.NODE_ENV === "development"
       ? {
+        level: "info",
         transport: {
           target: "pino-pretty",
           options: {
@@ -40,8 +40,9 @@ const app: FastifyInstance = Fastify({
           },
         },
       }
-      : {}),
-  },
+      : {
+        level: "warn",
+      },
 });
 
 // Error handler
@@ -73,7 +74,6 @@ await app.register(helmet, {
   },
   crossOriginEmbedderPolicy: true,
   referrerPolicy: { policy: "no-referrer" },
-  // permissionsPolicy: { features: {} },
 });
 await app.register(compress, { global: true });
 await app.register(cookie);
@@ -119,29 +119,8 @@ app.get("/", async (req: FastifyRequest, reply: FastifyReply) => {
 });
 
 // Routes registration
-// await app.register(healthRoutes);
-// await app.register(authRoutes);
-// await app.register(catalogRoutes);
-// await app.register(orderRoutes);
-// await app.register(paymentRoutes);
-// await app.register(reviewRoutes);
-// await app.register(wishlistRoutes);
-// await app.register(couponRoutes);
-// await app.register(adminRoutes);
-// await app.register(userRoutes);
 await app.register(publicRoutes);
 await app.register(rootRoutes);
 
-// Graceful shutdown
-const shutdown = async () => {
-  app.log.info("Shutting down server...");
-  await app.close();
-  await prisma.$disconnect();
-  if (redis?.status === "ready") await redis.quit();
-  process.exit(0);
-};
-process.on("SIGTERM", shutdown);
-process.on("SIGINT", shutdown);
 
-// Export app for index
 export default app;
