@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from "bun:test";
 import { app, prismaMock, resetMocks } from "../setup.js";
-import { ProductKind } from "../../../prisma/generated/client/index.js";
+import { ProductKind } from "../../prisma/generated/client/index.js";
 
 describe("Catalog Routes", () => {
   beforeEach(() => {

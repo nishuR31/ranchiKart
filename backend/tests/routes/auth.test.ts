@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, mock } from "bun:test";
 import { app, prismaMock, resetMocks } from "../setup.js";
-import { Role } from "../../../prisma/generated/client/index.js";
+import { Role } from "../../prisma/generated/client/index.js";
 
 describe("Auth Routes", () => {
   beforeEach(() => {
@@ -9,8 +9,8 @@ describe("Auth Routes", () => {
 
   describe("POST /api/v1/auth/register", () => {
     it("should successfully register a new user", async () => {
-      // Mock findUnique to return null (meaning user doesn't exist)
-      (prismaMock.user.findUnique as any).mockResolvedValue(null);
+      // Mock findFirst to return null (meaning user doesn't exist)
+      (prismaMock.user.findFirst as any).mockResolvedValue(null);
       // Mock create to return a new user object
       const createdUser = {
         id: "usr_123",
@@ -35,13 +35,13 @@ describe("Auth Routes", () => {
       const json = response.json();
       expect(json.success).toBe(true);
       expect(json.data.user.email).toBe("test@example.com");
-      expect(prismaMock.user.findUnique).toHaveBeenCalledTimes(1);
+      expect(prismaMock.user.findFirst).toHaveBeenCalledTimes(1);
       expect(prismaMock.user.create).toHaveBeenCalledTimes(1);
     });
 
     it("should fail if email already exists (409 Conflict)", async () => {
-      // Mock findUnique to return an existing user
-      (prismaMock.user.findUnique as any).mockResolvedValue({ id: "usr_999", email: "test@example.com" });
+      // Mock findFirst to return an existing user
+      (prismaMock.user.findFirst as any).mockResolvedValue({ id: "usr_999", email: "test@example.com" });
 
       const response = await app.inject({
         method: "POST",
@@ -56,7 +56,7 @@ describe("Auth Routes", () => {
       expect(response.statusCode).toBe(409);
       const json = response.json();
       expect(json.success).toBe(false);
-      expect(json.message).toBe("Email already in use");
+      expect(json.message).toBe("A user with this email already exists.");
       expect(prismaMock.user.create).not.toHaveBeenCalled();
     });
 
@@ -72,7 +72,7 @@ describe("Auth Routes", () => {
       });
 
       expect(response.statusCode).toBe(400);
-      expect(prismaMock.user.findUnique).not.toHaveBeenCalled();
+      expect(prismaMock.user.findFirst).not.toHaveBeenCalled();
     });
   });
 });
