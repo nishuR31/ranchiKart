@@ -13,6 +13,12 @@
   <a href="https://ranchikart.onrender.com/docs"><img src="https://img.shields.io/badge/API_Docs-Swagger_UI-85EA2D?style=for-the-badge&logo=swagger&logoColor=black" alt="API Docs" /></a>
 </p>
 
+[![Backend Build](https://github.com/nishuR31/ranchiKart/actions/workflows/backend.yml/badge.svg)](https://github.com/nishuR31/ranchiKart/actions/workflows/backend.yml)
+
+[![Frontend Build](https://github.com/nishuR31/ranchiKart/actions/workflows/frontend.yml/badge.svg)](https://github.com/nishuR31/ranchiKart/actions/workflows/frontend.yml)
+
+[![CI](https://github.com/nishuR31/ranchiKart/actions/workflows/ci.yml/badge.svg)](https://github.com/nishuR31/ranchiKart/actions/workflows/ci.yml)
+
 <p align="center">
   <img src="https://img.shields.io/badge/Fastify-5.3-000000?style=flat-square&logo=fastify&logoColor=white" />
   <img src="https://img.shields.io/badge/TypeScript-5.8-3178C6?style=flat-square&logo=typescript&logoColor=white" />
@@ -450,7 +456,8 @@ All routes are mounted under `/api/v1`. Auto‑generated Swagger docs are availa
       <sub>• System Design & Docs<br />• Requirement Analysis<br />• Monitoring & Logging</sub>
     </td>
     <td align="center" valign="top" width="20%">
-      <img src="https://github.com/github.png" width="80" style="border-radius:50%;" alt="Suraj" /><br />
+          <a href="https://github.com/surxz">
+      <img src="https://github.com/surxz.png" width="80" style="border-radius:50%;" alt="Suraj" /><br />
       <sub><b>Suraj</b></sub><br />
       <sub>• Quality Assurance<br />• Functional & UI Testing<br />• Bug Reporting & E2E</sub>
     </td>

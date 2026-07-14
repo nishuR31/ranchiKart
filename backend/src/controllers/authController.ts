@@ -21,6 +21,7 @@ import {
 } from "../utils/errors.js";
 import { sendPasswordlessLoginEmail } from "../config/email.js";
 import cookieOption from "../utils/cookieOptions.js";
+import env from "../config/env.js";
 
 const authService = new AuthService();
 

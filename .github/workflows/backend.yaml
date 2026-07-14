@@ -1,0 +1,29 @@
+name: Backend Build
+
+on:
+  push:
+    branches: [backend]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - run: bun i
+
+      - name: Type Check
+        run: bun run typecheck
+
+      - name: Build
+        run: bun run build

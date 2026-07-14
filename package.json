@@ -8,12 +8,12 @@
   ],
   "scripts": {
     "dev": "concurrently \"bun run dev -w frontend\" \"bun run dev -w backend\"",
-    "build": "bun run build -w frontend && bun run build -w backend",
+    "build": "cd frontend && bun run build && cd ../backend && bun run build && cd ..",
     "i": "cd frontend && bun i && cd ../backend && bun i && cd ..",
-    "typecheck": "bun run typecheck -w frontend && bun run typecheck -w backend",
-    "db:generate": "bun run db:generate -w backend",
-    "db:migrate": "bun run db:migrate -w backend",
-    "db:seed": "bun run db:seed -w backend",
+    "typecheck": "cd frontend && bun run typecheck && cd ../backend && bun run typecheck && cd ..",
+    "db:generate": "cd ../backend && bun run db:generate && cd ..",
+    "db:migrate": "cd ../backend && bun run db:migrate && cd ..",
+    "db:seed": "cd ../backend && bun run db:seed && cd ..",
     "git": "bun git.js"
   },
   "devDependencies": {
