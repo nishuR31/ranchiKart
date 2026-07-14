@@ -47,6 +47,10 @@ const envSchema = z.object({
 
   // Admin
   ADMIN_EMAIL: z.string().email().optional(),
+
+  // Image hosting (imgbb)
+  IMGBB_API_KEY: z.string().min(1).optional(),
+  IMGBB_API_URL: z.string().url().default("https://api.imgbb.com/1/upload"),
 });
 
 const env = envSchema.parse(process.env);

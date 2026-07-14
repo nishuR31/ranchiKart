@@ -19,13 +19,23 @@ export const getProfile = asyncHandler(async (req: FastifyRequest, res: FastifyR
 });
 
 export const updateProfile = asyncHandler(async (req: FastifyRequest, res: FastifyReply) => {
-  const body = z
+  const raw = z
     .object({
       name: z.string().min(2).max(80).optional(),
       phone: z.string().min(8).max(15).optional(),
+      // Accepted from plain-JSON callers that already have a hosted URL
       avatarUrl: z.string().url().optional(),
+      // Injected by avatarImageMiddleware after sharp→imgbb processing
+      imageUrl: z.string().url().optional(),
     })
     .parse(req.body);
+
+  // Prefer an explicit avatarUrl; fall back to the middleware-injected imageUrl
+  const body = {
+    name: raw.name,
+    phone: raw.phone,
+    avatarUrl: raw.avatarUrl ?? raw.imageUrl,
+  };
 
   const user = await userService.updateProfile(req.user!.id, body);
   return sendSuccess(res, "Profile updated", code("ok") as number, { user });

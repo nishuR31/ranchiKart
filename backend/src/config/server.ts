@@ -4,6 +4,7 @@ import cors from "@fastify/cors";
 import cookie from "@fastify/cookie";
 import sensible from "@fastify/sensible";
 import helmet from "@fastify/helmet";
+import multipart from "@fastify/multipart";
 import { publicRoutes } from "../routes/public.js";
 import compress from "@fastify/compress";
 import swagger from "@fastify/swagger";
@@ -76,6 +77,13 @@ await app.register(helmet, {
 });
 await app.register(compress, { global: true });
 await app.register(cookie);
+// Multipart (for image uploads)
+await app.register(multipart, {
+  limits: {
+    fileSize: 10 * 1024 * 1024, // 10 MB max per file
+    files: 1,                   // one image per request
+  },
+});
 // CORS
 await app.register(cors, {
   origin: [env.WEB_ORIGIN, "http://localhost:5173", "http://localhost:3000"],

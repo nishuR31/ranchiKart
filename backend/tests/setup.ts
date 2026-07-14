@@ -1,5 +1,5 @@
 import { mock } from "bun:test";
-import { PrismaClient } from "../../prisma/generated/client/index.js";
+import { PrismaClient } from "../prisma/generated/client/index.js";
 
 // Deep mock of PrismaClient
 export const prismaMock = {
