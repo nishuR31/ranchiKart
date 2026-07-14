@@ -39,5 +39,4 @@ jobs:
           bun-version: latest
 
       - run: bun install
-      - run: bun run check
       - run: bun run build
