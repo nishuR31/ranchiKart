@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [backend]
+    branches: [main]
   pull_request:
 
 jobs:
@@ -11,7 +11,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: backend
+        working-directory: main
 
     steps:
       - uses: actions/checkout@v4
@@ -21,7 +21,7 @@ jobs:
           bun-version: latest
 
       - run: bun install
-      - run: bun run typecheck
+      - run: bun run check
       - run: bun run build
 
   frontend:
@@ -39,5 +39,5 @@ jobs:
           bun-version: latest
 
       - run: bun install
-      - run: bun run typecheck
+      - run: bun run check
       - run: bun run build
