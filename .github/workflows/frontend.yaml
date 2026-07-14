@@ -2,7 +2,7 @@ name: Frontend Build
 
 on:
   push:
-    branches: [backend]
+    branches: [main,backend]
   pull_request:
 
 jobs:
