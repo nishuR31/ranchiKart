@@ -13,12 +13,19 @@
   <a href="https://ranchikart.onrender.com/docs"><img src="https://img.shields.io/badge/API_Docs-Swagger_UI-85EA2D?style=for-the-badge&logo=swagger&logoColor=black" alt="API Docs" /></a>
 </p>
 
-[![Backend Build](https://github.com/nishuR31/ranchiKart/actions/workflows/backend.yaml/badge.svg?branch=main)](https://github.com/nishuR31/ranchiKart/actions/workflows/backend.yaml)
+<p align="center">
+  <a href="https://github.com/nishuR31/ranchiKart/actions/workflows/backend.yaml">
+    <img src="https://github.com/nishuR31/ranchiKart/actions/workflows/backend.yaml/badge.svg?branch=main" alt="Backend Build" />
+  </a>
 
-[![Frontend Build](https://github.com/nishuR31/ranchiKart/actions/workflows/frontend.yaml/badge.svg?branch=main)](https://github.com/nishuR31/ranchiKart/actions/workflows/frontend.yaml)
+  <a href="https://github.com/nishuR31/ranchiKart/actions/workflows/frontend.yaml">
+    <img src="https://github.com/nishuR31/ranchiKart/actions/workflows/frontend.yaml/badge.svg?branch=main" alt="Frontend Build" />
+  </a>
 
-
-[![CI](https://github.com/nishuR31/ranchiKart/actions/workflows/CI.yaml/badge.svg?branch=main)](https://github.com/nishuR31/ranchiKart/actions/workflows/CI.yaml)
+  <a href="https://github.com/nishuR31/ranchiKart/actions/workflows/CI.yaml">
+    <img src="https://github.com/nishuR31/ranchiKart/actions/workflows/CI.yaml/badge.svg?branch=main" alt="CI" />
+  </a>
+</p>
 
 <p align="center">
   <img src="https://img.shields.io/badge/Fastify-5.3-000000?style=flat-square&logo=fastify&logoColor=white" />
