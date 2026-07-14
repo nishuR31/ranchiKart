@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "check": "bun run typecheck",
     "build": "vite build",
     "preview": "vite preview",
     "img": "bun run scripts/image.js && find public -name \"*.png\" -exec optipng -o7 {} \\;",
