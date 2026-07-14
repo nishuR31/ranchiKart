@@ -2,7 +2,7 @@
   <img src="frontend/public/assets/source.png" alt="RanchiKart — Ranchi's Own Online Store" width="720" />
 </p>
 
-<h1 align="center">RanchiKart</h1>
+<h1 align="center">Ranchi Kart</h1>
 
 <p align="center">
   <strong>A production‑grade, full‑stack ecommerce platform built for Ranchi — delivering stamps, stationery, custom boards, and everyday essentials with a premium shopping experience.</strong>
