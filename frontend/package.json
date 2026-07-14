@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "check": "bun run typecheck",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
     "build": "vite build",
     "preview": "vite preview",
     "img": "bun run scripts/image.js && find public -name \"*.png\" -exec optipng -o7 {} \\;",
