@@ -141,6 +141,7 @@ export default class AuthService {
   // === Google OAuth ===
 
   private assertGoogleConfig() {
+    console.log(env.GOOGLE_CLIENT_ID, env.GOOGLE_CLIENT_SECRET, env.GOOGLE_CALLBACK_URL);
     if (!env.GOOGLE_CLIENT_ID || !env.GOOGLE_CLIENT_SECRET || !env.GOOGLE_CALLBACK_URL) {
       throw new InternalServerError("Google OAuth is not configured.");
     }
@@ -284,14 +285,14 @@ export default class AuthService {
 
     const options = await createPasskeyRegistrationOptions(
       { id: user.id, email: user.email, name: user.name || "User" },
-      passkeys,
+      passkeys
     );
 
     // Save challenge temporarily (in production, use Redis or similar with expiry)
-    await prisma.user.update({
-      where: { id: userId },
-      data: { banReason: options.challenge }, // HACK: reusing field temporarily or use Redis. Better to use Redis.
-    });
+    // await prisma.user.update({
+    //   where: { id: userId },
+    //   data: { banReason: options.challenge }, // HACK: reusing field temporarily or use Redis. Better to use Redis.
+    // });
     // Wait, let's use Redis properly instead of hijacking `banReason`.
     const redis = (await import("../config/redis.js")).default;
     await redis?.setex(`passkey_reg_challenge:${userId}`, 300, options.challenge);
@@ -317,6 +318,7 @@ export default class AuthService {
         credentialID: credential.id,
         credentialPublicKey: Buffer.from(credential.publicKey),
         counter: BigInt(credential.counter),
+        transports: credential.transports || [],
       },
     });
 
@@ -353,6 +355,7 @@ export default class AuthService {
       credentialID: passkey.credentialID,
       credentialPublicKey: new Uint8Array(passkey.credentialPublicKey),
       counter: Number(passkey.counter),
+      transports: passkey.transports as AuthenticatorTransport[],
     });
 
     if (!verification.verified || !verification.authenticationInfo) {

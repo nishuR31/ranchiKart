@@ -17,24 +17,24 @@ id
 
 Columns
 -------
-id                  String (PK)
+id                  String (PK, cuid)
 email               String (Unique)
 name                String (Nullable)
 passwordHash        String (Nullable)
-role                Role Enum
+role                Role Enum (USER | MANAGER | ADMIN | SELLER) (Default: USER)
 avatarUrl           String (Nullable)
 gender              String (Nullable)
 phone               String (Nullable)
-isEmailVerified     Boolean
-coins               Integer
-isBanned            Boolean
+isEmailVerified     Boolean (Default: false)
+coins               Integer (Default: 0)
+isBanned            Boolean (Default: false)
 banReason           String (Nullable)
-lastLogin           DateTime
+lastLogin           DateTime (Default: now)
 refreshToken        String (Nullable)
 totpSecret          String (Nullable)
-isTotpEnabled       Boolean
-createdAt           DateTime
-updatedAt           DateTime
+isTotpEnabled       Boolean (Default: false)
+createdAt           DateTime (Default: now)
+updatedAt           DateTime (updatedAt)
 
 Relationships
 -------------
@@ -65,14 +65,14 @@ userId -> User.id
 
 Columns
 -------
-id
-userId
-credentialID (Unique)
-credentialPublicKey
-counter
-transports
-createdAt
-updatedAt
+id                  String (PK, cuid)
+userId              String (FK -> User.id, Cascade Delete)
+credentialID        String (Unique)
+credentialPublicKey Bytes
+counter             BigInt
+transports          String[] (Array of strings)
+createdAt           DateTime (Default: now)
+updatedAt           DateTime (updatedAt)
 
 Relationships
 -------------
@@ -97,15 +97,15 @@ parentId -> Category.id (Optional)
 
 Columns
 -------
-id
-slug
-name
-description
-imageUrl
-kind
-parentId
-createdAt
-updatedAt
+id                  String (PK, cuid)
+slug                String (Unique)
+name                String
+description         String
+imageUrl            String
+kind                ProductKind Enum (EATABLE | STATIONERY | ELECTRONIC | CLOTHING | SHOE | BAG | ACCESSORY | JEWELLERY | BEAUTY | HEALTH | SPORT | HOME | KITCHEN | GARDEN | PET | BABY | TOY | STAMP | BOARD | OTHER)
+parentId            String (Nullable, FK -> Category.id)
+createdAt           DateTime (Default: now)
+updatedAt           DateTime (updatedAt)
 
 Relationships
 -------------
@@ -135,37 +135,37 @@ categoryId -> Category.id
 
 Columns
 -------
-id
-categoryId
-slug
-name
-description
-kind
-imageUrl
-gallery
-basePrice
-currency
-stock
-isActive
-isFeatured
-tags
-highlights
-specifications
-rating
-reviewCount
-replacementDays
-returnEligible
-warrantyText
-dispatchDays
-minWidthMm
-maxWidthMm
-minHeightMm
-maxHeightMm
-defaultWidthMm
-defaultHeightMm
-options
-createdAt
-updatedAt
+id                  String (PK, cuid)
+categoryId          String (FK -> Category.id)
+slug                String (Unique)
+name                String
+description         String
+kind                ProductKind Enum
+imageUrl            String
+gallery             Json (Default: "[]")
+basePrice           Integer (in paisa)
+currency            String (Default: "INR")
+stock               Integer (Default: random)
+isActive            Boolean (Default: true)
+isFeatured          Boolean (Default: false)
+tags                Json (Default: "[]")
+highlights          Json (Default: "[]")
+specifications      Json (Default: "{}")
+rating              Float (Default: random)
+reviewCount         Integer (Default: 0)
+replacementDays     Integer (Default: 7)
+returnEligible      Boolean (Default: false)
+warrantyText        String (Default: "Manufacturing defects covered as per seller policy.")
+dispatchDays        Integer (Default: 3)
+minWidthMm          Integer (Nullable)
+maxWidthMm          Integer (Nullable)
+minHeightMm         Integer (Nullable)
+maxHeightMm         Integer (Nullable)
+defaultWidthMm      Integer (Nullable)
+defaultHeightMm     Integer (Nullable)
+options             Json (Default: "{}")
+createdAt           DateTime (Default: now)
+updatedAt           DateTime (updatedAt)
 
 Relationships
 -------------
@@ -199,15 +199,15 @@ productId -> Product.id
 
 Columns
 -------
-id
-productId
-name
-sku
-priceDelta
-attributes
-stock
-createdAt
-updatedAt
+id                  String (PK, cuid)
+productId           String (FK -> Product.id, Cascade Delete)
+name                String
+sku                 String (Unique)
+priceDelta          Integer (Default: 0)
+attributes          Json (Default: "{}")
+stock               Integer (Default: 100)
+createdAt           DateTime (Default: now)
+updatedAt           DateTime (updatedAt)
 
 Relationships
 -------------
@@ -235,17 +235,17 @@ orderId   -> Order.id (Optional)
 
 Columns
 -------
-id
-productId
-userId
-orderId
-rating
-title
-body
-isVerified
-helpfulCount
-createdAt
-updatedAt
+id                  String (PK, cuid)
+productId           String (FK -> Product.id, Cascade Delete)
+userId              String (FK -> User.id, Cascade Delete)
+orderId             String (Nullable, FK -> Order.id, SetNull on Delete)
+rating              Integer
+title               String (Nullable)
+body                String
+isVerified          Boolean (Default: false)
+helpfulCount        Integer (Default: 0)
+createdAt           DateTime (Default: now)
+updatedAt           DateTime (updatedAt)
 
 Relationships
 -------------
@@ -275,10 +275,10 @@ productId -> Product.id
 
 Columns
 -------
-id
-userId
-productId
-createdAt
+id                  String (PK, cuid)
+userId              String (FK -> User.id, Cascade Delete)
+productId           String (FK -> Product.id, Cascade Delete)
+createdAt           DateTime (Default: now)
 
 Relationships
 -------------
@@ -304,19 +304,19 @@ categoryId -> Category.id (Optional)
 
 Columns
 -------
-id
-code
-description
-type
-value
-minOrderAmount
-maxUses
-usedCount
-isActive
-expiresAt
-categoryId
-createdAt
-updatedAt
+id                  String (PK, cuid)
+code                String (Unique)
+description         String (Nullable)
+type                CouponType Enum (PERCENT | FIXED) (Default: PERCENT)
+value               Integer
+minOrderAmount      Integer (Default: 0)
+maxUses             Integer (Nullable)
+usedCount           Integer (Default: 0)
+isActive            Boolean (Default: true)
+expiresAt           DateTime (Nullable)
+categoryId          String (Nullable, FK -> Category.id)
+createdAt           DateTime (Default: now)
+updatedAt           DateTime (updatedAt)
 
 Relationships
 -------------
@@ -343,19 +343,19 @@ userId -> User.id
 
 Columns
 -------
-id
-userId
-label
-fullName
-phone
-line1
-line2
-city
-state
-pincode
-isDefault
-createdAt
-updatedAt
+id                  String (PK, cuid)
+userId              String (FK -> User.id, Cascade Delete)
+label               String (Default: "Home")
+fullName            String
+phone               String
+line1               String
+line2               String (Nullable)
+city                String
+state               String
+pincode             String
+isDefault           Boolean (Default: false)
+createdAt           DateTime (Default: now)
+updatedAt           DateTime (updatedAt)
 
 Relationships
 -------------
@@ -380,20 +380,20 @@ couponId -> Coupon.id (Optional)
 
 Columns
 -------
-id
-userId
-status
-paymentMethod
-subtotal
-shippingFee
-discountAmount
-total
-address
-trackingId
-notes
-couponId
-createdAt
-updatedAt
+id                  String (PK, cuid)
+userId              String (FK -> User.id)
+status              OrderStatus Enum (PENDING_PAYMENT | PAID | PROCESSING | SHIPPED | DELIVERED | CANCELLED | REFUNDED) (Default: PENDING_PAYMENT)
+paymentMethod       PaymentMethod Enum (UPI | CARD | CRYPTO | NET_BANKING | COINS)
+subtotal            Integer
+shippingFee         Integer (Default: 0)
+discountAmount      Integer (Default: 0)
+total               Integer
+address             Json
+trackingId          String (Nullable)
+notes               String (Nullable)
+couponId            String (Nullable, FK -> Coupon.id)
+createdAt           DateTime (Default: now)
+updatedAt           DateTime (updatedAt)
 
 Relationships
 -------------
@@ -427,17 +427,17 @@ variantId -> ProductVariant.id (Optional)
 
 Columns
 -------
-id
-orderId
-productId
-variantId
-quantity
-unitPrice
-total
-customWidthMm
-customHeightMm
-customText
-customization
+id                  String (PK, cuid)
+orderId             String (FK -> Order.id, Cascade Delete)
+productId           String (FK -> Product.id)
+variantId           String (Nullable, FK -> ProductVariant.id)
+quantity            Integer
+unitPrice           Integer
+total               Integer
+customWidthMm       Integer (Nullable)
+customHeightMm      Integer (Nullable)
+customText          String (Nullable)
+customization       Json (Default: "{}")
 
 Relationships
 -------------
@@ -459,18 +459,18 @@ orderId -> Order.id
 
 Columns
 -------
-id
-orderId
-provider
-status
-amount
-currency
-providerOrderId
-providerPaymentId
-providerSignature
-rawResponse
-createdAt
-updatedAt
+id                  String (PK, cuid)
+orderId             String (FK -> Order.id, Cascade Delete)
+provider            PaymentProvider Enum (RAZORPAY)
+status              PaymentStatus Enum (CREATED | AUTHORIZED | CAPTURED | FAILED | REFUNDED) (Default: CREATED)
+amount              Integer
+currency            String (Default: "INR")
+providerOrderId     String (Unique)
+providerPaymentId   String (Nullable)
+providerSignature   String (Nullable)
+rawResponse         Json (Nullable)
+createdAt           DateTime (Default: now)
+updatedAt           DateTime (updatedAt)
 
 Relationships
 -------------
@@ -495,13 +495,13 @@ adminId -> User.id
 
 Columns
 -------
-id
-adminId
-action
-entity
-entityId
-meta
-createdAt
+id                  String (PK, cuid)
+adminId             String (FK -> User.id)
+action              String
+entity              String
+entityId            String (Nullable)
+meta                Json (Nullable)
+createdAt           DateTime (Default: now)
 
 Relationships
 -------------

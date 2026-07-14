@@ -3804,7 +3804,6 @@ export namespace Prisma {
     credentialID: string | null
     credentialPublicKey: Bytes | null
     counter: bigint | null
-    transports: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -3815,7 +3814,6 @@ export namespace Prisma {
     credentialID: string | null
     credentialPublicKey: Bytes | null
     counter: bigint | null
-    transports: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -3847,7 +3845,6 @@ export namespace Prisma {
     credentialID?: true
     credentialPublicKey?: true
     counter?: true
-    transports?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -3858,7 +3855,6 @@ export namespace Prisma {
     credentialID?: true
     credentialPublicKey?: true
     counter?: true
-    transports?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -3967,7 +3963,7 @@ export namespace Prisma {
     credentialID: string
     credentialPublicKey: Bytes
     counter: bigint
-    transports: string | null
+    transports: string[]
     createdAt: Date
     updatedAt: Date
     _count: PasskeyCredentialCountAggregateOutputType | null
@@ -4060,7 +4056,7 @@ export namespace Prisma {
       credentialID: string
       credentialPublicKey: Prisma.Bytes
       counter: bigint
-      transports: string | null
+      transports: string[]
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["passkeyCredential"]>
@@ -4492,7 +4488,7 @@ export namespace Prisma {
     readonly credentialID: FieldRef<"PasskeyCredential", 'String'>
     readonly credentialPublicKey: FieldRef<"PasskeyCredential", 'Bytes'>
     readonly counter: FieldRef<"PasskeyCredential", 'BigInt'>
-    readonly transports: FieldRef<"PasskeyCredential", 'String'>
+    readonly transports: FieldRef<"PasskeyCredential", 'String[]'>
     readonly createdAt: FieldRef<"PasskeyCredential", 'DateTime'>
     readonly updatedAt: FieldRef<"PasskeyCredential", 'DateTime'>
   }
@@ -19010,7 +19006,7 @@ export namespace Prisma {
     credentialID?: StringFilter<"PasskeyCredential"> | string
     credentialPublicKey?: BytesFilter<"PasskeyCredential"> | Bytes
     counter?: BigIntFilter<"PasskeyCredential"> | bigint | number
-    transports?: StringNullableFilter<"PasskeyCredential"> | string | null
+    transports?: StringNullableListFilter<"PasskeyCredential">
     createdAt?: DateTimeFilter<"PasskeyCredential"> | Date | string
     updatedAt?: DateTimeFilter<"PasskeyCredential"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
@@ -19022,7 +19018,7 @@ export namespace Prisma {
     credentialID?: SortOrder
     credentialPublicKey?: SortOrder
     counter?: SortOrder
-    transports?: SortOrderInput | SortOrder
+    transports?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     user?: UserOrderByWithRelationInput
@@ -19037,7 +19033,7 @@ export namespace Prisma {
     userId?: StringFilter<"PasskeyCredential"> | string
     credentialPublicKey?: BytesFilter<"PasskeyCredential"> | Bytes
     counter?: BigIntFilter<"PasskeyCredential"> | bigint | number
-    transports?: StringNullableFilter<"PasskeyCredential"> | string | null
+    transports?: StringNullableListFilter<"PasskeyCredential">
     createdAt?: DateTimeFilter<"PasskeyCredential"> | Date | string
     updatedAt?: DateTimeFilter<"PasskeyCredential"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
@@ -19049,7 +19045,7 @@ export namespace Prisma {
     credentialID?: SortOrder
     credentialPublicKey?: SortOrder
     counter?: SortOrder
-    transports?: SortOrderInput | SortOrder
+    transports?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: PasskeyCredentialCountOrderByAggregateInput
@@ -19068,7 +19064,7 @@ export namespace Prisma {
     credentialID?: StringWithAggregatesFilter<"PasskeyCredential"> | string
     credentialPublicKey?: BytesWithAggregatesFilter<"PasskeyCredential"> | Bytes
     counter?: BigIntWithAggregatesFilter<"PasskeyCredential"> | bigint | number
-    transports?: StringNullableWithAggregatesFilter<"PasskeyCredential"> | string | null
+    transports?: StringNullableListFilter<"PasskeyCredential">
     createdAt?: DateTimeWithAggregatesFilter<"PasskeyCredential"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"PasskeyCredential"> | Date | string
   }
@@ -20319,7 +20315,7 @@ export namespace Prisma {
     credentialID: string
     credentialPublicKey: Bytes
     counter: bigint | number
-    transports?: string | null
+    transports?: PasskeyCredentialCreatetransportsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
     user: UserCreateNestedOneWithoutPasskeysInput
@@ -20331,7 +20327,7 @@ export namespace Prisma {
     credentialID: string
     credentialPublicKey: Bytes
     counter: bigint | number
-    transports?: string | null
+    transports?: PasskeyCredentialCreatetransportsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -20341,7 +20337,7 @@ export namespace Prisma {
     credentialID?: StringFieldUpdateOperationsInput | string
     credentialPublicKey?: BytesFieldUpdateOperationsInput | Bytes
     counter?: BigIntFieldUpdateOperationsInput | bigint | number
-    transports?: NullableStringFieldUpdateOperationsInput | string | null
+    transports?: PasskeyCredentialUpdatetransportsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutPasskeysNestedInput
@@ -20353,7 +20349,7 @@ export namespace Prisma {
     credentialID?: StringFieldUpdateOperationsInput | string
     credentialPublicKey?: BytesFieldUpdateOperationsInput | Bytes
     counter?: BigIntFieldUpdateOperationsInput | bigint | number
-    transports?: NullableStringFieldUpdateOperationsInput | string | null
+    transports?: PasskeyCredentialUpdatetransportsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -20364,7 +20360,7 @@ export namespace Prisma {
     credentialID: string
     credentialPublicKey: Bytes
     counter: bigint | number
-    transports?: string | null
+    transports?: PasskeyCredentialCreatetransportsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -20374,7 +20370,7 @@ export namespace Prisma {
     credentialID?: StringFieldUpdateOperationsInput | string
     credentialPublicKey?: BytesFieldUpdateOperationsInput | Bytes
     counter?: BigIntFieldUpdateOperationsInput | bigint | number
-    transports?: NullableStringFieldUpdateOperationsInput | string | null
+    transports?: PasskeyCredentialUpdatetransportsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -20385,7 +20381,7 @@ export namespace Prisma {
     credentialID?: StringFieldUpdateOperationsInput | string
     credentialPublicKey?: BytesFieldUpdateOperationsInput | Bytes
     counter?: BigIntFieldUpdateOperationsInput | bigint | number
-    transports?: NullableStringFieldUpdateOperationsInput | string | null
+    transports?: PasskeyCredentialUpdatetransportsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -21892,6 +21888,14 @@ export namespace Prisma {
     not?: NestedBigIntFilter<$PrismaModel> | bigint | number
   }
 
+  export type StringNullableListFilter<$PrismaModel = never> = {
+    equals?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    has?: string | StringFieldRefInput<$PrismaModel> | null
+    hasEvery?: string[] | ListStringFieldRefInput<$PrismaModel>
+    hasSome?: string[] | ListStringFieldRefInput<$PrismaModel>
+    isEmpty?: boolean
+  }
+
   export type UserScalarRelationFilter = {
     is?: UserWhereInput
     isNot?: UserWhereInput
@@ -21918,7 +21922,6 @@ export namespace Prisma {
     credentialID?: SortOrder
     credentialPublicKey?: SortOrder
     counter?: SortOrder
-    transports?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -21929,7 +21932,6 @@ export namespace Prisma {
     credentialID?: SortOrder
     credentialPublicKey?: SortOrder
     counter?: SortOrder
-    transports?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -23211,6 +23213,10 @@ export namespace Prisma {
     deleteMany?: PasskeyCredentialScalarWhereInput | PasskeyCredentialScalarWhereInput[]
   }
 
+  export type PasskeyCredentialCreatetransportsInput = {
+    set: string[]
+  }
+
   export type UserCreateNestedOneWithoutPasskeysInput = {
     create?: XOR<UserCreateWithoutPasskeysInput, UserUncheckedCreateWithoutPasskeysInput>
     connectOrCreate?: UserCreateOrConnectWithoutPasskeysInput
@@ -23227,6 +23233,11 @@ export namespace Prisma {
     decrement?: bigint | number
     multiply?: bigint | number
     divide?: bigint | number
+  }
+
+  export type PasskeyCredentialUpdatetransportsInput = {
+    set?: string[]
+    push?: string | string[]
   }
 
   export type UserUpdateOneRequiredWithoutPasskeysNestedInput = {
@@ -24638,7 +24649,7 @@ export namespace Prisma {
     credentialID: string
     credentialPublicKey: Bytes
     counter: bigint | number
-    transports?: string | null
+    transports?: PasskeyCredentialCreatetransportsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -24648,7 +24659,7 @@ export namespace Prisma {
     credentialID: string
     credentialPublicKey: Bytes
     counter: bigint | number
-    transports?: string | null
+    transports?: PasskeyCredentialCreatetransportsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -24847,7 +24858,7 @@ export namespace Prisma {
     credentialID?: StringFilter<"PasskeyCredential"> | string
     credentialPublicKey?: BytesFilter<"PasskeyCredential"> | Bytes
     counter?: BigIntFilter<"PasskeyCredential"> | bigint | number
-    transports?: StringNullableFilter<"PasskeyCredential"> | string | null
+    transports?: StringNullableListFilter<"PasskeyCredential">
     createdAt?: DateTimeFilter<"PasskeyCredential"> | Date | string
     updatedAt?: DateTimeFilter<"PasskeyCredential"> | Date | string
   }
@@ -27727,7 +27738,7 @@ export namespace Prisma {
     credentialID: string
     credentialPublicKey: Bytes
     counter: bigint | number
-    transports?: string | null
+    transports?: PasskeyCredentialCreatetransportsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -27920,7 +27931,7 @@ export namespace Prisma {
     credentialID?: StringFieldUpdateOperationsInput | string
     credentialPublicKey?: BytesFieldUpdateOperationsInput | Bytes
     counter?: BigIntFieldUpdateOperationsInput | bigint | number
-    transports?: NullableStringFieldUpdateOperationsInput | string | null
+    transports?: PasskeyCredentialUpdatetransportsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -27930,7 +27941,7 @@ export namespace Prisma {
     credentialID?: StringFieldUpdateOperationsInput | string
     credentialPublicKey?: BytesFieldUpdateOperationsInput | Bytes
     counter?: BigIntFieldUpdateOperationsInput | bigint | number
-    transports?: NullableStringFieldUpdateOperationsInput | string | null
+    transports?: PasskeyCredentialUpdatetransportsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -27940,7 +27951,7 @@ export namespace Prisma {
     credentialID?: StringFieldUpdateOperationsInput | string
     credentialPublicKey?: BytesFieldUpdateOperationsInput | Bytes
     counter?: BigIntFieldUpdateOperationsInput | bigint | number
-    transports?: NullableStringFieldUpdateOperationsInput | string | null
+    transports?: PasskeyCredentialUpdatetransportsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

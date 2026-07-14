@@ -15,18 +15,15 @@
 
 <p align="center">
   <a href="https://github.com/nishuR31/ranchiKart/actions/workflows/backend.yaml">
-    <img src="https://github.com/nishuR31/ranchiKart/actions/workflows/backend.yaml/badge.svg?branch=main" alt="Backend Build" />
+    <img src="https://img.shields.io/github/actions/workflow/status/nishuR31/ranchiKart/backend.yaml?branch=main&logo=githubactions&label=&style=flat-square" alt="Backend" />
   </a>
-
   <a href="https://github.com/nishuR31/ranchiKart/actions/workflows/frontend.yaml">
-    <img src="https://github.com/nishuR31/ranchiKart/actions/workflows/frontend.yaml/badge.svg?branch=main" alt="Frontend Build" />
+    <img src="https://img.shields.io/github/actions/workflow/status/nishuR31/ranchiKart/frontend.yaml?branch=main&logo=githubactions&label=&style=flat-square" alt="Frontend" />
   </a>
-
   <a href="https://github.com/nishuR31/ranchiKart/actions/workflows/CI.yaml">
-    <img src="https://github.com/nishuR31/ranchiKart/actions/workflows/CI.yaml/badge.svg?branch=main" alt="CI" />
+    <img src="https://img.shields.io/github/actions/workflow/status/nishuR31/ranchiKart/CI.yaml?branch=main&logo=githubactions&label=&style=flat-square" alt="CI" />
   </a>
 </p>
-
 <p align="center">
   <img src="https://img.shields.io/badge/Fastify-5.3-000000?style=flat-square&logo=fastify&logoColor=white" />
   <img src="https://img.shields.io/badge/TypeScript-5.8-3178C6?style=flat-square&logo=typescript&logoColor=white" />

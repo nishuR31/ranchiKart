@@ -1,3 +1,90 @@
+// import {
+//   generateRegistrationOptions,
+//   verifyRegistrationResponse,
+//   generateAuthenticationOptions,
+//   verifyAuthenticationResponse,
+// } from "@simplewebauthn/server";
+
+// import type {
+//   VerifiedRegistrationResponse,
+//   VerifiedAuthenticationResponse,
+// } from "@simplewebauthn/server";
+
+// import env from "../config/env.js";
+
+
+// // RP (Relying Party) settings
+// const rpName = env.BUSINESS_NAME || "RanchiKart";
+// // In production, this should be your actual domain (e.g., 'mudrakart.in')
+// // Since WEB_ORIGIN could be 'http://localhost:5173', we extract the hostname.
+// const rpID = new URL(env.WEB_ORIGIN).hostname;
+// const origin = env.WEB_ORIGIN;
+
+// export async function createPasskeyRegistrationOptions(
+//   user: { id: string; email: string; name: string },
+//   userPasskeys: any[],
+// ) {
+//   return generateRegistrationOptions({
+//     rpName,
+//     rpID,
+//     userID: Uint8Array.from(Buffer.from(user.id, "utf-8")),
+//     userName: user.email,
+//     userDisplayName: user.name,
+//     attestationType: "none",
+//     excludeCredentials: userPasskeys.map((passkey) => ({
+//       id: passkey.credentialID,
+//       transports: passkey.transports,
+//     })),
+//     authenticatorSelection: {
+//       residentKey: "preferred",
+//       userVerification: "preferred",
+//     },
+//   });
+// }
+
+// export async function verifyPasskeyRegistration(response: any, expectedChallenge: string): Promise<VerifiedRegistrationResponse> {
+//   return verifyRegistrationResponse({
+//     response,
+//     expectedChallenge,
+//     expectedOrigin: origin,
+//     expectedRPID: rpID,
+//   });
+// }
+
+// export async function createPasskeyAuthenticationOptions(userPasskeys: any[]) {
+//   return generateAuthenticationOptions({
+//     rpID,
+//     allowCredentials: userPasskeys.map((passkey) => ({
+//       id: passkey.credentialID,
+//       transports: passkey.transports,
+//     })),
+//     userVerification: "preferred",
+//   });
+// }
+
+// export async function verifyPasskeyAuthentication(
+//   response: any,
+//   expectedChallenge: string,
+//   authenticator: {
+//     credentialID: string;
+//     credentialPublicKey: Uint8Array;
+//     counter: number;
+//   },
+// ) {
+//   return verifyAuthenticationResponse({
+//     response,
+//     expectedChallenge,
+//     expectedOrigin: origin,
+//     expectedRPID: rpID,
+//     credential: {
+//       id: authenticator.credentialID,
+//       publicKey: authenticator.credentialPublicKey as any,
+//       counter: authenticator.counter,
+//     },
+//   });
+// }
+
+
 import {
   generateRegistrationOptions,
   verifyRegistrationResponse,
@@ -10,30 +97,46 @@ import type {
   VerifiedAuthenticationResponse,
 } from "@simplewebauthn/server";
 
+import type {
+  RegistrationResponseJSON,
+  AuthenticationResponseJSON,
+  WebAuthnCredential,
+  AuthenticatorTransportFuture,
+} from "@simplewebauthn/types";
+
 import env from "../config/env.js";
 
-
-// RP (Relying Party) settings
 const rpName = env.BUSINESS_NAME || "RanchiKart";
-// In production, this should be your actual domain (e.g., 'mudrakart.in')
-// Since WEB_ORIGIN could be 'http://localhost:5173', we extract the hostname.
 const rpID = new URL(env.WEB_ORIGIN).hostname;
 const origin = env.WEB_ORIGIN;
 
 export async function createPasskeyRegistrationOptions(
-  user: { id: string; email: string; name: string },
-  userPasskeys: any[],
+  user: {
+    id: string;
+    email: string;
+    name: string;
+  },
+  userPasskeys: {
+    id: string;
+    createdAt: Date;
+    updatedAt: Date;
+    userId: string;
+    credentialPublicKey: Uint8Array<ArrayBuffer>;
+    counter: bigint;
+    credentialID: string;
+    transports: string[];
+  }[],
 ) {
   return generateRegistrationOptions({
     rpName,
     rpID,
-    userID: Uint8Array.from(Buffer.from(user.id, "utf-8")),
+    userID: Buffer.from(user.id),
     userName: user.email,
     userDisplayName: user.name,
     attestationType: "none",
     excludeCredentials: userPasskeys.map((passkey) => ({
       id: passkey.credentialID,
-      transports: passkey.transports,
+      transports: passkey.transports as AuthenticatorTransportFuture[],
     })),
     authenticatorSelection: {
       residentKey: "preferred",
@@ -42,7 +145,10 @@ export async function createPasskeyRegistrationOptions(
   });
 }
 
-export async function verifyPasskeyRegistration(response: any, expectedChallenge: string): Promise<VerifiedRegistrationResponse> {
+export async function verifyPasskeyRegistration(
+  response: RegistrationResponseJSON,
+  expectedChallenge: string,
+): Promise<VerifiedRegistrationResponse> {
   return verifyRegistrationResponse({
     response,
     expectedChallenge,
@@ -51,26 +157,32 @@ export async function verifyPasskeyRegistration(response: any, expectedChallenge
   });
 }
 
-export async function createPasskeyAuthenticationOptions(userPasskeys: any[]) {
+export async function createPasskeyAuthenticationOptions(
+  userPasskeys: {
+    credentialID: string;
+    transports: string[];
+  }[],
+) {
   return generateAuthenticationOptions({
     rpID,
     allowCredentials: userPasskeys.map((passkey) => ({
       id: passkey.credentialID,
-      transports: passkey.transports,
+      transports: passkey.transports as AuthenticatorTransportFuture[],
     })),
     userVerification: "preferred",
   });
 }
 
 export async function verifyPasskeyAuthentication(
-  response: any,
+  response: AuthenticationResponseJSON,
   expectedChallenge: string,
   authenticator: {
     credentialID: string;
     credentialPublicKey: Uint8Array;
     counter: number;
+    transports?: AuthenticatorTransportFuture[];
   },
-) {
+): Promise<VerifiedAuthenticationResponse> {
   return verifyAuthenticationResponse({
     response,
     expectedChallenge,
@@ -78,8 +190,9 @@ export async function verifyPasskeyAuthentication(
     expectedRPID: rpID,
     credential: {
       id: authenticator.credentialID,
-      publicKey: authenticator.credentialPublicKey as any,
+      publicKey: authenticator.credentialPublicKey,
       counter: authenticator.counter,
+      transports: authenticator.transports,
     },
   });
 }

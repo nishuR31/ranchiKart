@@ -113,7 +113,7 @@ model PasskeyCredential {
   credentialID        String   @unique
   credentialPublicKey Bytes
   counter             BigInt
-  transports          String? // JSON array of strings
+  transports          String[]
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
 

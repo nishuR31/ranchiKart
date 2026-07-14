@@ -130,7 +130,7 @@ export const changePassword = asyncHandler(async (req: FastifyRequest, res: Fast
 
 // === Google OAuth ===
 
-export const getGoogleAuthUrl = asyncHandler(async (_req: FastifyRequest, res: FastifyReply) => {
+export const getGoogleAuthUrl = asyncHandler(async (req: FastifyRequest, res: FastifyReply) => {
   try {
     const state = authService.generateOAuthState();
     const url = authService.getGoogleAuthUrl(state);
@@ -142,6 +142,7 @@ export const getGoogleAuthUrl = asyncHandler(async (_req: FastifyRequest, res: F
     });
     return sendSuccess(res, "OAuth URL generated", code("ok") as number, { url });
   } catch (err: any) {
+    console.log("getGoogleAuthUrl", err)
     return handleError(err, res);
   }
 });
