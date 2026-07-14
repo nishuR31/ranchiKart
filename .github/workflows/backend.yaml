@@ -2,8 +2,18 @@ name: Backend Build
 
 on:
   push:
-    branches: [main,backend]
+    branches:
+      - main
+      - backend
+    paths:
+      - "backend/**"
+
   pull_request:
+    branches:
+      - main
+      - backend
+    paths:
+      - "backend/**"
 
 jobs:
   build:
@@ -20,10 +30,10 @@ jobs:
         with:
           bun-version: latest
 
-      - run: bun i
+      - run: bun install
 
       - name: Type Check
-        run: bun run check
+        run: bun run typecheck
 
       - name: Build
         run: bun run build
