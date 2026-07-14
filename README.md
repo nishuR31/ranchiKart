@@ -432,7 +432,7 @@ All routes are mounted under `/api/v1`. Auto‑generated Swagger docs are availa
 
 | Component | Platform | Details |
 |---|---|---|
-| **Backend API** | Render | Fastify on Bun runtime, auto‑deploys from `main` branch |
+| **Backend API** | Render | Fastify on Bun runtime, manual deploys from `main` branch for `Render`'s idle sleep work around |
 | **Frontend SPA** | Vercel | Vite build with SPA rewrites configured in `vercel.json` |
 | **Database** | Prisma Accelerate / NeonDB | Managed PostgreSQL with connection pooling |
 | **Cache** | Redis Cloud | Session caching, rate limiting, token blacklisting |
