@@ -23,6 +23,7 @@
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^6.0.3",
+    "lighthouse": "^13.4.0",
     "vite": "^8.1.4"
   }
 }

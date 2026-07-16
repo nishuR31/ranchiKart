@@ -1,0 +1,462 @@
+#!/usr/bin/env bun
+/**
+ * analytics.ts
+ *
+ * Usage:
+ *   bun analytics.ts https://example.com
+ *
+ * Optional:
+ *   export PAGESPEED_KEY=YOUR_KEY
+ *
+ * Requires:
+ *   bun add -d lighthouse
+ */
+
+import { mkdir, writeFile } from "node:fs/promises";
+import { existsSync } from "node:fs";
+import { execSync } from "node:child_process";
+
+const url: string = process.argv[2] ?? "https://ranchikart.vercel.app";
+const key: string | undefined = process.env.PAGESPEED_KEY;
+const ts: string = new Date().toISOString().replace(/[:.]/g, "-");
+const out: string = `analytics-report/${ts}`;
+
+await mkdir(out, { recursive: true });
+
+function run(cmd: string) {
+  console.log(`\n> ${cmd}`);
+  execSync(cmd, { stdio: "inherit" });
+}
+
+async function fetchJson(name: string, endpoint: string) {
+  const res = await fetch(endpoint);
+  const text = await res.text();
+  await writeFile(`${out}/${name}`, text);
+}
+
+async function check(url: string) {
+  try {
+    const r = await fetch(url, { redirect: "follow" });
+    console.table(r);
+    return r.status;
+  } catch {
+    return 0;
+  }
+}
+
+console.log("=== Analytics ===");
+console.log("Target:", url);
+
+const robots = await check(new URL("/robots.txt", url).toString());
+const sitemap = await check(new URL("/sitemap.xml", url).toString());
+
+try {
+  run(
+    `bunx lighthouse "${url}" --output html --output json --output-path "${out}/mobile" --chrome-flags="--headless=new" --quiet`
+  );
+} catch { }
+
+try {
+  run(
+    `bunx lighthouse "${url}" --preset=desktop --output html --output json --output-path "${out}/desktop" --chrome-flags="--headless=new" --quiet`
+  );
+} catch { }
+
+if (key) {
+  console.log("Fetching PageSpeed...");
+  await Promise.all([
+    fetchJson(
+      "pagespeed-mobile.json",
+      `https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=${encodeURIComponent(
+        url
+      )}&strategy=mobile&key=${key}`
+    ),
+    fetchJson(
+      "pagespeed-desktop.json",
+      `https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=${encodeURIComponent(
+        url
+      )}&strategy=desktop&key=${key}`
+    ),
+  ]);
+}
+
+const sitemapUrl = new URL("/sitemap.xml", url).toString();
+
+try {
+  await fetch(
+    `https://www.bing.com/ping?sitemap=${encodeURIComponent(sitemapUrl)}`
+  );
+} catch { }
+
+const html = `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Analytics Report - RanchiKart</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-color: #0f172a;
+      --card-bg: #1e293b;
+      --border-color: #334155;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --primary: #6366f1;
+      --primary-hover: #4f46e5;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+    }
+    
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg-color: #f8fafc;
+        --card-bg: #ffffff;
+        --border-color: #e2e8f0;
+        --text-main: #0f172a;
+        --text-muted: #64748b;
+        --primary: #4f46e5;
+        --primary-hover: #3730a3;
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      line-height: 1.6;
+      padding: 2rem 1rem;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    header {
+      margin-bottom: 2.5rem;
+      text-align: center;
+    }
+
+    .logo-container {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .logo-icon {
+      width: 2.5rem;
+      height: 2.5rem;
+      background: linear-gradient(135deg, var(--primary), #a855f7);
+      border-radius: 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 700;
+      font-size: 1.25rem;
+    }
+
+    h1 {
+      font-size: 2.25rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--text-main), var(--text-muted));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.5rem;
+    }
+
+    .target-url {
+      font-family: monospace;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      padding: 0.5rem 1rem;
+      border-radius: 2rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--primary);
+      font-size: 0.95rem;
+      word-break: break-all;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+      transition: transform 0.2s, box-shadow 0.2s;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    }
+
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.875rem;
+      font-weight: 600;
+    }
+
+    .status-success {
+      background-color: rgba(16, 185, 129, 0.15);
+      color: var(--success);
+    }
+
+    .status-warning {
+      background-color: rgba(245, 158, 11, 0.15);
+      color: var(--warning);
+    }
+
+    .status-danger {
+      background-color: rgba(239, 68, 68, 0.15);
+      color: var(--danger);
+    }
+
+    .card-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .card-list-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px dashed var(--border-color);
+    }
+
+    .card-list-item:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      width: 100%;
+      padding: 0.75rem 1rem;
+      background-color: var(--primary);
+      color: white;
+      text-decoration: none;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      transition: background-color 0.2s, transform 0.1s;
+      border: none;
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      background-color: var(--primary-hover);
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+    .btn-secondary {
+      background-color: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+    }
+
+    .btn-secondary:hover {
+      background-color: var(--border-color);
+    }
+
+    .info-box {
+      background: rgba(99, 102, 241, 0.05);
+      border-left: 4px solid var(--primary);
+      border-radius: 0.5rem;
+      padding: 1.25rem;
+      margin-bottom: 2rem;
+    }
+
+    .info-title {
+      font-weight: 600;
+      font-size: 1rem;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--primary);
+    }
+
+    .info-content {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    footer {
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 3rem;
+      border-top: 1px solid var(--border-color);
+      padding-top: 1.5rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo-container">
+        <div class="logo-icon">RK</div>
+        <span style="font-weight:700; font-size: 1.25rem; tracking: -0.025em; color: var(--text-main);">RanchiKart</span>
+      </div>
+      <h1>Analytics Report</h1>
+      <div class="target-url">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+        <a href="${url}" target="_blank" style="color: inherit; text-decoration: none;">${url}</a>
+      </div>
+    </header>
+
+    <div class="grid">
+      <!-- SEO & Discovery Status Card -->
+      <div class="card">
+        <div>
+          <div class="card-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+            SEO Essentials
+          </div>
+          <div class="card-list" style="margin-bottom: 1rem;">
+            <div class="card-list-item">
+              <span>robots.txt</span>
+              \${robots === 200 
+                ? '<span class="status-badge status-success">200 OK</span>' 
+                : robots > 0 
+                  ? \`<span class="status-badge status-warning">\${robots} Error</span>\` 
+                  : '<span class="status-badge status-danger">Missing / Failed</span>'}
+            </div>
+            <div class="card-list-item">
+              <span>sitemap.xml</span>
+              \${sitemap === 200 
+                ? '<span class="status-badge status-success">200 OK</span>' 
+                : sitemap > 0 
+                  ? \`<span class="status-badge status-warning">\${robots} Error</span>\` 
+                  : '<span class="status-badge status-danger">Missing / Failed</span>'}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Lighthouse Performance Card -->
+      <div class="card">
+        <div>
+          <div class="card-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+            Lighthouse Audits
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+            <a href="mobile.report.html" class="btn" target="_blank">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+              Mobile Lighthouse Report
+            </a>
+            <a href="desktop.report.html" class="btn" target="_blank">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+              Desktop Lighthouse Report
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Google PageSpeed JSONs (Conditional) -->
+      \${key ? \`
+      <div class="card">
+        <div>
+          <div class="card-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+            PageSpeed Insights Data
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+            <a href="pagespeed-mobile.json" class="btn btn-secondary" target="_blank">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+              PageSpeed Mobile JSON
+            </a>
+            <a href="pagespeed-desktop.json" class="btn btn-secondary" target="_blank">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+              PageSpeed Desktop JSON
+            </a>
+          </div>
+        </div>
+      </div>
+      \` : ''}
+    </div>
+
+    <!-- Search Engine Indexing Callout -->
+    <div class="info-box">
+      <div class="info-title">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+        Search Engine Indexing
+      </div>
+      <div class="info-content">
+        Automatic force-indexing is not available for normal websites. To ensure your pages are discovered and indexed correctly, submit your generated sitemap in <strong>Google Search Console</strong> and <strong>Bing Webmaster Tools</strong>.
+      </div>
+    </div>
+
+    <footer>
+      Report generated at \${new Date().toUTCString()} &bull; Powered by RanchiKart Analytics Engine
+    </footer>
+  </div>
+</body>
+</html>`;
+
+await writeFile(`${out}/index.html`, html);
+
+await writeFile(
+  `${out}/summary.json`,
+  JSON.stringify(
+    {
+      url,
+      robotsStatus: robots,
+      sitemapStatus: sitemap,
+      generatedAt: new Date().toISOString(),
+      pagespeed: !!key,
+    },
+    null,
+    2
+  )
+);
+
+console.log("\nDone.");
+console.log(`Report directory: ${out}`);
+console.log(`Open: ${out}/index.html`);
