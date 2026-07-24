@@ -63,7 +63,6 @@ export default class AuthService {
     await storeRefreshToken(user.id, tokens.refreshToken!);
     await userRepo.updateRefreshToken(user.id, tokens.refreshToken!);
 
-    console.log(tokens, user)
 
     return { user: publicUser(user), tokens };
   }
