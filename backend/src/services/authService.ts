@@ -151,11 +151,19 @@ export default class AuthService {
     return crypto.randomBytes(16).toString("hex");
   }
 
+  private getCallbackUrl(): string {
+    // Must be identical in both the auth URL and the token exchange.
+    // Google rejects the code if redirect_uri doesn't match exactly.
+    return env.NODE_ENV === "production"
+      ? env.GOOGLE_CALLBACK_URL!
+      : "http://localhost:3000/api/v1/auth/google/callback";
+  }
+
   getGoogleAuthUrl(state: string) {
     this.assertGoogleConfig();
     const url = new URL("https://accounts.google.com/o/oauth2/v2/auth");
     url.searchParams.set("client_id", env.GOOGLE_CLIENT_ID!);
-    url.searchParams.set("redirect_uri", env.GOOGLE_CALLBACK_URL!);
+    url.searchParams.set("redirect_uri", this.getCallbackUrl());
     url.searchParams.set("response_type", "code");
     url.searchParams.set("scope", "openid email profile");
     url.searchParams.set("state", state);
@@ -171,7 +179,7 @@ export default class AuthService {
         code,
         client_id: env.GOOGLE_CLIENT_ID!,
         client_secret: env.GOOGLE_CLIENT_SECRET!,
-        redirect_uri: env.GOOGLE_CALLBACK_URL!,
+        redirect_uri: this.getCallbackUrl(), // must match what getGoogleAuthUrl() sent
         grant_type: "authorization_code",
       }),
     });
