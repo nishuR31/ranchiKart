@@ -141,7 +141,6 @@ export default class AuthService {
   // === Google OAuth ===
 
   private assertGoogleConfig() {
-    console.log(env.GOOGLE_CLIENT_ID, env.GOOGLE_CLIENT_SECRET, env.GOOGLE_CALLBACK_URL);
     if (!env.GOOGLE_CLIENT_ID || !env.GOOGLE_CLIENT_SECRET || !env.GOOGLE_CALLBACK_URL) {
       throw new InternalServerError("Google OAuth is not configured.");
     }
