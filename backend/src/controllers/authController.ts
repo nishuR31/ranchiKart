@@ -22,6 +22,8 @@ import {
 import { sendPasswordlessLoginEmail } from "../config/email.js";
 import cookieOption from "../utils/cookieOptions.js";
 import env from "../config/env.js";
+const domain = env.NODE_ENV === "development" ? "http://localhost:5173" : env.WEB_ORIGIN
+
 
 const authService = new AuthService();
 
@@ -153,27 +155,27 @@ export const getGoogleAuthUrl = asyncHandler(async (req: FastifyRequest, res: Fa
     return res.redirect(url);
   } catch (err: any) {
     console.log("getGoogleAuthUrl", err)
-    return res.redirect(`${env.WEB_ORIGIN}/auth?error=Google OAuth was denied`);
+    return res.redirect(`${domain}/auth?error=Google OAuth was denied`);
   }
 });
 
 export const googleCallback = asyncHandler(async (req: FastifyRequest, res: FastifyReply) => {
   const { code: oauthCode, state, error } = req.query as any;
-  if (error) return res.redirect(`${env.WEB_ORIGIN}/auth?error=Google OAuth was denied`);
+  if (error) return res.redirect(`${domain}/auth?error=Google OAuth was denied`);
   if (!oauthCode || !state)
-    return res.redirect(`${env.WEB_ORIGIN}/auth?error=Missing Google OAuth callback parameters`);
+    return res.redirect(`${domain}/auth?error=Missing Google OAuth callback parameters`);
 
   const cookieState = req.cookies?.oauth_state;
-  if (!cookieState || cookieState !== state) return res.redirect(`${env.WEB_ORIGIN}/auth?error=Invalid OAuth state`);
+  if (!cookieState || cookieState !== state) return res.redirect(`${domain}/auth?error=Invalid OAuth state`);
   res.clearCookie("oauth_state");
 
   try {
     const result = await authService.loginWithGoogleCode(oauthCode);
     res.cookie("accessToken", result.tokens.accessToken!, cookieOption("access"));
     // Use URL fragment (#) instead of query param (?) to avoid token leaking in server logs/referrers
-    return res.redirect(`${env.WEB_ORIGIN}/auth#token=${result.tokens.accessToken}`);
+    return res.redirect(`${domain}/auth#token=${result.tokens.accessToken}`);
   } catch (err: any) {
-    return res.redirect(`${env.WEB_ORIGIN}/auth?error=${encodeURIComponent(err?.message || "Google login failed")}`);
+    return res.redirect(`${domain}/auth?error=${encodeURIComponent(err?.message || "Google login failed")}`);
   }
 });
 
@@ -183,10 +185,10 @@ export const requestMagicLink = asyncHandler(async (req: FastifyRequest, res: Fa
   const { email } = z.object({ email: z.string().email() }).parse(req.body);
   try {
     const token = await authService.generateMagicLinkToken(email);
-    const link = `${env.WEB_ORIGIN}/magic-link?token=${token}&time=${Date.now().toString()}&valid=1${(Math.random() * (9893649837 - 1826398123)) + 1826398123}1`;
+    const link = `${env.NODE_ENV === "production" ? env.WEB_ORIGIN : "http://localhost:5173/api"}/v1/auth/magic-link/verify?token=${token}`;
     // const link = `${env.WEB_ORIGIN}/magic-link/verify?token=${token}&time=${Date.now().toString()}&`;
     // Look up the user for the email greeting — but don't leak whether the user exists
-    await sendPasswordlessLoginEmail(email, "User", link, 5);
+    await sendPasswordlessLoginEmail(email, "User", link, 15);
     // Never return the link/token in the response — it must only be accessible via email
     return sendSuccess(res, "If an account with that email exists, a magic link has been sent.", code("ok") as number, null);
   } catch (err: any) {
@@ -196,20 +198,15 @@ export const requestMagicLink = asyncHandler(async (req: FastifyRequest, res: Fa
 });
 
 export const verifyMagicLink = asyncHandler(async (req: FastifyRequest, res: FastifyReply) => {
-  const { token, date, valid } = z.object({ token: z.string(), valid: z.string(), date: z.string() }).parse(req.query);
-  const [f, l]: number[] = [Number(valid[0]), Number(valid[valid.length - 1])]
-  if (!(f & l)) { return unauthorizedError(res, "Link has been tampered, rejecting flow.", 401); }
+  const { token } = z.object({ token: z.string() }).parse(req.query);
+
   try {
-    let timeElapsed = (Date.now() - Number(date)) / (1000 * 60);
-    if (timeElapsed > 10) { return unauthorizedError(res, "Expired link, pleased request again", 400) }
+
     const result = await authService.verifyMagicLink(token);
     res.cookie("accessToken", result.tokens.accessToken!, cookieOption("access"));
-    return sendSuccess(res, "Magic link login successful", code("ok") as number, {
-      user: result.user,
-      token: result.tokens.accessToken,
-    });
+    return res.redirect(`${domain}/auth#token=${result.tokens.accessToken}`);
   } catch (err: any) {
-    return handleError(err, res);
+    return res.redirect(`${domain}/auth?error=${encodeURIComponent(err?.message || "Magic link login failed")}`);
   }
 });
 

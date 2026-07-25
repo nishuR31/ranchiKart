@@ -15,13 +15,18 @@ export default function AuthPage() {
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
-    const token = params.get("token");
+    let token = params.get("token");
     const error = params.get("error");
+
+    if (!token && location.hash) {
+      const hashParams = new URLSearchParams(location.hash.substring(1));
+      token = hashParams.get("token");
+    }
 
     if (token) {
       useAuthStore.setState({ token });
       fetchUser().then(() => {
-        showToast("Logged in with Google!");
+        showToast("Logged in successfully!");
         navigate("/", { replace: true });
       });
     } else if (error) {
@@ -30,9 +35,28 @@ export default function AuthPage() {
   }, [location, navigate, fetchUser, showToast]);
 
   const handleGoogleLogin = () => {
-    window.location.href = import.meta.env.VITE_API_URL
-      ? `${import.meta.env.VITE_API_URL}/api/v1/auth/google/login`
-      : "http://localhost:3000/api/v1/auth/google/login";
+    const baseUrl = import.meta.env.NODE_ENV === "production" ? import.meta.env.VITE_API_URL : "";
+    window.location.href = `${baseUrl}/api/v1/auth/google/login`;
+  };
+
+  const handleMagicLink = async () => {
+    if (!form.email) return showToast("Please enter your email first", "error");
+    setLoading(true);
+    try {
+      const baseUrl = import.meta.env.NODE_ENV === "production" ? import.meta.env.VITE_API_URL : "";
+      const res = await fetch(`${baseUrl}/api/v1/auth/magic-link`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: form.email }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Failed to send magic link");
+      showToast("Magic link sent! Check your email.");
+    } catch (err) {
+      showToast(extractError(err, "Failed to send magic link"), "error");
+    } finally {
+      setLoading(false);
+    }
   };
 
   async function handleSubmit(e) {
@@ -100,6 +124,12 @@ export default function AuthPage() {
         <button className="btn btn-outline btn-full" onClick={handleGoogleLogin}>
           Continue with Google
         </button>
+
+        {mode === "login" && (
+          <button className="btn btn-outline btn-full" onClick={handleMagicLink} style={{ marginTop: '10px' }} type="button">
+            Send Magic Link
+          </button>
+        )}
 
         <p className="auth-switch">
           {mode === "login" ? (

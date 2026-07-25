@@ -38,7 +38,11 @@ const _generatePasskeyAuthenticationZod = z.object({
   email: z.string().email(),
 });
 
-const _verifyMagicLinkZod = z.object({ token: z.string() });
+const _verifyMagicLinkZod = z.object({ 
+  token: z.string(),
+  time: z.string().optional(),
+  valid: z.string().optional()
+});
 
 // ─── JSON Schema exports ─────────────────────────────────────────────────────
 

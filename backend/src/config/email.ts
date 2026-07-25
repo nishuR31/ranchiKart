@@ -5,16 +5,16 @@ const smtpConfigured = !!(env.SMTP_HOST && env.SMTP_USER && env.SMTP_PASS);
 
 const transporter = smtpConfigured
   ? nodemailer.createTransport({
-      host: env.SMTP_HOST,
-      port: env.SMTP_PORT,
-      secure: env.SMTP_PORT === 465,
-      auth: { user: env.SMTP_USER, pass: env.SMTP_PASS },
-      // Prevent hanging at startup — nodemailer would otherwise try to
-      // verify the SMTP connection eagerly when the module is first imported.
-      connectionTimeout: 5000,   // 5 s to establish TCP connection
-      greetingTimeout: 5000,     // 5 s to receive SMTP greeting
-      socketTimeout: 10000,      // 10 s of inactivity before giving up
-    })
+    host: env.SMTP_HOST,
+    port: env.SMTP_PORT,
+    secure: env.SMTP_PORT === 465,
+    auth: { user: env.SMTP_USER, pass: env.SMTP_PASS },
+    // Prevent hanging at startup — nodemailer would otherwise try to
+    // verify the SMTP connection eagerly when the module is first imported.
+    connectionTimeout: 5000,   // 5 s to establish TCP connection
+    greetingTimeout: 5000,     // 5 s to receive SMTP greeting
+    socketTimeout: 10000,      // 10 s of inactivity before giving up
+  })
   : null;
 
 async function send(to: string, subject: string, html: string) {
@@ -95,7 +95,7 @@ export async function sendPasswordlessLoginEmail(
   to: string,
   name: string,
   link: string,
-  expiresInMinutes: number = 5,
+  expiresInMinutes: number = 15,
 ) {
   await send(
     to,

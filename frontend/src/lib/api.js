@@ -1,6 +1,8 @@
 import axios from "axios";
 
-const baseURL = import.meta.env.VITE_API_URL || "http://0.0.0.0:3000";
+// In development, this evaluates to "" (empty string), causing Axios to call `/api/v1/...` relative to the current frontend domain (e.g., localhost:5173). 
+// The Vite proxy then invisibly forwards it to the backend on port 3000.
+const baseURL = import.meta.env.NODE_ENV === "production" ? import.meta.env.VITE_API_URL : "";
 
 const api = axios.create({ baseURL: baseURL + "/api/v1", withCredentials: true });
 
