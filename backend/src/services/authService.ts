@@ -1,5 +1,6 @@
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
+import z from "zod";
 import {
   generateTokenPair,
   generateAccessToken,
@@ -9,6 +10,8 @@ import {
   removeRefreshToken,
   blacklistToken,
   removeAccessToken,
+  verifyAccessToken,
+  TokenPair,
 } from "../utils/jwt.js";
 import { sendWelcomeEmail, sendPasswordlessLoginEmail } from "../config/email.js";
 import UserRepository from "../repositories/userRepository.js";
@@ -30,6 +33,10 @@ import {
   createPasskeyAuthenticationOptions,
   verifyPasskeyAuthentication,
 } from "../utils/passkey.js";
+import { isEmail } from "../utils/isEmail.js";
+
+
+
 
 const userRepo = new UserRepository();
 
@@ -45,7 +52,7 @@ export default class AuthService {
 
   async register(data: { email: string; name: string; password: string }): Promise<{
     user: PublicUser;
-    tokens: { accessToken?: string; refreshToken?: string };
+    tokens: TokenPair;
   }> {
     const existing = await userRepo.findByEmail(data.email.toLowerCase());
     if (existing) throw new ConflictError("A user with this email already exists.");
@@ -68,15 +75,24 @@ export default class AuthService {
   }
 
   async login(
-    email: string,
-    password?: string,
+    emailOrUsername: string,
+    password: string,
     totpToken?: string,
   ): Promise<{
     user: PublicUser;
-    tokens?: { accessToken?: string; refreshToken?: string };
+    tokens?: TokenPair;
     requireTotp?: boolean;
   }> {
-    const user = await userRepo.findByEmail(email.toLowerCase());
+
+    let { value, type } = isEmail(emailOrUsername);
+    let user: User | null = null;
+    if (type === "email") {
+      user = await userRepo.findByEmail(value.toLowerCase());
+      if (!user) throw new UnauthorizedError("Invalid email or password.");
+    } else {
+      user = await userRepo.findByUsername(value.toLowerCase());
+      if (!user) throw new UnauthorizedError("Invalid username or password.");
+    }
     if (!user) throw new UnauthorizedError("Invalid email or password.");
     if (user.isBanned) {
       throw new ForbiddenError(
@@ -87,14 +103,12 @@ export default class AuthService {
       );
     }
 
-    if (password) {
-      if (!user.passwordHash)
-        throw new UnauthorizedError(
-          "This account uses OAuth or Magic Link. Please log in without a password.",
-        );
-      const isMatch = await bcrypt.compare(password, user.passwordHash);
-      if (!isMatch) throw new UnauthorizedError("Invalid email or password.");
-    }
+    if (!user.passwordHash)
+      throw new UnauthorizedError(
+        "This account uses OAuth or Magic Link. Please use that method to log in.",
+      );
+    const isMatch = await bcrypt.compare(password, user.passwordHash);
+    if (!isMatch) throw new UnauthorizedError("Invalid email or password.");
 
     if (user.isTotpEnabled) {
       if (!totpToken) {
@@ -164,11 +178,16 @@ export default class AuthService {
     url.searchParams.set("redirect_uri", this.getCallbackUrl());
     url.searchParams.set("response_type", "code");
     url.searchParams.set("scope", "openid email profile");
+    url.searchParams.set("prompt", "consent");
+    url.searchParams.set("access_type", "offline");
+
     url.searchParams.set("state", state);
     return url.toString();
   }
 
-  async loginWithGoogleCode(code: string) {
+  async loginWithGoogleCode(code: string): Promise<{
+    user: PublicUser, tokens: TokenPair;
+  }> {
     this.assertGoogleConfig();
     const tokenRes = await fetch("https://oauth2.googleapis.com/token", {
       method: "POST",
@@ -199,6 +218,7 @@ export default class AuthService {
     if (!user) {
       user = await userRepo.create({
         email: profile.email,
+        username: profile.username || profile.email.split("@")[0],
         name: profile.name || profile.email.split("@")[0],
         avatarUrl: profile.picture,
         isEmailVerified: true,
@@ -220,22 +240,18 @@ export default class AuthService {
 
   // === Magic Links / Passwordless ===
 
-  async generateMagicLinkToken(email: string) {
+  async generateMagicLinkToken(email: string): Promise<{ tokens: { accessToken: string } }> {
     const user = await userRepo.findByEmail(email.toLowerCase());
     if (!user) throw new NotFoundError("User not found.");
 
     const token = generateAccessToken({ id: user.id, email: user.email, role: user.role });
-    return { user, token };
-  }
+    return { tokens: { accessToken: token } };
+  };
 
-  async verifyMagicLink(token: string) {
+  async verifyMagicLink(token: string): Promise<{ user: PublicUser, tokens: TokenPair }> {
     // Magic link tokens are essentially short-lived access tokens.
     // If valid, issue full access + refresh pair.
-    const decoded = await verifyRefreshToken(token).catch(async () => {
-      // fallback if we used access token generator
-      const { verifyAccessToken } = await import("../utils/jwt.js");
-      return verifyAccessToken(token);
-    });
+    const decoded = await verifyAccessToken(token);
 
     const user = await userRepo.findById(decoded.id);
     if (user.isBanned) throw new ForbiddenError("Account is banned.");
@@ -392,13 +408,17 @@ export default class AuthService {
   }
 
   async changePassword(userId: string, currentPassword?: string, newPassword?: string) {
+    if (!newPassword) throw new ValidationError("New password is required.");
+
     const user = await userRepo.findById(userId);
     if (user.passwordHash && currentPassword) {
       const isMatch = await bcrypt.compare(currentPassword, user.passwordHash);
       if (!isMatch) throw new UnauthorizedError("Current password is incorrect.");
+    } else if (user.passwordHash && !currentPassword) {
+      throw new ValidationError("Current password is required to change password.");
     }
 
-    const hash = newPassword ? await bcrypt.hash(newPassword, 10) : "";
+    const hash = await bcrypt.hash(newPassword, 10);
     await userRepo.updatePassword(userId, hash);
   }
 }

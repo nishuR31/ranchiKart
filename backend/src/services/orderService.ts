@@ -94,29 +94,44 @@ export default class OrderService {
 
     const total = subtotal + shippingFee - discountAmount;
 
-    const order = await prisma.order.create({
-      data: {
-        userId,
-        paymentMethod: data.paymentMethod,
-        subtotal,
-        shippingFee,
-        discountAmount,
-        total,
-        address: data.address,
-        notes: data.notes,
-        ...(couponId ? { couponId } : {}),
-        items: { create: orderItems },
-      },
-      include: { items: { include: { product: true, variant: true } }, coupon: true },
+    // Wrap order creation + coupon increment in a transaction to prevent
+    // race conditions (double-use of coupons) and ensure atomicity
+    const order = await prisma.$transaction(async (tx) => {
+      // Re-check coupon availability inside the transaction to prevent races
+      if (couponId) {
+        const coupon = await tx.coupon.findUnique({ where: { id: couponId } });
+        if (!coupon || (coupon.maxUses !== null && coupon.usedCount >= coupon.maxUses)) {
+          throw new BadRequestError("Coupon is no longer available");
+        }
+      }
+
+      const created = await tx.order.create({
+        data: {
+          userId,
+          paymentMethod: data.paymentMethod,
+          subtotal,
+          shippingFee,
+          discountAmount,
+          total,
+          address: data.address,
+          notes: data.notes,
+          ...(couponId ? { couponId } : {}),
+          items: { create: orderItems },
+        },
+        include: { items: { include: { product: true, variant: true } }, coupon: true },
+      });
+
+      if (couponId) {
+        await tx.coupon.update({
+          where: { id: couponId },
+          data: { usedCount: { increment: 1 } },
+        });
+      }
+
+      return created;
     });
 
-    if (couponId) {
-      await prisma.coupon.update({
-        where: { id: couponId },
-        data: { usedCount: { increment: 1 } },
-      });
-    }
-
+    // Send email outside the transaction (non-critical, fire-and-forget)
     const user = await prisma.user.findUnique({ where: { id: userId } });
     if (user) {
       sendOrderConfirmation(user.email, user.name ?? "User", order.id, order.total).catch(

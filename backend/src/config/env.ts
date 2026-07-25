@@ -12,8 +12,8 @@ const envSchema = z.object({
   DIRECT_URL: z.string().optional(),
 
   // Auth
-  JWT_ACCESS_SECRET: z.string().min(16).optional(),
-  JWT_REFRESH_SECRET: z.string().min(16).optional(),
+  JWT_ACCESS_SECRET: z.string().min(16).default("dev-access-secret-change-in-production"),
+  JWT_REFRESH_SECRET: z.string().min(16).default("dev-refresh-secret-change-in-production"),
   JWT_EXPIRES_IN_ACCESS: z.string().default("15m"),
   JWT_EXPIRES_IN_REFRESH: z.string().default("7d"),
 

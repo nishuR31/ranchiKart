@@ -6,13 +6,7 @@ import { User } from "../types/index.js";
 
 export const authenticate = asyncHandler(async (req: FastifyRequest, res: FastifyReply) => {
   const authHeader = req.headers.authorization;
-  let token = "";
-
-  if (authHeader && authHeader.startsWith("Bearer ")) {
-    token = authHeader.split(" ")[1];
-  } else if (req.cookies && req.cookies.refreshToken) {
-    token = req.cookies.refreshToken;
-  }
+  const token = authHeader && authHeader.startsWith("Bearer ") ? authHeader.split(" ")[1] : req.cookies?.accessToken;
 
   if (!token) {
     return unauthorizedError(res, "Access denied. No token provided. Please log in.");

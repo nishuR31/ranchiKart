@@ -51,8 +51,11 @@ export const register = asyncHandler(async (req: FastifyRequest, res: FastifyRep
       name: body.name,
       password: body.password,
     });
-    res.cookie("refreshToken", result.tokens.refreshToken!, cookieOption("refresh"));
-    return sendSuccess(res, "User registered successfully", code("created") as number, result);
+    res.cookie("accessToken", result.tokens?.accessToken!, cookieOption("access"));
+    return sendSuccess(res, "User registered successfully", code("created") as number, {
+      user: result.user,
+      token: result.tokens?.accessToken!,
+    });
   } catch (err: any) {
     return handleError(err, res);
   }
@@ -61,22 +64,25 @@ export const register = asyncHandler(async (req: FastifyRequest, res: FastifyRep
 export const login = asyncHandler(async (req: FastifyRequest, res: FastifyReply) => {
   const body = z
     .object({
-      email: z.string().email(),
-      password: z.string().optional(),
+      emailOrUsername: z.string(),
+      password: z.string(),
       totpToken: z.string().optional(),
     })
     .parse(req.body);
 
   try {
-    const result = await authService.login(body.email, body.password, body.totpToken);
+    const result = await authService.login(body.emailOrUsername, body.password, body.totpToken);
     if (result.requireTotp) {
       return sendSuccess(res, "TOTP required", code("ok") as number, {
         requireTotp: true,
         userId: result.user.id,
       });
     }
-    res.cookie("refreshToken", result.tokens!.refreshToken!, cookieOption("refresh"));
-    return sendSuccess(res, "Login successful", code("ok") as number, result);
+    res.cookie("accessToken", result.tokens?.accessToken!, cookieOption("refresh"));
+    return sendSuccess(res, "Login successful", code("ok") as number, {
+      user: result.user,
+      token: result.tokens?.accessToken!,
+    });
   } catch (err: any) {
     return handleError(err, res);
   }
@@ -85,13 +91,17 @@ export const login = asyncHandler(async (req: FastifyRequest, res: FastifyReply)
 export const logout = asyncHandler(async (req: FastifyRequest, res: FastifyReply) => {
   const authHeader = req.headers.authorization;
   const token = authHeader && authHeader.startsWith("Bearer ") ? authHeader.split(" ")[1] : "";
-  await authService.logout(req.user!.id, token);
-  res.clearCookie("refreshToken");
-  return sendSuccess(res, "Logout successful", code("ok") as number, null);
+  try {
+    await authService.logout(req.user!.id, token);
+    res.clearCookie("refreshToken");
+    return sendSuccess(res, "Logout successful", code("ok") as number, null);
+  } catch (err: any) {
+    return handleError(err, res);
+  }
 });
 
 export const refreshToken = asyncHandler(async (req: FastifyRequest, res: FastifyReply) => {
-  const token = (req.body as any)?.refreshToken || req.cookies?.refreshToken;
+  const token = (req.body as any)?.refreshToken;
   if (!token) return unauthorizedError(res, "No refresh token provided.");
 
   try {
@@ -140,10 +150,10 @@ export const getGoogleAuthUrl = asyncHandler(async (req: FastifyRequest, res: Fa
       sameSite: "lax",
       maxAge: 5 * 60, // seconds — @fastify/cookie uses seconds, NOT milliseconds
     });
-    return sendSuccess(res, "OAuth URL generated", code("ok") as number, { url });
+    return res.redirect(url);
   } catch (err: any) {
     console.log("getGoogleAuthUrl", err)
-    return handleError(err, res);
+    return res.redirect(`${env.WEB_ORIGIN}/auth?error=Google OAuth was denied`);
   }
 });
 
@@ -159,9 +169,9 @@ export const googleCallback = asyncHandler(async (req: FastifyRequest, res: Fast
 
   try {
     const result = await authService.loginWithGoogleCode(oauthCode);
-    res.cookie("refreshToken", result.tokens.refreshToken!, cookieOption("refresh"));
-    // Redirect back to frontend with the access token in URL fragment or query parameter
-    return res.redirect(`${env.WEB_ORIGIN}/auth?token=${result.tokens.accessToken}`);
+    res.cookie("accessToken", result.tokens.accessToken!, cookieOption("access"));
+    // Use URL fragment (#) instead of query param (?) to avoid token leaking in server logs/referrers
+    return res.redirect(`${env.WEB_ORIGIN}/auth#token=${result.tokens.accessToken}`);
   } catch (err: any) {
     return res.redirect(`${env.WEB_ORIGIN}/auth?error=${encodeURIComponent(err?.message || "Google login failed")}`);
   }
@@ -172,12 +182,15 @@ export const googleCallback = asyncHandler(async (req: FastifyRequest, res: Fast
 export const requestMagicLink = asyncHandler(async (req: FastifyRequest, res: FastifyReply) => {
   const { email } = z.object({ email: z.string().email() }).parse(req.body);
   try {
-    const { user, token } = await authService.generateMagicLinkToken(email);
+    const token = await authService.generateMagicLinkToken(email);
     const link = `${req.protocol}://${req.hostname}/api/v1/auth/magic-link/verify?token=${token}`;
-    await sendPasswordlessLoginEmail(user.email, user.name ?? "User", link, 5); // Assumes email service supports this signature
-    return sendSuccess(res, "Magic link sent to email", code("ok") as number, { link }); // Provide link in response for testing
+    // Look up the user for the email greeting — but don't leak whether the user exists
+    await sendPasswordlessLoginEmail(email, "User", link, 5);
+    // Never return the link/token in the response — it must only be accessible via email
+    return sendSuccess(res, "If an account with that email exists, a magic link has been sent.", code("ok") as number, null);
   } catch (err: any) {
-    return handleError(err, res);
+    // Return generic success even on error to prevent email enumeration
+    return sendSuccess(res, "If an account with that email exists, a magic link has been sent.", code("ok") as number, null);
   }
 });
 
@@ -185,8 +198,11 @@ export const verifyMagicLink = asyncHandler(async (req: FastifyRequest, res: Fas
   const { token } = z.object({ token: z.string() }).parse(req.query);
   try {
     const result = await authService.verifyMagicLink(token);
-    res.cookie("refreshToken", result.tokens.refreshToken!, cookieOption("refresh"));
-    return sendSuccess(res, "Magic link login successful", code("ok") as number, result);
+    res.cookie("accessToken", result.tokens.accessToken!, cookieOption("access"));
+    return sendSuccess(res, "Magic link login successful", code("ok") as number, {
+      user: result.user,
+      token: result.tokens.accessToken,
+    });
   } catch (err: any) {
     return handleError(err, res);
   }
@@ -284,8 +300,11 @@ export const verifyPasskeyAuthentication = asyncHandler(
     try {
       const result = await authService.verifyPasskeyAuthenticationResponse(userId, req.body);
       res.clearCookie("passkey_auth_user");
-      res.cookie("refreshToken", result.tokens.refreshToken!, cookieOption("refresh"));
-      return sendSuccess(res, "Passkey login successful", code("ok") as number, result);
+      res.cookie("refreshToken", result.tokens!.refreshToken!, cookieOption("refresh"));
+      return sendSuccess(res, "Passkey login successful", code("ok") as number, {
+        user: result.user,
+        token: result.tokens!.accessToken,
+      });
     } catch (err: any) {
       return handleError(err, res);
     }

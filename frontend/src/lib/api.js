@@ -11,7 +11,6 @@ api.interceptors.request.use((config) => {
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
-  console.log(token, config)
   return config;
 });
 
@@ -24,7 +23,7 @@ api.interceptors.response.use(
   },
   async (error) => {
     const originalRequest = error.config;
-    
+
     // If the error is 401 (Unauthorized) and we haven't already retried this request
     if (error.response?.status === 401 && !originalRequest._retry) {
       // Prevent infinite loop if the refresh endpoint itself fails with 401
@@ -38,14 +37,14 @@ api.interceptors.response.use(
       try {
         // Try to get a new access token (cookies are automatically sent because withCredentials is true)
         const { data } = await axios.post(baseURL + "/api/v1/auth/refresh", {}, { withCredentials: true });
-        
+
         // Ensure we got an accessToken back
         if (data && data.data && data.data.accessToken) {
           const newAccessToken = data.data.accessToken;
-          
+
           // Update the zustand store so future requests use the new token
           useAuthStore.setState({ token: newAccessToken });
-          
+
           // Retry the original request with the new token
           originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
           return api(originalRequest);
@@ -59,7 +58,7 @@ api.interceptors.response.use(
         return Promise.reject(refreshError);
       }
     }
-    
+
     return Promise.reject(error);
   }
 );

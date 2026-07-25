@@ -1,5 +1,6 @@
 import { OrderStatus, PaymentProvider, PaymentStatus, type Prisma } from "../../prisma/generated/client/index.js";
 import { prisma } from "../config/prisma.js";
+import env from "../config/env.js";
 import {
   getRazorpayClient,
   razorpayConfigured,
@@ -23,7 +24,7 @@ export default class PaymentService {
       return {
         payment: existing,
         gateway: {
-          keyId: process.env.RAZORPAY_KEY_ID ?? "",
+          keyId: env.RAZORPAY_KEY_ID ?? "",
           orderId: existing.providerOrderId,
           amount: existing.amount,
           currency: existing.currency,
@@ -35,8 +36,14 @@ export default class PaymentService {
     const client = getRazorpayClient();
     const receipt = `exkart_${order.id.slice(0, 18)}`;
 
-    if (!client && process.env.NODE_ENV === "production") {
+    if (!client && env.NODE_ENV === "production") {
       throw new InternalServerError("Razorpay keys are not configured");
+    }
+
+    // Razorpay expects amount in paise (smallest currency unit).
+    // order.total MUST already be in paise (e.g., 99900 = ₹999).
+    if (!Number.isInteger(order.total) || order.total <= 0) {
+      throw new BadRequestError("Invalid order total for payment processing");
     }
 
     const gatewayOrder = client
@@ -70,7 +77,7 @@ export default class PaymentService {
     return {
       payment,
       gateway: {
-        keyId: process.env.RAZORPAY_KEY_ID ?? "",
+        keyId: env.RAZORPAY_KEY_ID ?? "",
         orderId: payment.providerOrderId,
         amount: payment.amount,
         currency: payment.currency,

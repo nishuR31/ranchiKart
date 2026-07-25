@@ -10,6 +10,10 @@ export default class UserRepository extends BaseRepository<User> {
     return this.findOne({ email });
   }
 
+  async findByUsername(username: string): Promise<User | null> {
+    return this.findOne({ username });
+  }
+
   async updatePassword(userId: string, passwordHash: string): Promise<User> {
     return this.update(userId, { passwordHash });
   }

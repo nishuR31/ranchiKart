@@ -5,6 +5,7 @@ let redisFatalError = false;
 
 class MockRedis {
   private store = new Map<string, string>();
+  private timers = new Map<string, ReturnType<typeof setTimeout>>();
   status = "ready";
 
   async get(key: string): Promise<string | null> {
@@ -17,11 +18,18 @@ class MockRedis {
   }
 
   async setex(key: string, seconds: number, value: string): Promise<"OK"> {
+    // Clear any existing timer for this key to prevent leaks on overwrite
+    const existing = this.timers.get(key);
+    if (existing) clearTimeout(existing);
+
     this.store.set(key, value);
-    // Simple mock expiry (not strictly needed for local demo, but matches interface)
-    setTimeout(() => {
+    const timer = setTimeout(() => {
       this.store.delete(key);
+      this.timers.delete(key);
     }, seconds * 1000);
+    // Prevent timer from keeping the process alive
+    if (timer.unref) timer.unref();
+    this.timers.set(key, timer);
     return "OK";
   }
 
@@ -29,6 +37,11 @@ class MockRedis {
     let count = 0;
     for (const key of keys) {
       if (this.store.delete(key)) count++;
+      const timer = this.timers.get(key);
+      if (timer) {
+        clearTimeout(timer);
+        this.timers.delete(key);
+      }
     }
     return count;
   }
@@ -55,16 +68,18 @@ class MockRedis {
     return this;
   }
 
-  disconnect() {}
+  disconnect() {
+    // Clear all timers on disconnect
+    for (const timer of this.timers.values()) clearTimeout(timer);
+    this.timers.clear();
+  }
   async quit() {
+    this.disconnect();
     return "OK";
   }
 }
 
 const mockRedis = new MockRedis();
-mockRedis.set("api_key", "fake-demo-api-key");
-mockRedis.set("demo_api_key", "fake-demo-api-key");
-mockRedis.set("GEMINI_API_KEY", "dummy-api-key");
 
 const realRedis = env.REDIS_URL
   ? new Redis(env.REDIS_URL, {
