@@ -1,6 +1,6 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { verifyAccessToken } from "../utils/jwt.js";
-import { unauthorizedError } from "../utils/response.js";
+import { UnauthorizedError } from "../utils/errors.js";
 import asyncHandler from "../utils/asyncHandler.js";
 import { User } from "../types/index.js";
 
@@ -9,7 +9,7 @@ export const authenticate = asyncHandler(async (req: FastifyRequest, res: Fastif
   const token = authHeader && authHeader.startsWith("Bearer ") ? authHeader.split(" ")[1] : req.cookies?.accessToken;
 
   if (!token) {
-    return unauthorizedError(res, "Access denied. No token provided. Please log in.");
+    throw new UnauthorizedError("Access denied. No token provided. Please log in.");
   }
 
   try {
@@ -20,6 +20,6 @@ export const authenticate = asyncHandler(async (req: FastifyRequest, res: Fastif
       role: decoded.role,
     } as User;
   } catch (err) {
-    return unauthorizedError(res, "Access denied. Invalid or expired token.");
+    throw new UnauthorizedError("Access denied. Invalid or expired token.");
   }
 });

@@ -12,7 +12,7 @@ const _registerZod = z.object({
 });
 
 const _loginZod = z.object({
-  email: z.string().email(),
+  emailOrUsername: z.string(),
   password: z.string().optional(),
   totpToken: z.string().optional(),
 });

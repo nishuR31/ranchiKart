@@ -56,7 +56,7 @@ export const register = asyncHandler(async (req: FastifyRequest, res: FastifyRep
     res.cookie("accessToken", result.tokens?.accessToken!, cookieOption("access"));
     return sendSuccess(res, "User registered successfully", code("created") as number, {
       user: result.user,
-      token: result.tokens?.accessToken!,
+      tokens: { accessToken: result.tokens?.accessToken },
     });
   } catch (err: any) {
     return handleError(err, res);
@@ -80,10 +80,10 @@ export const login = asyncHandler(async (req: FastifyRequest, res: FastifyReply)
         userId: result.user.id,
       });
     }
-    res.cookie("accessToken", result.tokens?.accessToken!, cookieOption("refresh"));
+    res.cookie("accessToken", result.tokens?.accessToken!, cookieOption("access"));
     return sendSuccess(res, "Login successful", code("ok") as number, {
       user: result.user,
-      token: result.tokens?.accessToken!,
+      tokens: { accessToken: result.tokens?.accessToken },
     });
   } catch (err: any) {
     return handleError(err, res);
@@ -95,8 +95,8 @@ export const logout = asyncHandler(async (req: FastifyRequest, res: FastifyReply
   const token = authHeader && authHeader.startsWith("Bearer ") ? authHeader.split(" ")[1] : "";
   try {
     await authService.logout(req.user!.id, token);
-    res.clearCookie("refreshToken");
-    return sendSuccess(res, "Logout successful", code("ok") as number, null);
+    res.clearCookie("accessToken");
+    return sendSuccess(res, "Logged out successfully", code("ok") as number, null);
   } catch (err: any) {
     return handleError(err, res);
   }
