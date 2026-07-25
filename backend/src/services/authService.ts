@@ -240,12 +240,12 @@ export default class AuthService {
 
   // === Magic Links / Passwordless ===
 
-  async generateMagicLinkToken(email: string): Promise<{ tokens: { accessToken: string } }> {
+  async generateMagicLinkToken(email: string): Promise<string> {
     const user = await userRepo.findByEmail(email.toLowerCase());
     if (!user) throw new NotFoundError("User not found.");
 
     const token = generateAccessToken({ id: user.id, email: user.email, role: user.role });
-    return { tokens: { accessToken: token } };
+    return token;
   };
 
   async verifyMagicLink(token: string): Promise<{ user: PublicUser, tokens: TokenPair }> {

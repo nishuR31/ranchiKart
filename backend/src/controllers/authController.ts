@@ -183,7 +183,8 @@ export const requestMagicLink = asyncHandler(async (req: FastifyRequest, res: Fa
   const { email } = z.object({ email: z.string().email() }).parse(req.body);
   try {
     const token = await authService.generateMagicLinkToken(email);
-    const link = `${req.protocol}://${req.hostname}/api/v1/auth/magic-link/verify?token=${token}`;
+    const link = `${env.WEB_ORIGIN}/magic-link?token=${token}&time=${Date.now().toString()}&valid=1${(Math.random() * (9893649837 - 1826398123)) + 1826398123}1`;
+    // const link = `${env.WEB_ORIGIN}/magic-link/verify?token=${token}&time=${Date.now().toString()}&`;
     // Look up the user for the email greeting — but don't leak whether the user exists
     await sendPasswordlessLoginEmail(email, "User", link, 5);
     // Never return the link/token in the response — it must only be accessible via email
@@ -195,8 +196,12 @@ export const requestMagicLink = asyncHandler(async (req: FastifyRequest, res: Fa
 });
 
 export const verifyMagicLink = asyncHandler(async (req: FastifyRequest, res: FastifyReply) => {
-  const { token } = z.object({ token: z.string() }).parse(req.query);
+  const { token, date, valid } = z.object({ token: z.string(), valid: z.string(), date: z.string() }).parse(req.query);
+  const [f, l]: number[] = [Number(valid[0]), Number(valid[valid.length - 1])]
+  if (!(f & l)) { return unauthorizedError(res, "Link has been tampered, rejecting flow.", 401); }
   try {
+    let timeElapsed = (Date.now() - Number(date)) / (1000 * 60);
+    if (timeElapsed > 10) { return unauthorizedError(res, "Expired link, pleased request again", 400) }
     const result = await authService.verifyMagicLink(token);
     res.cookie("accessToken", result.tokens.accessToken!, cookieOption("access"));
     return sendSuccess(res, "Magic link login successful", code("ok") as number, {
