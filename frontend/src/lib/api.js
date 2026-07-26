@@ -2,7 +2,7 @@ import axios from "axios";
 
 // In development, this evaluates to "" (empty string), causing Axios to call `/api/v1/...` relative to the current frontend domain (e.g., localhost:5173). 
 // The Vite proxy then invisibly forwards it to the backend on port 3000.
-const API_ORIGIN = import.meta.env.NODE_ENV === "production" ? (import.meta.env.VITE_API_URL || "https://ranchikart.onrender.com") : "";
+const API_ORIGIN = import.meta.env.NODE_ENV === "production" ? (import.meta.env.VITE_API_URL || "") : "";
 const baseURL = API_ORIGIN + "/api/v1";
 
 const api = axios.create({ baseURL, withCredentials: true });
