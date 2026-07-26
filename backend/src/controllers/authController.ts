@@ -178,8 +178,8 @@ export const getGoogleAuthUrl = asyncHandler(async (req: FastifyRequest, res: Fa
     const url = authService.getGoogleAuthUrl(state);
     res.cookie("oauth_state", state, {
       httpOnly: true,
-      secure: env.NODE_ENV === "production", // Secure only over HTTPS; plain HTTP (localhost) rejects Secure cookies
-      sameSite: "lax",
+      secure: env.NODE_ENV === "production" ? true : false,
+      sameSite: env.NODE_ENV === "production" ? "none" : "lax",
       maxAge: 5 * 60, // seconds — @fastify/cookie uses seconds, NOT milliseconds
     });
     return res.redirect(url);
@@ -310,8 +310,8 @@ export const generatePasskeyAuthentication = asyncHandler(
       const { options, userId } = await authService.generatePasskeyAuthenticationOptions(email);
       res.cookie("passkey_auth_user", userId, {
         httpOnly: true,
-        secure: env.NODE_ENV === "production", // Secure only over HTTPS
-        sameSite: "lax",
+        secure: env.NODE_ENV === "production" ? true : false,
+        sameSite: env.NODE_ENV === "production" ? "none" : "lax",
         maxAge: 5 * 60, // seconds — NOT milliseconds
       });
       return sendSuccess(
