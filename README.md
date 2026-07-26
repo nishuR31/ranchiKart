@@ -23,6 +23,9 @@
   <a href="https://github.com/nishuR31/ranchiKart/actions/workflows/CI.yaml">
     <img src="https://img.shields.io/github/actions/workflow/status/nishuR31/ranchiKart/CI.yaml?branch=main&logo=githubactions&label=&style=flat-square" alt="CI" />
   </a>
+  <a href="https://github.com/nishuR31/ranchiKart/actions/workflows/frontend-auto-merge.yml">
+    <img src="https://img.shields.io/github/actions/workflow/status/nishuR31/ranchiKart/frontend-auto-merge.yml?branch=main&logo=githubactions&label=Frontend%20Auto--Merge&style=flat-square" alt="Frontend Auto-Merge" />
+  </a>
 </p>
 <p align="center">
   <img src="https://img.shields.io/badge/Fastify-5.3-000000?style=flat-square&logo=fastify&logoColor=white" />
