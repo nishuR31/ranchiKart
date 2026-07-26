@@ -121,8 +121,8 @@ export const logout = asyncHandler(async (req: FastifyRequest, res: FastifyReply
   const token = authHeader && authHeader.startsWith("Bearer ") ? authHeader.split(" ")[1] : "";
   try {
     await authService.logout(req.user!.id, token);
-    res.clearCookie("accessToken");
-    res.clearCookie("refreshToken");
+    res.clearCookie("accessToken", { path: "/" });
+    res.clearCookie("refreshToken", { path: "/" });
     return sendSuccess(res, "Logged out successfully", code("ok") as number, null);
   } catch (err: any) {
     return handleError(err, res);
@@ -181,6 +181,7 @@ export const getGoogleAuthUrl = asyncHandler(async (req: FastifyRequest, res: Fa
       secure: env.NODE_ENV === "production" ? true : false,
       sameSite: env.NODE_ENV === "production" ? "none" : "lax",
       maxAge: 5 * 60, // seconds — @fastify/cookie uses seconds, NOT milliseconds
+      path: "/",
     });
     return res.redirect(url);
   } catch (err: any) {
@@ -197,7 +198,7 @@ export const googleCallback = asyncHandler(async (req: FastifyRequest, res: Fast
 
   const cookieState = req.cookies?.oauth_state;
   if (!cookieState || cookieState !== state) return res.redirect(`${domain}/auth?error=Invalid OAuth state`);
-  res.clearCookie("oauth_state");
+  res.clearCookie("oauth_state", { path: "/" });
 
   try {
     const result = await authService.loginWithGoogleCode(oauthCode);
@@ -314,6 +315,7 @@ export const generatePasskeyAuthentication = asyncHandler(
         secure: env.NODE_ENV === "production" ? true : false,
         sameSite: env.NODE_ENV === "production" ? "none" : "lax",
         maxAge: 5 * 60, // seconds — NOT milliseconds
+        path: "/",
       });
       return sendSuccess(
         res,
@@ -334,7 +336,7 @@ export const verifyPasskeyAuthentication = asyncHandler(
 
     try {
       const result = await authService.verifyPasskeyAuthenticationResponse(userId, req.body);
-      res.clearCookie("passkey_auth_user");
+      res.clearCookie("passkey_auth_user", { path: "/" });
       res.cookie("accessToken", result.tokens!.accessToken!, cookieOption("access"));
       res.cookie("refreshToken", result.tokens!.refreshToken!, cookieOption("refresh"));
       return sendSuccess(res, "Passkey login successful", code("ok") as number, {
