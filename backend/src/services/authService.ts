@@ -168,8 +168,8 @@ export default class AuthService {
     // Google rejects the code if redirect_uri doesn't match exactly.
     return env.NODE_ENV === "production"
       ? env.GOOGLE_CALLBACK_URL!
-      // : "http://localhost:5173/api/v1/auth/google/callback";
-      : "http://localhost:3000/api/v1/auth/google/callback";
+      : "http://localhost:5173/api/v1/auth/google/callback";
+    // : "http://localhost:3000/api/v1/auth/google/callback";
   }
 
   getGoogleAuthUrl(state: string) {
