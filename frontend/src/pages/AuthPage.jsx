@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import useAuthStore from "../store/useAuthStore";
 import useShopStore from "../store/useShopStore";
-import { extractError } from "../lib/api";
+import api, { extractError } from "../lib/api";
 
 export default function AuthPage() {
   const [mode, setMode] = useState("login");
@@ -35,22 +35,14 @@ export default function AuthPage() {
   }, [location, navigate, fetchUser, showToast]);
 
   const handleGoogleLogin = () => {
-    const baseUrl = import.meta.env.NODE_ENV === "production" ? (import.meta.env.VITE_API_URL || "") : "";
-    window.location.href = `${baseUrl}/api/v1/auth/google/login`;
+    window.location.href = `/api/v1/auth/google/login`;
   };
 
   const handleMagicLink = async () => {
     if (!form.email) return showToast("Please enter your email first", "error");
     setLoading(true);
     try {
-      const baseUrl = import.meta.env.NODE_ENV === "production" ? (import.meta.env.VITE_API_URL || "") : "";
-      const res = await fetch(`${baseUrl}/api/v1/auth/magic-link`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: form.email }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Failed to send magic link");
+      await api.post("/auth/magic-link", { email: form.email });
       showToast("Magic link sent! Check your email.");
     } catch (err) {
       showToast(extractError(err, "Failed to send magic link"), "error");
