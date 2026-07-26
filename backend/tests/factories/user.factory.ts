@@ -11,11 +11,12 @@ export const userFactory = {
   }),
   create: async (overrides = {}) => {
     const data = userFactory.build(overrides);
+    const { password, ...prismaData } = data;
     const { hash } = await import("bcryptjs");
-    const hashedPassword = await hash(data.password, 10);
+    const hashedPassword = await hash(password, 10);
     return prisma.user.create({
       data: {
-        ...data,
+        ...prismaData,
         passwordHash: hashedPassword,
         isEmailVerified: true,
       },

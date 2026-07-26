@@ -47,6 +47,9 @@ const app = Fastify({
 
 // Error handler
 app.setErrorHandler((error: FastifyError, _request, reply) => {
+  if (reply.sent) {
+    return;
+  }
   if (error instanceof ZodError) {
     return reply.badRequest(error.issues.map((i) => i.message).join(", "));
   }

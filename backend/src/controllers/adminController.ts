@@ -39,8 +39,12 @@ export const getOrders = asyncHandler(async (req: FastifyRequest, res: FastifyRe
     })
     .parse(req.query);
 
-  const data = await adminService.getOrders(query);
-  return sendSuccess(res, "Orders fetched", code("ok") as number, data);
+  try {
+    const data = await adminService.getOrders(query);
+    return sendSuccess(res, "Orders fetched", code("ok") as number, data);
+  } catch (err: any) {
+    return handleError(err, res);
+  }
 });
 
 export const updateOrderStatus = asyncHandler(async (req: FastifyRequest, res: FastifyReply) => {

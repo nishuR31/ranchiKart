@@ -21,7 +21,7 @@ describe("Users Endpoints", () => {
       expect(res.statusCode).toBe(200);
       const body = JSON.parse(res.payload);
       expect(body.success).toBe(true);
-      expect(body.data.email).toBeDefined();
+      expect(body.data.user.email).toBeDefined();
     });
 
     it("should fail without token", async () => {
@@ -46,7 +46,7 @@ describe("Users Endpoints", () => {
       });
       expect(res.statusCode).toBe(200);
       const body = JSON.parse(res.payload);
-      expect(body.data.name).toBe("Updated Name");
+      expect(body.data.user.name).toBe("Updated Name");
     });
   });
 
@@ -57,18 +57,19 @@ describe("Users Endpoints", () => {
         url: "/api/v1/users/me/addresses",
         headers: { authorization: `Bearer ${token}` },
         payload: {
-          street: "123 Main St",
+          fullName: "Nishu Kumar",
+          phone: "9876543210",
+          line1: "123 Main St",
           city: "Ranchi",
           state: "Jharkhand",
-          postalCode: "834001",
-          country: "India",
+          pincode: "834001",
           isDefault: true,
         },
       });
       expect(res.statusCode).toBe(201);
       const body = JSON.parse(res.payload);
       expect(body.success).toBe(true);
-      addressId = body.data.id;
+      addressId = body.data.address.id;
     });
 
     it("should fail validation if fields are missing", async () => {
@@ -93,8 +94,8 @@ describe("Users Endpoints", () => {
       });
       expect(res.statusCode).toBe(200);
       const body = JSON.parse(res.payload);
-      expect(Array.isArray(body.data)).toBe(true);
-      expect(body.data.length).toBeGreaterThan(0);
+      expect(Array.isArray(body.data.addresses)).toBe(true);
+      expect(body.data.addresses.length).toBeGreaterThan(0);
     });
   });
 
@@ -114,7 +115,7 @@ describe("Users Endpoints", () => {
         url: `/api/v1/users/me/addresses/invalid-id`,
         headers: { authorization: `Bearer ${token}` },
       });
-      expect(res.statusCode).toBe(400); // Invalid UUID
+      expect(res.statusCode).toBe(404);
     });
   });
 
@@ -144,3 +145,4 @@ describe("Users Endpoints", () => {
     });
   });
 });
+

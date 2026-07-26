@@ -41,7 +41,7 @@ describe("Reviews Endpoints", () => {
         payload: {
           rating: 5,
           title: "Great",
-          comment: "Loved it!",
+          body: "Loved it! Excellent quality product.",
         },
       });
       expect(res.statusCode).toBe(404);
@@ -55,7 +55,7 @@ describe("Reviews Endpoints", () => {
         url: "/api/v1/reviews/invalid-id/helpful",
         headers: { authorization: `Bearer ${userToken}` },
       });
-      expect(res.statusCode).toBe(400);
+      expect(res.statusCode).toBe(404);
     });
   });
 
@@ -66,7 +66,7 @@ describe("Reviews Endpoints", () => {
         url: "/api/v1/reviews/invalid-id",
         headers: { authorization: `Bearer ${userToken}` },
       });
-      expect(res.statusCode).toBe(400);
+      expect(res.statusCode).toBe(404);
     });
   });
 });

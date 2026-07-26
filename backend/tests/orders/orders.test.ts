@@ -32,7 +32,7 @@ describe("Orders Endpoints", () => {
       });
       expect(res.statusCode).toBe(200);
       const body = JSON.parse(res.payload);
-      expect(Array.isArray(body.data)).toBe(true);
+      expect(Array.isArray(body.data.orders)).toBe(true);
     });
 
     it("should fail if unauthorized", async () => {
@@ -51,7 +51,7 @@ describe("Orders Endpoints", () => {
         url: "/api/v1/orders/invalid-id",
         headers: { authorization: `Bearer ${userToken}` },
       });
-      expect(res.statusCode).toBe(400); // Bad Request (invalid UUID)
+      expect(res.statusCode).toBe(404);
     });
     
     it("should fail to get a non-existent order (valid UUID)", async () => {

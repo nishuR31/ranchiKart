@@ -7,5 +7,5 @@ export async function couponRoutes(app: FastifyInstance) {
   app.post("/coupons/apply", { preHandler: authenticate, schema: { body: applyCouponSchema } }, couponController.applyCoupon);
   app.get("/coupons", { preHandler: authenticate }, couponController.getAllCoupons);
   app.post("/coupons", { preHandler: authenticate, schema: { body: createCouponSchema } }, couponController.createCoupon);
-  app.patch("/coupons/:id/toggle", { preHandler: authenticate, schema: { body: toggleCouponSchema } }, couponController.toggleCoupon);
+  app.patch("/coupons/:id/toggle", { preHandler: authenticate, schema: { params: toggleCouponSchema } }, couponController.toggleCoupon);
 }

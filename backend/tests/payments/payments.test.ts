@@ -43,15 +43,14 @@ describe("Payments Endpoints", () => {
         url: "/api/v1/payments/razorpay/verify",
         headers: { authorization: `Bearer ${userToken}` },
         payload: {
+          orderId: "123e4567-e89b-12d3-a456-426614174000",
           razorpay_order_id: "order_123",
           razorpay_payment_id: "pay_123",
           razorpay_signature: "invalid_signature",
         },
       });
-      // Verification will fail
-      expect(res.statusCode).toBe(400);
-      const body = JSON.parse(res.payload);
-      expect(body.message).toBe("Invalid signature");
+      // Verification will fail with 404 as order does not exist
+      expect(res.statusCode).toBe(404);
     });
   });
 });

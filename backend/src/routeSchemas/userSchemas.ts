@@ -24,7 +24,7 @@ const _addAddressZod = z.object({
 const _idParamZod = z.object({ id: z.string() });
 
 const _updatePasswordZod = z.object({
-  oldPassword: z.string().min(6),
+  currentPassword: z.string().min(6),
   newPassword: z.string().min(6),
 });
 

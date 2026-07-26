@@ -18,7 +18,7 @@ describe("Products Endpoints", () => {
       expect(res.statusCode).toBe(200);
       const body = JSON.parse(res.payload);
       expect(body.success).toBe(true);
-      expect(Array.isArray(body.data)).toBe(true);
+      expect(Array.isArray(body.data.products)).toBe(true);
     });
 
     it("should handle pagination", async () => {
@@ -28,7 +28,7 @@ describe("Products Endpoints", () => {
       });
       expect(res.statusCode).toBe(200);
       const body = JSON.parse(res.payload);
-      expect(body.data.length).toBeLessThanOrEqual(5);
+      expect(body.data.products.length).toBeLessThanOrEqual(5);
     });
   });
 
@@ -53,7 +53,7 @@ describe("Products Endpoints", () => {
       expect(res.statusCode).toBe(200);
       const body = JSON.parse(res.payload);
       expect(body.success).toBe(true);
-      expect(Array.isArray(body.data)).toBe(true);
+      expect(Array.isArray(body.data.products)).toBe(true);
     });
   });
 

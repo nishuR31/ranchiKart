@@ -8,6 +8,7 @@ export function sendSuccess(
   data: Record<string, any> | string | number | boolean | null,
   details?: Record<string, any>,
 ) {
+  if (res.sent) return res;
   return res.code(statusCode).send({
     success: true,
     message,
@@ -22,6 +23,7 @@ export function sendError(
   statusCode: number = code("internalServerError") as number,
   errors?: any,
 ) {
+  if (res.sent) return res;
   return res.code(statusCode).send({ success: false, message, ...(errors && { errors }) });
 }
 

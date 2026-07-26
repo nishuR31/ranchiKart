@@ -22,11 +22,9 @@ describe("Coupons Endpoints", () => {
         headers: { authorization: `Bearer ${userToken}` },
         payload: {
           code: couponCode,
-          discountType: "PERCENTAGE",
-          discountValue: 10,
-          minOrderValue: 100,
-          validUntil: new Date(Date.now() + 86400000).toISOString(),
-          isActive: true,
+          type: "PERCENT",
+          value: 10,
+          minOrderAmount: 100,
         },
       });
       expect([401, 403]).toContain(res.statusCode);
@@ -39,16 +37,14 @@ describe("Coupons Endpoints", () => {
         headers: { authorization: `Bearer ${adminToken}` },
         payload: {
           code: couponCode,
-          discountType: "PERCENTAGE",
-          discountValue: 10,
-          minOrderValue: 100,
-          validUntil: new Date(Date.now() + 86400000).toISOString(),
-          isActive: true,
+          type: "PERCENT",
+          value: 10,
+          minOrderAmount: 100,
         },
       });
       expect(res.statusCode).toBe(201);
       const body = JSON.parse(res.payload);
-      couponId = body.data.id;
+      couponId = body.data.coupon.id;
     });
   });
 
@@ -61,7 +57,7 @@ describe("Coupons Endpoints", () => {
       });
       expect(res.statusCode).toBe(200);
       const body = JSON.parse(res.payload);
-      expect(Array.isArray(body.data)).toBe(true);
+      expect(Array.isArray(body.data.coupons)).toBe(true);
     });
   });
 
@@ -73,7 +69,7 @@ describe("Coupons Endpoints", () => {
         headers: { authorization: `Bearer ${userToken}` },
         payload: {
           code: couponCode,
-          orderValue: 200,
+          orderAmount: 200,
         },
       });
       expect(res.statusCode).toBe(200);
@@ -86,17 +82,17 @@ describe("Coupons Endpoints", () => {
         headers: { authorization: `Bearer ${userToken}` },
         payload: {
           code: couponCode,
-          orderValue: 50,
+          orderAmount: 50,
         },
       });
       expect(res.statusCode).toBe(400); // Bad request due to low order value
     });
   });
 
-  describe("PUT /api/v1/coupons/:id/toggle", () => {
+  describe("PATCH /api/v1/coupons/:id/toggle", () => {
     it("should toggle coupon status as admin", async () => {
       const res = await app.inject({
-        method: "PUT",
+        method: "PATCH",
         url: `/api/v1/coupons/${couponId}/toggle`,
         headers: { authorization: `Bearer ${adminToken}` },
       });
@@ -104,11 +100,11 @@ describe("Coupons Endpoints", () => {
     });
   });
 
-  describe("DELETE /api/v1/coupons/:id", () => {
+  describe("DELETE /api/v1/admin/coupons/:id", () => {
     it("should delete coupon as admin", async () => {
       const res = await app.inject({
         method: "DELETE",
-        url: `/api/v1/coupons/${couponId}`,
+        url: `/api/v1/admin/coupons/${couponId}`,
         headers: { authorization: `Bearer ${adminToken}` },
       });
       expect(res.statusCode).toBe(200);

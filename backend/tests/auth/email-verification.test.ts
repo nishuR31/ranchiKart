@@ -21,7 +21,6 @@ describe("Email Verification Functionality", () => {
     if (userId) {
       await prisma.user.deleteMany({ where: { id: userId } });
     }
-    await app.close();
   });
 
   it("should register a new user with unverified email", async () => {

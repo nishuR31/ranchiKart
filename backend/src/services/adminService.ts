@@ -121,10 +121,14 @@ export default class AdminService {
   ) {
     const where: Prisma.OrderWhereInput = {
       status: options.status,
-      createdAt: {
-        gte: options.from ? new Date(options.from) : undefined,
-        lte: options.to ? new Date(options.to) : undefined,
-      },
+      ...(options.from || options.to
+        ? {
+            createdAt: {
+              ...(options.from ? { gte: new Date(options.from) } : {}),
+              ...(options.to ? { lte: new Date(options.to) } : {}),
+            },
+          }
+        : {}),
     };
 
     const [orders, total] = await Promise.all([
