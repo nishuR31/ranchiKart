@@ -1,0 +1,2099 @@
+[
+    {
+        "openapi": "3.0.3",
+        "info": {
+            "title": "Backend",
+            "description": "Production-ready e-commerce API for Ranchi and scalable global marketplace. Built with Fastify + Prisma + PostgreSQL.",
+            "version": "1.3.4",
+            "contact": {
+                "name": "Backend Team",
+                "email": "ranchikartecom@gmail.com"
+            }
+        },
+        "components": {
+            "securitySchemes": {
+                "bearerAuth": {
+                    "type": "http",
+                    "scheme": "bearer",
+                    "bearerFormat": "JWT"
+                }
+            },
+            "schemas": {}
+        },
+        "paths": {
+            "/": {
+                "get": {
+                    "responses": {
+                        "200": {
+                            "description": "Default Response"
+                        }
+                    }
+                }
+            },
+            "/api/v1/admin/dashboard": {
+                "get": {
+                    "responses": {
+                        "200": {
+                            "description": "Default Response"
+                        }
+                    }
+                }
+            },
+            "/api/v1/admin/stats/revenue-chart": {
+                "get": {
+                    "responses": {
+                        "200": {
+                            "description": "Default Response"
+                        }
+                    }
+                }
+            },
+            "/api/v1/admin/orders": {
+                "get": {
+                    "parameters": [
+                        {
+                            "schema": {
+                                "type": "string",
+                                "enum": [
+                                    "PENDING_PAYMENT",
+                                    "PAID",
+                                    "PROCESSING",
+                                    "SHIPPED",
+                                    "DELIVERED",
+                                    "CANCELLED",
+                                    "REFUNDED"
+                                ]
+                            },
+                            "in": "query",
+                            "name": "status",
+                            "required": false
+                        },
+                        {
+                            "schema": {
+                                "type": "string"
+                            },
+                            "in": "query",
+                            "name": "search",
+                            "required": false
+                        },
+                        {
+                            "schema": {
+                                "type": "integer",
+                                "exclusiveMinimum": 0,
+                                "default": 1
+                            },
+                            "in": "query",
+                            "name": "page",
+                            "required": false
+                        },
+                        {
+                            "schema": {
+                                "type": "integer",
+                                "exclusiveMinimum": 0,
+                                "maximum": 50,
+                                "default": 20
+                            },
+                            "in": "query",
+                            "name": "limit",
+                            "required": false
+                        },
+                        {
+                            "schema": {
+                                "type": "string"
+                            },
+                            "in": "query",
+                            "name": "from",
+                            "required": false
+                        },
+                        {
+                            "schema": {
+                                "type": "string"
+                            },
+                            "in": "query",
+                            "name": "to",
+                            "required": false
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "Default Response"
+                        }
+                    }
+                }
+            },
+            "/api/v1/admin/orders/{id}/status": {
+                "put": {
+                    "requestBody": {
+                        "required": true,
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "enum": [
+                                                "PENDING_PAYMENT",
+                                                "PAID",
+                                                "PROCESSING",
+                                                "SHIPPED",
+                                                "DELIVERED",
+                                                "CANCELLED",
+                                                "REFUNDED"
+                                            ]
+                                        },
+                                        "trackingId": {
+                                            "type": "string"
+                                        },
+                                        "notes": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "status"
+                                    ],
+                                    "additionalProperties": false
+                                }
+                            }
+                        }
+                    },
+                    "parameters": [
+                        {
+                            "schema": {
+                                "type": "string"
+                            },
+                            "in": "path",
+                            "name": "id",
+                            "required": true
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "Default Response"
+                        }
+                    }
+                }
+            },
+            "/api/v1/admin/products": {
+                "get": {
+                    "parameters": [
+                        {
+                            "schema": {
+                                "type": "integer",
+                                "exclusiveMinimum": 0,
+                                "default": 1
+                            },
+                            "in": "query",
+                            "name": "page",
+                            "required": false
+                        },
+                        {
+                            "schema": {
+                                "type": "integer",
+                                "exclusiveMinimum": 0,
+                                "maximum": 50,
+                                "default": 20
+                            },
+                            "in": "query",
+                            "name": "limit",
+                            "required": false
+                        },
+                        {
+                            "schema": {
+                                "type": "string"
+                            },
+                            "in": "query",
+                            "name": "search",
+                            "required": false
+                        },
+                        {
+                            "schema": {
+                                "type": "boolean"
+                            },
+                            "in": "query",
+                            "name": "isActive",
+                            "required": false
+                        },
+                        {
+                            "schema": {
+                                "type": "string",
+                                "enum": [
+                                    "EATABLE",
+                                    "STATIONERY",
+                                    "ELECTRONIC",
+                                    "CLOTHING",
+                                    "SHOE",
+                                    "BAG",
+                                    "ACCESSORY",
+                                    "JEWELLERY",
+                                    "BEAUTY",
+                                    "HEALTH",
+                                    "SPORT",
+                                    "HOME",
+                                    "KITCHEN",
+                                    "GARDEN",
+                                    "PET",
+                                    "BABY",
+                                    "TOY",
+                                    "STAMP",
+                                    "BOARD",
+                                    "OTHER"
+                                ]
+                            },
+                            "in": "query",
+                            "name": "kind",
+                            "required": false
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "Default Response"
+                        }
+                    }
+                },
+                "post": {
+                    "responses": {
+                        "200": {
+                            "description": "Default Response"
+                        }
+                    }
+                }
+            },
+            "/api/v1/admin/products/{id}": {
+                "put": {
+                    "parameters": [
+                        {
+                            "schema": {
+                                "type": "string"
+                            },
+                            "in": "path",
+                            "name": "id",
+                            "required": true
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "Default Response"
+                        }
+                    }
+                }
+            },
+            "/api/v1/admin/products/{id}/toggle": {
+                "patch": {
+                    "parameters": [
+                        {
+                            "schema": {
+                                "type": "string"
+                            },
+                            "in": "path",
+                            "name": "id",
+                            "required": true
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "Default Response"
+                        }
+                    }
+                }
+            },
+            "/api/v1/admin/products/{id}/featured": {
+                "patch": {
+                    "parameters": [
+                        {
+                            "schema": {
+                                "type": "string"
+                            },
+                            "in": "path",
+                            "name": "id",
+                            "required": true
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "Default Response"
+                        }
+                    }
+                }
+            },
+            "/api/v1/admin/categories": {
+                "post": {
+                    "responses": {
+                        "200": {
+                            "description": "Default Response"
+                        }
+                    }
+                }
+            },
+            "/api/v1/admin/categories/{id}": {
+                "put": {
+                    "parameters": [
+                        {
+                            "schema": {
+                                "type": "string"
+                            },
+                            "in": "path",
+                            "name": "id",
+                            "required": true
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "Default Response"
+                        }
+                    }
+                },
+                "delete": {
+                    "parameters": [
+                        {
+                            "schema": {
+                                "type": "string"
+                            },
+                            "in": "path",
+                            "name": "id",
+                            "required": true
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "Default Response"
+                        }
+                    }
+                }
+            },
+            "/api/v1/admin/users": {
+                "get": {
+                    "parameters": [
+                        {
+                            "schema": {
+                                "type": "integer",
+                                "exclusiveMinimum": 0,
+                                "default": 1
+                            },
+                            "in": "query",
+                            "name": "page",
+                            "required": false
+                        },
+                        {
+                            "schema": {
+                                "type": "integer",
+                                "exclusiveMinimum": 0,
+                                "maximum": 100,
+                                "default": 20
+                            },
+                            "in": "query",
+                            "name": "limit",
+                            "required": false
+                        },
+                        {
+                            "schema": {
+                                "type": "string"
+                            },
+                            "in": "query",
+                            "name": "search",
+                            "required": false
+                        },
+                        {
+                            "schema": {
+                                "type": "string",
+                                "enum": [
+                                    "USER",
+                                    "MANAGER",
+                                    "ADMIN"
+                                ]
+                            },
+                            "in": "query",
+                            "name": "role",
+                            "required": false
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "Default Response"
+                        }
+                    }
+                }
+            },
+            "/api/v1/admin/users/{id}/ban": {
+                "patch": {
+                    "requestBody": {
+                        "required": true,
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "isBanned": {
+                                            "type": "boolean"
+                                        },
+                                        "banReason": {
+                                            "type": "string",
+                                            "maxLength": 300
+                                        }
+                                    },
+                                    "required": [
+                                        "isBanned"
+                                    ],
+                                    "additionalProperties": false
+                                }
+                            }
+                        }
+                    },
+                    "parameters": [
+                        {
+                            "schema": {
+                                "type": "string"
+                            },
+                            "in": "path",
+                            "name": "id",
+                            "required": true
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "Default Response"
+                        }
+                    }
+                }
+            },
+            "/api/v1/admin/users/{id}/role": {
+                "patch": {
+                    "requestBody": {
+                        "required": true,
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "role": {
+                                            "type": "string",
+                                            "enum": [
+                                                "USER",
+                                                "MANAGER",
+                                                "ADMIN"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "role"
+                                    ],
+                                    "additionalProperties": false
+                                }
+                            }
+                        }
+                    },
+                    "parameters": [
+                        {
+                            "schema": {
+                                "type": "string"
+                            },
+                            "in": "path",
+                            "name": "id",
+                            "required": true
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "Default Response"
+                        }
+                    }
+                }
+            },
+            "/api/v1/admin/coupons": {
+                "get": {
+                    "parameters": [
+                        {
+                            "schema": {
+                                "type": "integer",
+                                "exclusiveMinimum": 0,
+                                "default": 1
+                            },
+                            "in": "query",
+                            "name": "page",
+                            "required": false
+                        },
+                        {
+                            "schema": {
+                                "type": "integer",
+                                "exclusiveMinimum": 0,
+                                "maximum": 50,
+                                "default": 20
+                            },
+                            "in": "query",
+                            "name": "limit",
+                            "required": false
+                        },
+                        {
+                            "schema": {
+                                "type": "boolean"
+                            },
+                            "in": "query",
+                            "name": "isActive",
+                            "required": false
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "Default Response"
+                        }
+                    }
+                },
+                "post": {
+                    "requestBody": {
+                        "required": true,
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "code": {
+                                            "type": "string",
+                                            "minLength": 3,
+                                            "maxLength": 30
+                                        },
+                                        "description": {
+                                            "type": "string"
+                                        },
+                                        "type": {
+                                            "type": "string",
+                                            "enum": [
+                                                "PERCENT",
+                                                "FIXED"
+                                            ],
+                                            "default": "PERCENT"
+                                        },
+                                        "value": {
+                                            "type": "integer",
+                                            "exclusiveMinimum": 0
+                                        },
+                                        "minOrderAmount": {
+                                            "type": "integer",
+                                            "minimum": 0,
+                                            "default": 0
+                                        },
+                                        "maxUses": {
+                                            "type": "integer",
+                                            "exclusiveMinimum": 0
+                                        },
+                                        "expiresAt": {
+                                            "type": "string"
+                                        },
+                                        "categoryId": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "code",
+                                        "value"
+                                    ],
+                                    "additionalProperties": false
+                                }
+                            }
+                        }
+                    },
+                    "responses": {
+                        "200": {
+                            "description": "Default Response"
+                        }
+                    }
+                }
+            },
+            "/api/v1/admin/coupons/{id}": {
+                "put": {
+                    "requestBody": {
+                        "required": true,
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "description": {
+                                            "type": "string"
+                                        },
+                                        "value": {
+                                            "type": "integer",
+                                            "exclusiveMinimum": 0
+                                        },
+                                        "minOrderAmount": {
+                                            "type": "integer",
+                                            "minimum": 0
+                                        },
+                                        "maxUses": {
+                                            "anyOf": [
+                                                {
+                                                    "type": "integer",
+                                                    "exclusiveMinimum": 0
+                                                },
+                                                {
+                                                    "type": "null"
+                                                }
+                                            ]
+                                        },
+                                        "isActive": {
+                                            "type": "boolean"
+                                        },
+                                        "expiresAt": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        }
+                                    },
+                                    "additionalProperties": false
+                                }
+                            }
+                        }
+                    },
+                    "parameters": [
+                        {
+                            "schema": {
+                                "type": "string"
+                            },
+                            "in": "path",
+                            "name": "id",
+                            "required": true
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "Default Response"
+                        }
+                    }
+                },
+                "delete": {
+                    "parameters": [
+                        {
+                            "schema": {
+                                "type": "string"
+                            },
+                            "in": "path",
+                            "name": "id",
+                            "required": true
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "Default Response"
+                        }
+                    }
+                }
+            },
+            "/api/v1/admin/logs": {
+                "get": {
+                    "parameters": [
+                        {
+                            "schema": {
+                                "type": "integer",
+                                "exclusiveMinimum": 0,
+                                "default": 1
+                            },
+                            "in": "query",
+                            "name": "page",
+                            "required": false
+                        },
+                        {
+                            "schema": {
+                                "type": "integer",
+                                "exclusiveMinimum": 0,
+                                "maximum": 100,
+                                "default": 50
+                            },
+                            "in": "query",
+                            "name": "limit",
+                            "required": false
+                        },
+                        {
+                            "schema": {
+                                "type": "string"
+                            },
+                            "in": "query",
+                            "name": "entity",
+                            "required": false
+                        },
+                        {
+                            "schema": {
+                                "type": "string"
+                            },
+                            "in": "query",
+                            "name": "action",
+                            "required": false
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "Default Response"
+                        }
+                    }
+                }
+            },
+            "/api/v1/auth/register": {
+                "post": {
+                    "requestBody": {
+                        "required": true,
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "email": {
+                                            "type": "string",
+                                            "format": "email"
+                                        },
+                                        "name": {
+                                            "type": "string",
+                                            "minLength": 2,
+                                            "maxLength": 80
+                                        },
+                                        "password": {
+                                            "type": "string",
+                                            "minLength": 8,
+                                            "maxLength": 120
+                                        }
+                                    },
+                                    "required": [
+                                        "email",
+                                        "name"
+                                    ],
+                                    "additionalProperties": false
+                                }
+                            }
+                        }
+                    },
+                    "responses": {
+                        "200": {
+                            "description": "Default Response"
+                        }
+                    }
+                }
+            },
+            "/api/v1/auth/login": {
+                "post": {
+                    "requestBody": {
+                        "required": true,
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "emailOrUsername": {
+                                            "type": "string"
+                                        },
+                                        "password": {
+                                            "type": "string"
+                                        },
+                                        "totpToken": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "emailOrUsername"
+                                    ],
+                                    "additionalProperties": false
+                                }
+                            }
+                        }
+                    },
+                    "responses": {
+                        "200": {
+                            "description": "Default Response"
+                        }
+                    }
+                }
+            },
+            "/api/v1/auth/logout": {
+                "post": {
+                    "responses": {
+                        "200": {
+                            "description": "Default Response"
+                        }
+                    }
+                }
+            },
+            "/api/v1/auth/refresh": {
+                "post": {
+                    "requestBody": {
+                        "required": true,
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "refreshToken": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "additionalProperties": false
+                                }
+                            }
+                        }
+                    },
+                    "responses": {
+                        "200": {
+                            "description": "Default Response"
+                        }
+                    }
+                }
+            },
+            "/api/v1/auth/me": {
+                "get": {
+                    "responses": {
+                        "200": {
+                            "description": "Default Response"
+                        }
+                    }
+                }
+            },
+            "/api/v1/auth/change-password": {
+                "put": {
+                    "requestBody": {
+                        "required": true,
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "currentPassword": {
+                                            "type": "string"
+                                        },
+                                        "newPassword": {
+                                            "type": "string",
+                                            "minLength": 8,
+                                            "maxLength": 120
+                                        }
+                                    },
+                                    "required": [
+                                        "newPassword"
+                                    ],
+                                    "additionalProperties": false
+                                }
+                            }
+                        }
+                    },
+                    "responses": {
+                        "200": {
+                            "description": "Default Response"
+                        }
+                    }
+                }
+            },
+            "/api/v1/auth/google/login": {
+                "get": {
+                    "responses": {
+                        "200": {
+                            "description": "Default Response"
+                        }
+                    }
+                }
+            },
+            "/api/v1/auth/google/callback": {
+                "get": {
+                    "responses": {
+                        "200": {
+                            "description": "Default Response"
+                        }
+                    }
+                }
+            },
+            "/api/v1/auth/magic-link": {
+                "post": {
+                    "requestBody": {
+                        "required": true,
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "email": {
+                                            "type": "string",
+                                            "format": "email"
+                                        }
+                                    },
+                                    "required": [
+                                        "email"
+                                    ],
+                                    "additionalProperties": false
+                                }
+                            }
+                        }
+                    },
+                    "responses": {
+                        "200": {
+                            "description": "Default Response"
+                        }
+                    }
+                }
+            },
+            "/api/v1/auth/magic-link/verify": {
+                "get": {
+                    "parameters": [
+                        {
+                            "schema": {
+                                "type": "string"
+                            },
+                            "in": "query",
+                            "name": "token",
+                            "required": true
+                        },
+                        {
+                            "schema": {
+                                "type": "string"
+                            },
+                            "in": "query",
+                            "name": "time",
+                            "required": false
+                        },
+                        {
+                            "schema": {
+                                "type": "string"
+                            },
+                            "in": "query",
+                            "name": "valid",
+                            "required": false
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "Default Response"
+                        }
+                    }
+                }
+            },
+            "/api/v1/auth/totp/enable": {
+                "post": {
+                    "responses": {
+                        "200": {
+                            "description": "Default Response"
+                        }
+                    }
+                }
+            },
+            "/api/v1/auth/totp/verify": {
+                "post": {
+                    "requestBody": {
+                        "required": true,
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "token": {
+                                            "type": "string",
+                                            "minLength": 6,
+                                            "maxLength": 6
+                                        }
+                                    },
+                                    "required": [
+                                        "token"
+                                    ],
+                                    "additionalProperties": false
+                                }
+                            }
+                        }
+                    },
+                    "responses": {
+                        "200": {
+                            "description": "Default Response"
+                        }
+                    }
+                }
+            },
+            "/api/v1/auth/totp/disable": {
+                "post": {
+                    "requestBody": {
+                        "required": true,
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "token": {
+                                            "type": "string",
+                                            "minLength": 6,
+                                            "maxLength": 6
+                                        }
+                                    },
+                                    "required": [
+                                        "token"
+                                    ],
+                                    "additionalProperties": false
+                                }
+                            }
+                        }
+                    },
+                    "responses": {
+                        "200": {
+                            "description": "Default Response"
+                        }
+                    }
+                }
+            },
+            "/api/v1/auth/passkey/register": {
+                "get": {
+                    "responses": {
+                        "200": {
+                            "description": "Default Response"
+                        }
+                    }
+                }
+            },
+            "/api/v1/auth/passkey/register/verify": {
+                "post": {
+                    "responses": {
+                        "200": {
+                            "description": "Default Response"
+                        }
+                    }
+                }
+            },
+            "/api/v1/auth/passkey/login": {
+                "post": {
+                    "requestBody": {
+                        "required": true,
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "email": {
+                                            "type": "string",
+                                            "format": "email"
+                                        }
+                                    },
+                                    "required": [
+                                        "email"
+                                    ],
+                                    "additionalProperties": false
+                                }
+                            }
+                        }
+                    },
+                    "responses": {
+                        "200": {
+                            "description": "Default Response"
+                        }
+                    }
+                }
+            },
+            "/api/v1/auth/passkey/login/verify": {
+                "post": {
+                    "responses": {
+                        "200": {
+                            "description": "Default Response"
+                        }
+                    }
+                }
+            },
+            "/api/v1/categories": {
+                "get": {
+                    "responses": {
+                        "200": {
+                            "description": "Default Response"
+                        }
+                    }
+                }
+            },
+            "/api/v1/products/featured": {
+                "get": {
+                    "responses": {
+                        "200": {
+                            "description": "Default Response"
+                        }
+                    }
+                }
+            },
+            "/api/v1/products": {
+                "get": {
+                    "parameters": [
+                        {
+                            "schema": {
+                                "type": "string"
+                            },
+                            "in": "query",
+                            "name": "category",
+                            "required": false
+                        },
+                        {
+                            "schema": {
+                                "type": "string"
+                            },
+                            "in": "query",
+                            "name": "q",
+                            "required": false
+                        },
+                        {
+                            "schema": {
+                                "type": "string",
+                                "enum": [
+                                    "EATABLE",
+                                    "STATIONERY",
+                                    "ELECTRONIC",
+                                    "CLOTHING",
+                                    "SHOE",
+                                    "BAG",
+                                    "ACCESSORY",
+                                    "JEWELLERY",
+                                    "BEAUTY",
+                                    "HEALTH",
+                                    "SPORT",
+                                    "HOME",
+                                    "KITCHEN",
+                                    "GARDEN",
+                                    "PET",
+                                    "BABY",
+                                    "TOY",
+                                    "STAMP",
+                                    "BOARD",
+                                    "OTHER"
+                                ]
+                            },
+                            "in": "query",
+                            "name": "kind",
+                            "required": false
+                        },
+                        {
+                            "schema": {
+                                "type": "integer",
+                                "minimum": 0
+                            },
+                            "in": "query",
+                            "name": "minPrice",
+                            "required": false
+                        },
+                        {
+                            "schema": {
+                                "type": "integer",
+                                "minimum": 0
+                            },
+                            "in": "query",
+                            "name": "maxPrice",
+                            "required": false
+                        },
+                        {
+                            "schema": {
+                                "type": "number",
+                                "minimum": 0,
+                                "maximum": 5
+                            },
+                            "in": "query",
+                            "name": "minRating",
+                            "required": false
+                        },
+                        {
+                            "schema": {
+                                "type": "boolean"
+                            },
+                            "in": "query",
+                            "name": "featured",
+                            "required": false
+                        },
+                        {
+                            "schema": {
+                                "type": "string",
+                                "enum": [
+                                    "newest",
+                                    "price_asc",
+                                    "price_desc",
+                                    "rating"
+                                ]
+                            },
+                            "in": "query",
+                            "name": "sort",
+                            "required": false
+                        },
+                        {
+                            "schema": {
+                                "type": "integer",
+                                "exclusiveMinimum": 0,
+                                "maximum": 60
+                            },
+                            "in": "query",
+                            "name": "limit",
+                            "required": false
+                        },
+                        {
+                            "schema": {
+                                "type": "integer",
+                                "exclusiveMinimum": 0
+                            },
+                            "in": "query",
+                            "name": "page",
+                            "required": false
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "Default Response"
+                        }
+                    }
+                }
+            },
+            "/api/v1/search": {
+                "get": {
+                    "parameters": [
+                        {
+                            "schema": {
+                                "type": "string"
+                            },
+                            "in": "query",
+                            "name": "q",
+                            "required": false
+                        },
+                        {
+                            "schema": {
+                                "type": "integer",
+                                "exclusiveMinimum": 0,
+                                "maximum": 60
+                            },
+                            "in": "query",
+                            "name": "limit",
+                            "required": false
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "Default Response"
+                        }
+                    }
+                }
+            },
+            "/api/v1/products/{slug}": {
+                "get": {
+                    "parameters": [
+                        {
+                            "schema": {
+                                "type": "string"
+                            },
+                            "in": "path",
+                            "name": "slug",
+                            "required": true
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "Default Response"
+                        }
+                    }
+                }
+            },
+            "/api/v1/catalog/cache": {
+                "delete": {
+                    "responses": {
+                        "200": {
+                            "description": "Default Response"
+                        }
+                    }
+                }
+            },
+            "/api/v1/health": {
+                "get": {
+                    "responses": {
+                        "200": {
+                            "description": "Default Response"
+                        }
+                    }
+                }
+            },
+            "/api/v1/ping": {
+                "get": {
+                    "responses": {
+                        "200": {
+                            "description": "Default Response"
+                        }
+                    }
+                }
+            },
+            "/api/v1/orders": {
+                "post": {
+                    "requestBody": {
+                        "required": true,
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "paymentMethod": {
+                                            "type": "string",
+                                            "enum": [
+                                                "UPI",
+                                                "CARD",
+                                                "CRYPTO",
+                                                "NET_BANKING",
+                                                "COINS"
+                                            ]
+                                        },
+                                        "address": {
+                                            "type": "object",
+                                            "properties": {
+                                                "fullName": {
+                                                    "type": "string",
+                                                    "minLength": 2
+                                                },
+                                                "phone": {
+                                                    "type": "string",
+                                                    "minLength": 8
+                                                },
+                                                "line1": {
+                                                    "type": "string",
+                                                    "minLength": 4
+                                                },
+                                                "line2": {
+                                                    "type": "string"
+                                                },
+                                                "city": {
+                                                    "type": "string",
+                                                    "minLength": 2
+                                                },
+                                                "state": {
+                                                    "type": "string",
+                                                    "minLength": 2
+                                                },
+                                                "pincode": {
+                                                    "type": "string",
+                                                    "minLength": 4
+                                                }
+                                            },
+                                            "required": [
+                                                "fullName",
+                                                "phone",
+                                                "line1",
+                                                "city",
+                                                "state",
+                                                "pincode"
+                                            ],
+                                            "additionalProperties": false
+                                        },
+                                        "couponCode": {
+                                            "type": "string"
+                                        },
+                                        "notes": {
+                                            "type": "string",
+                                            "maxLength": 500
+                                        },
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "productId": {
+                                                        "type": "string"
+                                                    },
+                                                    "variantId": {
+                                                        "type": "string"
+                                                    },
+                                                    "quantity": {
+                                                        "type": "integer",
+                                                        "minimum": 1,
+                                                        "maximum": 50
+                                                    },
+                                                    "customWidthMm": {
+                                                        "type": "integer",
+                                                        "exclusiveMinimum": 0
+                                                    },
+                                                    "customHeightMm": {
+                                                        "type": "integer",
+                                                        "exclusiveMinimum": 0
+                                                    },
+                                                    "customText": {
+                                                        "type": "string",
+                                                        "maxLength": 300
+                                                    },
+                                                    "customization": {
+                                                        "type": "object",
+                                                        "additionalProperties": {},
+                                                        "default": {}
+                                                    }
+                                                },
+                                                "required": [
+                                                    "productId",
+                                                    "quantity"
+                                                ],
+                                                "additionalProperties": false
+                                            },
+                                            "minItems": 1
+                                        }
+                                    },
+                                    "required": [
+                                        "paymentMethod",
+                                        "address",
+                                        "items"
+                                    ],
+                                    "additionalProperties": false
+                                }
+                            }
+                        }
+                    },
+                    "responses": {
+                        "200": {
+                            "description": "Default Response"
+                        }
+                    }
+                },
+                "get": {
+                    "parameters": [
+                        {
+                            "schema": {
+                                "type": "string",
+                                "enum": [
+                                    "PENDING_PAYMENT",
+                                    "PAID",
+                                    "PROCESSING",
+                                    "SHIPPED",
+                                    "DELIVERED",
+                                    "CANCELLED",
+                                    "REFUNDED"
+                                ]
+                            },
+                            "in": "query",
+                            "name": "status",
+                            "required": false
+                        },
+                        {
+                            "schema": {
+                                "type": "integer",
+                                "exclusiveMinimum": 0,
+                                "default": 1
+                            },
+                            "in": "query",
+                            "name": "page",
+                            "required": false
+                        },
+                        {
+                            "schema": {
+                                "type": "integer",
+                                "exclusiveMinimum": 0,
+                                "maximum": 20,
+                                "default": 10
+                            },
+                            "in": "query",
+                            "name": "limit",
+                            "required": false
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "Default Response"
+                        }
+                    }
+                }
+            },
+            "/api/v1/orders/{id}": {
+                "get": {
+                    "parameters": [
+                        {
+                            "schema": {
+                                "type": "string"
+                            },
+                            "in": "path",
+                            "name": "id",
+                            "required": true
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "Default Response"
+                        }
+                    }
+                }
+            },
+            "/api/v1/payments/razorpay/orders": {
+                "post": {
+                    "requestBody": {
+                        "required": true,
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "orderId": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "orderId"
+                                    ],
+                                    "additionalProperties": false
+                                }
+                            }
+                        }
+                    },
+                    "responses": {
+                        "200": {
+                            "description": "Default Response"
+                        }
+                    }
+                }
+            },
+            "/api/v1/payments/razorpay/verify": {
+                "post": {
+                    "requestBody": {
+                        "required": true,
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "orderId": {
+                                            "type": "string"
+                                        },
+                                        "razorpay_order_id": {
+                                            "type": "string"
+                                        },
+                                        "razorpay_payment_id": {
+                                            "type": "string"
+                                        },
+                                        "razorpay_signature": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "orderId",
+                                        "razorpay_order_id",
+                                        "razorpay_payment_id",
+                                        "razorpay_signature"
+                                    ],
+                                    "additionalProperties": false
+                                }
+                            }
+                        }
+                    },
+                    "responses": {
+                        "200": {
+                            "description": "Default Response"
+                        }
+                    }
+                }
+            },
+            "/api/v1/products/{slug}/reviews": {
+                "get": {
+                    "parameters": [
+                        {
+                            "schema": {
+                                "type": "integer",
+                                "exclusiveMinimum": 0,
+                                "default": 1
+                            },
+                            "in": "query",
+                            "name": "page",
+                            "required": false
+                        },
+                        {
+                            "schema": {
+                                "type": "integer",
+                                "exclusiveMinimum": 0,
+                                "maximum": 20,
+                                "default": 10
+                            },
+                            "in": "query",
+                            "name": "limit",
+                            "required": false
+                        },
+                        {
+                            "schema": {
+                                "type": "string"
+                            },
+                            "in": "path",
+                            "name": "slug",
+                            "required": true
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "Default Response"
+                        }
+                    }
+                },
+                "post": {
+                    "requestBody": {
+                        "required": true,
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "rating": {
+                                            "type": "integer",
+                                            "minimum": 1,
+                                            "maximum": 5
+                                        },
+                                        "title": {
+                                            "type": "string",
+                                            "maxLength": 120
+                                        },
+                                        "body": {
+                                            "type": "string",
+                                            "minLength": 10,
+                                            "maxLength": 2000
+                                        }
+                                    },
+                                    "required": [
+                                        "rating",
+                                        "body"
+                                    ],
+                                    "additionalProperties": false
+                                }
+                            }
+                        }
+                    },
+                    "parameters": [
+                        {
+                            "schema": {
+                                "type": "string"
+                            },
+                            "in": "path",
+                            "name": "slug",
+                            "required": true
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "Default Response"
+                        }
+                    }
+                }
+            },
+            "/api/v1/reviews/{id}/helpful": {
+                "post": {
+                    "parameters": [
+                        {
+                            "schema": {
+                                "type": "string"
+                            },
+                            "in": "path",
+                            "name": "id",
+                            "required": true
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "Default Response"
+                        }
+                    }
+                }
+            },
+            "/api/v1/reviews/{id}": {
+                "delete": {
+                    "parameters": [
+                        {
+                            "schema": {
+                                "type": "string"
+                            },
+                            "in": "path",
+                            "name": "id",
+                            "required": true
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "Default Response"
+                        }
+                    }
+                }
+            },
+            "/api/v1/users/me": {
+                "get": {
+                    "responses": {
+                        "200": {
+                            "description": "Default Response"
+                        }
+                    }
+                }
+            },
+            "/api/v1/users/me/profile": {
+                "put": {
+                    "responses": {
+                        "200": {
+                            "description": "Default Response"
+                        }
+                    }
+                }
+            },
+            "/api/v1/users/me/addresses": {
+                "get": {
+                    "responses": {
+                        "200": {
+                            "description": "Default Response"
+                        }
+                    }
+                },
+                "post": {
+                    "requestBody": {
+                        "required": true,
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "label": {
+                                            "type": "string",
+                                            "maxLength": 30,
+                                            "default": "Home"
+                                        },
+                                        "fullName": {
+                                            "type": "string",
+                                            "minLength": 2
+                                        },
+                                        "phone": {
+                                            "type": "string",
+                                            "minLength": 8
+                                        },
+                                        "line1": {
+                                            "type": "string",
+                                            "minLength": 4
+                                        },
+                                        "line2": {
+                                            "type": "string"
+                                        },
+                                        "city": {
+                                            "type": "string",
+                                            "minLength": 2
+                                        },
+                                        "state": {
+                                            "type": "string",
+                                            "minLength": 2
+                                        },
+                                        "pincode": {
+                                            "type": "string",
+                                            "minLength": 4
+                                        },
+                                        "isDefault": {
+                                            "type": "boolean",
+                                            "default": false
+                                        }
+                                    },
+                                    "required": [
+                                        "fullName",
+                                        "phone",
+                                        "line1",
+                                        "city",
+                                        "state",
+                                        "pincode"
+                                    ],
+                                    "additionalProperties": false
+                                }
+                            }
+                        }
+                    },
+                    "responses": {
+                        "200": {
+                            "description": "Default Response"
+                        }
+                    }
+                }
+            },
+            "/api/v1/users/me/addresses/{id}": {
+                "delete": {
+                    "parameters": [
+                        {
+                            "schema": {
+                                "type": "string"
+                            },
+                            "in": "path",
+                            "name": "id",
+                            "required": true
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "Default Response"
+                        }
+                    }
+                }
+            },
+            "/api/v1/users/me/password": {
+                "put": {
+                    "requestBody": {
+                        "required": true,
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "oldPassword": {
+                                            "type": "string",
+                                            "minLength": 6
+                                        },
+                                        "newPassword": {
+                                            "type": "string",
+                                            "minLength": 6
+                                        }
+                                    },
+                                    "required": [
+                                        "oldPassword",
+                                        "newPassword"
+                                    ],
+                                    "additionalProperties": false
+                                }
+                            }
+                        }
+                    },
+                    "responses": {
+                        "200": {
+                            "description": "Default Response"
+                        }
+                    }
+                }
+            },
+            "/api/v1/wishlist": {
+                "get": {
+                    "responses": {
+                        "200": {
+                            "description": "Default Response"
+                        }
+                    }
+                },
+                "post": {
+                    "requestBody": {
+                        "required": true,
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "productId": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "productId"
+                                    ],
+                                    "additionalProperties": false
+                                }
+                            }
+                        }
+                    },
+                    "responses": {
+                        "200": {
+                            "description": "Default Response"
+                        }
+                    }
+                }
+            },
+            "/api/v1/wishlist/toggle": {
+                "post": {
+                    "requestBody": {
+                        "required": true,
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "productId": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "productId"
+                                    ],
+                                    "additionalProperties": false
+                                }
+                            }
+                        }
+                    },
+                    "responses": {
+                        "200": {
+                            "description": "Default Response"
+                        }
+                    }
+                }
+            },
+            "/api/v1/wishlist/{productId}": {
+                "delete": {
+                    "parameters": [
+                        {
+                            "schema": {
+                                "type": "string"
+                            },
+                            "in": "path",
+                            "name": "productId",
+                            "required": true
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "Default Response"
+                        }
+                    }
+                }
+            },
+            "/api/v1/wishlist/check/{productId}": {
+                "get": {
+                    "parameters": [
+                        {
+                            "schema": {
+                                "type": "string"
+                            },
+                            "in": "path",
+                            "name": "productId",
+                            "required": true
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "Default Response"
+                        }
+                    }
+                }
+            },
+            "/api/v1/coupons/apply": {
+                "post": {
+                    "requestBody": {
+                        "required": true,
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "code": {
+                                            "type": "string",
+                                            "minLength": 1,
+                                            "maxLength": 30
+                                        },
+                                        "orderAmount": {
+                                            "type": "integer",
+                                            "exclusiveMinimum": 0
+                                        },
+                                        "categoryId": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "code",
+                                        "orderAmount"
+                                    ],
+                                    "additionalProperties": false
+                                }
+                            }
+                        }
+                    },
+                    "responses": {
+                        "200": {
+                            "description": "Default Response"
+                        }
+                    }
+                }
+            },
+            "/api/v1/coupons": {
+                "get": {
+                    "responses": {
+                        "200": {
+                            "description": "Default Response"
+                        }
+                    }
+                },
+                "post": {
+                    "requestBody": {
+                        "required": true,
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "code": {
+                                            "type": "string",
+                                            "minLength": 3,
+                                            "maxLength": 30
+                                        },
+                                        "description": {
+                                            "type": "string"
+                                        },
+                                        "type": {
+                                            "type": "string",
+                                            "enum": [
+                                                "PERCENT",
+                                                "FIXED"
+                                            ],
+                                            "default": "PERCENT"
+                                        },
+                                        "value": {
+                                            "type": "integer",
+                                            "exclusiveMinimum": 0
+                                        },
+                                        "minOrderAmount": {
+                                            "type": "integer",
+                                            "minimum": 0,
+                                            "default": 0
+                                        },
+                                        "maxUses": {
+                                            "type": "integer",
+                                            "exclusiveMinimum": 0
+                                        },
+                                        "expiresAt": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "code",
+                                        "value"
+                                    ],
+                                    "additionalProperties": false
+                                }
+                            }
+                        }
+                    },
+                    "responses": {
+                        "200": {
+                            "description": "Default Response"
+                        }
+                    }
+                }
+            },
+            "/api/v1/coupons/{id}/toggle": {
+                "patch": {
+                    "requestBody": {
+                        "required": true,
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "id"
+                                    ],
+                                    "additionalProperties": false
+                                }
+                            }
+                        }
+                    },
+                    "parameters": [
+                        {
+                            "schema": {
+                                "type": "string"
+                            },
+                            "in": "path",
+                            "name": "id",
+                            "required": true
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "Default Response"
+                        }
+                    }
+                }
+            },
+            "/api/v1/version": {
+                "get": {
+                    "responses": {
+                        "200": {
+                            "description": "Default Response"
+                        }
+                    }
+                }
+            }
+        },
+        "servers": [
+            {
+                "url": "http://localhost:3000",
+                "description": "Development"
+            },
+            {
+                "url": "https://ranchikart.onrender.com",
+                "description": "Production"
+            }
+        ]
+    }
+]

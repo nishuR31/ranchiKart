@@ -127,12 +127,15 @@ export const me = asyncHandler(async (req: FastifyRequest, res: FastifyReply) =>
 export const changePassword = asyncHandler(async (req: FastifyRequest, res: FastifyReply) => {
   const body = z
     .object({
-      currentPassword: z.string().optional(),
+      currentPassword: z.string().min(8).max(120),
       newPassword: z.string().min(8).max(120),
     })
     .parse(req.body);
 
   try {
+    if (body.newPassword === body.currentPassword) {
+      throw new ValidationError("New password cannot be same as current password");
+    }
     await authService.changePassword(req.user!.id, body.currentPassword, body.newPassword);
     return sendSuccess(res, "Password changed successfully", code("ok") as number, null);
   } catch (err: any) {
