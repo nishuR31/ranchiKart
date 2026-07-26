@@ -35,7 +35,7 @@ export default function AuthPage() {
   }, [location, navigate, fetchUser, showToast]);
 
   const handleGoogleLogin = () => {
-    const baseUrl = import.meta.env.NODE_ENV === "production" ? import.meta.env.VITE_API_URL : "";
+    const baseUrl = import.meta.env.NODE_ENV === "production" ? (import.meta.env.VITE_API_URL || "") : "";
     window.location.href = `${baseUrl}/api/v1/auth/google/login`;
   };
 
@@ -43,7 +43,7 @@ export default function AuthPage() {
     if (!form.email) return showToast("Please enter your email first", "error");
     setLoading(true);
     try {
-      const baseUrl = import.meta.env.NODE_ENV === "production" ? import.meta.env.VITE_API_URL : "";
+      const baseUrl = import.meta.env.NODE_ENV === "production" ? (import.meta.env.VITE_API_URL || "") : "";
       const res = await fetch(`${baseUrl}/api/v1/auth/magic-link`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },

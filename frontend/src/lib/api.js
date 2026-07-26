@@ -2,9 +2,10 @@ import axios from "axios";
 
 // In development, this evaluates to "" (empty string), causing Axios to call `/api/v1/...` relative to the current frontend domain (e.g., localhost:5173). 
 // The Vite proxy then invisibly forwards it to the backend on port 3000.
-const baseURL = import.meta.env.NODE_ENV === "production" ? import.meta.env.VITE_API_URL : "";
+const API_ORIGIN = import.meta.env.NODE_ENV === "production" ? (import.meta.env.VITE_API_URL || "") : "";
+const baseURL = API_ORIGIN + "/api/v1";
 
-const api = axios.create({ baseURL: baseURL + "/api/v1", withCredentials: true });
+const api = axios.create({ baseURL, withCredentials: true });
 
 import useAuthStore from "../store/useAuthStore";
 
@@ -38,7 +39,7 @@ api.interceptors.response.use(
 
       try {
         // Try to get a new access token (cookies are automatically sent because withCredentials is true)
-        const { data } = await axios.post(baseURL + "/api/v1/auth/refresh", {}, { withCredentials: true });
+        const { data } = await axios.post(baseURL + "/auth/refresh", {}, { withCredentials: true });
 
         // Ensure we got an accessToken back
         if (data && data.data && data.data.accessToken) {
