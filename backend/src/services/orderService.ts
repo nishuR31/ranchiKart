@@ -94,14 +94,38 @@ export default class OrderService {
 
     const total = subtotal + shippingFee - discountAmount;
 
-    // Wrap order creation + coupon increment in a transaction to prevent
-    // race conditions (double-use of coupons) and ensure atomicity
-    const order = await prisma.$transaction(async (tx) => {
+    // Wrap order creation, stock reduction + coupon increment in a transaction to prevent
+    // race conditions and ensure atomicity
+    const order = await prisma.$transaction(
+      async (tx) => {
       // Re-check coupon availability inside the transaction to prevent races
       if (couponId) {
         const coupon = await tx.coupon.findUnique({ where: { id: couponId } });
         if (!coupon || (coupon.maxUses !== null && coupon.usedCount >= coupon.maxUses)) {
           throw new BadRequestError("Coupon is no longer available");
+        }
+      }
+
+      // Validate and reduce stock for each product/variant
+      for (const item of data.items) {
+        if (item.variantId) {
+          const variant = await tx.productVariant.findUnique({ where: { id: item.variantId } });
+          if (!variant || variant.stock < item.quantity) {
+            throw new BadRequestError("Insufficient stock for requested item variant");
+          }
+          await tx.productVariant.update({
+            where: { id: item.variantId },
+            data: { stock: { decrement: item.quantity } },
+          });
+        } else {
+          const product = await tx.product.findUnique({ where: { id: item.productId } });
+          if (!product || product.stock < item.quantity) {
+            throw new BadRequestError(`Insufficient stock for ${product?.name ?? "product"}`);
+          }
+          await tx.product.update({
+            where: { id: item.productId },
+            data: { stock: { decrement: item.quantity } },
+          });
         }
       }
 
@@ -129,7 +153,7 @@ export default class OrderService {
       }
 
       return created;
-    });
+    }, { timeout: 15000 });
 
     // Send email outside the transaction (non-critical, fire-and-forget)
     const user = await prisma.user.findUnique({ where: { id: userId } });

@@ -21,6 +21,7 @@ export function getRazorpayKeys(): { key_id: string; key_secret: string } | null
 }
 
 export function getRazorpayClient(): Razorpay | null {
+  if (process.env.NODE_ENV === "test" || env.NODE_ENV === "test") return null;
   const keys = getRazorpayKeys();
   if (!keys) return null;
 

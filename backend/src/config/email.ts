@@ -16,7 +16,7 @@ const transporter = smtpConfigured
   : null;
 
 async function send(to: string, subject: string, html: string) {
-  if (env.NODE_ENV === "test" || !transporter) {
+  if (env.NODE_ENV !== "production" || process.env.NODE_ENV === "test" || !transporter) {
     console.log(`[Email no-op] To: ${to} | Subject: ${subject}`);
     return;
   }

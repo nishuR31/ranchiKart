@@ -1,17 +1,18 @@
 import type { Product, ProductVariant } from "../../prisma/generated/client/index.js";
+import { BadRequestError } from "../utils/errors.js";
 
 export function assertSize(product: Product, width?: number, height?: number) {
   if (!width && !height) return;
 
   if (!product.minWidthMm || !product.maxWidthMm || !product.minHeightMm || !product.maxHeightMm) {
-    throw new Error(`${product.name} does not support custom sizing`);
+    throw new BadRequestError(`${product.name} does not support custom sizing`);
   }
 
-  if (!width || !height) throw new Error(`${product.name} needs both width and height`);
+  if (!width || !height) throw new BadRequestError(`${product.name} needs both width and height`);
   if (width < product.minWidthMm || width > product.maxWidthMm)
-    throw new Error(`${product.name} width is out of range`);
+    throw new BadRequestError(`${product.name} width is out of range`);
   if (height < product.minHeightMm || height > product.maxHeightMm)
-    throw new Error(`${product.name} height is out of range`);
+    throw new BadRequestError(`${product.name} height is out of range`);
 }
 
 export function sizePrice(product: Product, width?: number, height?: number) {
