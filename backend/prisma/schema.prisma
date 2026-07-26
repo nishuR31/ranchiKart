@@ -86,6 +86,8 @@ model User {
   gender           String?
   phone            String?
   isEmailVerified  Boolean        @default(false)
+  emailOtpHash     String?
+  emailOtpExpiry   DateTime?
   coins            Int            @default(0)
   isBanned         Boolean        @default(false)
   banReason        String?

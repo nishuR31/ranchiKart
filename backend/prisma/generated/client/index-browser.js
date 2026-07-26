@@ -132,6 +132,8 @@ exports.Prisma.UserScalarFieldEnum = {
   gender: 'gender',
   phone: 'phone',
   isEmailVerified: 'isEmailVerified',
+  emailOtpHash: 'emailOtpHash',
+  emailOtpExpiry: 'emailOtpExpiry',
   coins: 'coins',
   isBanned: 'isBanned',
   banReason: 'banReason',

@@ -39,4 +39,6 @@ export async function authRoutes(app: FastifyInstance) {
   );
   app.post("/auth/passkey/login", { schema: { body: generatePasskeyAuthenticationSchema } }, authController.generatePasskeyAuthentication);
   app.post("/auth/passkey/login/verify", authController.verifyPasskeyAuthentication);
+  app.post("/auth/email/send-verification", { preHandler: authenticate }, authController.sendVerifyMail);
+  app.post("/auth/email/verify", { preHandler: authenticate }, authController.verifyEmail);
 }

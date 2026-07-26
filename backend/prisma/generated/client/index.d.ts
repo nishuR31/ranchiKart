@@ -2396,6 +2396,8 @@ export namespace Prisma {
     gender: string | null
     phone: string | null
     isEmailVerified: boolean | null
+    emailOtpHash: string | null
+    emailOtpExpiry: Date | null
     coins: number | null
     isBanned: boolean | null
     banReason: string | null
@@ -2418,6 +2420,8 @@ export namespace Prisma {
     gender: string | null
     phone: string | null
     isEmailVerified: boolean | null
+    emailOtpHash: string | null
+    emailOtpExpiry: Date | null
     coins: number | null
     isBanned: boolean | null
     banReason: string | null
@@ -2440,6 +2444,8 @@ export namespace Prisma {
     gender: number
     phone: number
     isEmailVerified: number
+    emailOtpHash: number
+    emailOtpExpiry: number
     coins: number
     isBanned: number
     banReason: number
@@ -2472,6 +2478,8 @@ export namespace Prisma {
     gender?: true
     phone?: true
     isEmailVerified?: true
+    emailOtpHash?: true
+    emailOtpExpiry?: true
     coins?: true
     isBanned?: true
     banReason?: true
@@ -2494,6 +2502,8 @@ export namespace Prisma {
     gender?: true
     phone?: true
     isEmailVerified?: true
+    emailOtpHash?: true
+    emailOtpExpiry?: true
     coins?: true
     isBanned?: true
     banReason?: true
@@ -2516,6 +2526,8 @@ export namespace Prisma {
     gender?: true
     phone?: true
     isEmailVerified?: true
+    emailOtpHash?: true
+    emailOtpExpiry?: true
     coins?: true
     isBanned?: true
     banReason?: true
@@ -2625,6 +2637,8 @@ export namespace Prisma {
     gender: string | null
     phone: string | null
     isEmailVerified: boolean
+    emailOtpHash: string | null
+    emailOtpExpiry: Date | null
     coins: number
     isBanned: boolean
     banReason: string | null
@@ -2666,6 +2680,8 @@ export namespace Prisma {
     gender?: boolean
     phone?: boolean
     isEmailVerified?: boolean
+    emailOtpHash?: boolean
+    emailOtpExpiry?: boolean
     coins?: boolean
     isBanned?: boolean
     banReason?: boolean
@@ -2695,6 +2711,8 @@ export namespace Prisma {
     gender?: boolean
     phone?: boolean
     isEmailVerified?: boolean
+    emailOtpHash?: boolean
+    emailOtpExpiry?: boolean
     coins?: boolean
     isBanned?: boolean
     banReason?: boolean
@@ -2717,6 +2735,8 @@ export namespace Prisma {
     gender?: boolean
     phone?: boolean
     isEmailVerified?: boolean
+    emailOtpHash?: boolean
+    emailOtpExpiry?: boolean
     coins?: boolean
     isBanned?: boolean
     banReason?: boolean
@@ -2739,6 +2759,8 @@ export namespace Prisma {
     gender?: boolean
     phone?: boolean
     isEmailVerified?: boolean
+    emailOtpHash?: boolean
+    emailOtpExpiry?: boolean
     coins?: boolean
     isBanned?: boolean
     banReason?: boolean
@@ -2750,7 +2772,7 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "username" | "name" | "passwordHash" | "role" | "avatarUrl" | "gender" | "phone" | "isEmailVerified" | "coins" | "isBanned" | "banReason" | "lastLogin" | "refreshToken" | "totpSecret" | "isTotpEnabled" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "username" | "name" | "passwordHash" | "role" | "avatarUrl" | "gender" | "phone" | "isEmailVerified" | "emailOtpHash" | "emailOtpExpiry" | "coins" | "isBanned" | "banReason" | "lastLogin" | "refreshToken" | "totpSecret" | "isTotpEnabled" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     orders?: boolean | User$ordersArgs<ExtArgs>
     reviews?: boolean | User$reviewsArgs<ExtArgs>
@@ -2784,6 +2806,8 @@ export namespace Prisma {
       gender: string | null
       phone: string | null
       isEmailVerified: boolean
+      emailOtpHash: string | null
+      emailOtpExpiry: Date | null
       coins: number
       isBanned: boolean
       banReason: string | null
@@ -3232,6 +3256,8 @@ export namespace Prisma {
     readonly gender: FieldRef<"User", 'String'>
     readonly phone: FieldRef<"User", 'String'>
     readonly isEmailVerified: FieldRef<"User", 'Boolean'>
+    readonly emailOtpHash: FieldRef<"User", 'String'>
+    readonly emailOtpExpiry: FieldRef<"User", 'DateTime'>
     readonly coins: FieldRef<"User", 'Int'>
     readonly isBanned: FieldRef<"User", 'Boolean'>
     readonly banReason: FieldRef<"User", 'String'>
@@ -18387,6 +18413,8 @@ export namespace Prisma {
     gender: 'gender',
     phone: 'phone',
     isEmailVerified: 'isEmailVerified',
+    emailOtpHash: 'emailOtpHash',
+    emailOtpExpiry: 'emailOtpExpiry',
     coins: 'coins',
     isBanned: 'isBanned',
     banReason: 'banReason',
@@ -18704,20 +18732,6 @@ export namespace Prisma {
 
 
   /**
-   * Reference to a field of type 'Int'
-   */
-  export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
-    
-
-
-  /**
-   * Reference to a field of type 'Int[]'
-   */
-  export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
-    
-
-
-  /**
    * Reference to a field of type 'DateTime'
    */
   export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime'>
@@ -18728,6 +18742,20 @@ export namespace Prisma {
    * Reference to a field of type 'DateTime[]'
    */
   export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'Int'
+   */
+  export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
+    
+
+
+  /**
+   * Reference to a field of type 'Int[]'
+   */
+  export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
     
 
 
@@ -18888,6 +18916,8 @@ export namespace Prisma {
     gender?: StringNullableFilter<"User"> | string | null
     phone?: StringNullableFilter<"User"> | string | null
     isEmailVerified?: BoolFilter<"User"> | boolean
+    emailOtpHash?: StringNullableFilter<"User"> | string | null
+    emailOtpExpiry?: DateTimeNullableFilter<"User"> | Date | string | null
     coins?: IntFilter<"User"> | number
     isBanned?: BoolFilter<"User"> | boolean
     banReason?: StringNullableFilter<"User"> | string | null
@@ -18916,6 +18946,8 @@ export namespace Prisma {
     gender?: SortOrderInput | SortOrder
     phone?: SortOrderInput | SortOrder
     isEmailVerified?: SortOrder
+    emailOtpHash?: SortOrderInput | SortOrder
+    emailOtpExpiry?: SortOrderInput | SortOrder
     coins?: SortOrder
     isBanned?: SortOrder
     banReason?: SortOrderInput | SortOrder
@@ -18947,6 +18979,8 @@ export namespace Prisma {
     gender?: StringNullableFilter<"User"> | string | null
     phone?: StringNullableFilter<"User"> | string | null
     isEmailVerified?: BoolFilter<"User"> | boolean
+    emailOtpHash?: StringNullableFilter<"User"> | string | null
+    emailOtpExpiry?: DateTimeNullableFilter<"User"> | Date | string | null
     coins?: IntFilter<"User"> | number
     isBanned?: BoolFilter<"User"> | boolean
     banReason?: StringNullableFilter<"User"> | string | null
@@ -18975,6 +19009,8 @@ export namespace Prisma {
     gender?: SortOrderInput | SortOrder
     phone?: SortOrderInput | SortOrder
     isEmailVerified?: SortOrder
+    emailOtpHash?: SortOrderInput | SortOrder
+    emailOtpExpiry?: SortOrderInput | SortOrder
     coins?: SortOrder
     isBanned?: SortOrder
     banReason?: SortOrderInput | SortOrder
@@ -19005,6 +19041,8 @@ export namespace Prisma {
     gender?: StringNullableWithAggregatesFilter<"User"> | string | null
     phone?: StringNullableWithAggregatesFilter<"User"> | string | null
     isEmailVerified?: BoolWithAggregatesFilter<"User"> | boolean
+    emailOtpHash?: StringNullableWithAggregatesFilter<"User"> | string | null
+    emailOtpExpiry?: DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
     coins?: IntWithAggregatesFilter<"User"> | number
     isBanned?: BoolWithAggregatesFilter<"User"> | boolean
     banReason?: StringNullableWithAggregatesFilter<"User"> | string | null
@@ -20169,6 +20207,8 @@ export namespace Prisma {
     gender?: string | null
     phone?: string | null
     isEmailVerified?: boolean
+    emailOtpHash?: string | null
+    emailOtpExpiry?: Date | string | null
     coins?: number
     isBanned?: boolean
     banReason?: string | null
@@ -20197,6 +20237,8 @@ export namespace Prisma {
     gender?: string | null
     phone?: string | null
     isEmailVerified?: boolean
+    emailOtpHash?: string | null
+    emailOtpExpiry?: Date | string | null
     coins?: number
     isBanned?: boolean
     banReason?: string | null
@@ -20225,6 +20267,8 @@ export namespace Prisma {
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     isEmailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailOtpHash?: NullableStringFieldUpdateOperationsInput | string | null
+    emailOtpExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     coins?: IntFieldUpdateOperationsInput | number
     isBanned?: BoolFieldUpdateOperationsInput | boolean
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -20253,6 +20297,8 @@ export namespace Prisma {
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     isEmailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailOtpHash?: NullableStringFieldUpdateOperationsInput | string | null
+    emailOtpExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     coins?: IntFieldUpdateOperationsInput | number
     isBanned?: BoolFieldUpdateOperationsInput | boolean
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -20281,6 +20327,8 @@ export namespace Prisma {
     gender?: string | null
     phone?: string | null
     isEmailVerified?: boolean
+    emailOtpHash?: string | null
+    emailOtpExpiry?: Date | string | null
     coins?: number
     isBanned?: boolean
     banReason?: string | null
@@ -20303,6 +20351,8 @@ export namespace Prisma {
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     isEmailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailOtpHash?: NullableStringFieldUpdateOperationsInput | string | null
+    emailOtpExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     coins?: IntFieldUpdateOperationsInput | number
     isBanned?: BoolFieldUpdateOperationsInput | boolean
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -20325,6 +20375,8 @@ export namespace Prisma {
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     isEmailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailOtpHash?: NullableStringFieldUpdateOperationsInput | string | null
+    emailOtpExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     coins?: IntFieldUpdateOperationsInput | number
     isBanned?: BoolFieldUpdateOperationsInput | boolean
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -21654,6 +21706,17 @@ export namespace Prisma {
     not?: NestedBoolFilter<$PrismaModel> | boolean
   }
 
+  export type DateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
   export type IntFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[] | ListIntFieldRefInput<$PrismaModel>
@@ -21752,6 +21815,8 @@ export namespace Prisma {
     gender?: SortOrder
     phone?: SortOrder
     isEmailVerified?: SortOrder
+    emailOtpHash?: SortOrder
+    emailOtpExpiry?: SortOrder
     coins?: SortOrder
     isBanned?: SortOrder
     banReason?: SortOrder
@@ -21778,6 +21843,8 @@ export namespace Prisma {
     gender?: SortOrder
     phone?: SortOrder
     isEmailVerified?: SortOrder
+    emailOtpHash?: SortOrder
+    emailOtpExpiry?: SortOrder
     coins?: SortOrder
     isBanned?: SortOrder
     banReason?: SortOrder
@@ -21800,6 +21867,8 @@ export namespace Prisma {
     gender?: SortOrder
     phone?: SortOrder
     isEmailVerified?: SortOrder
+    emailOtpHash?: SortOrder
+    emailOtpExpiry?: SortOrder
     coins?: SortOrder
     isBanned?: SortOrder
     banReason?: SortOrder
@@ -21867,6 +21936,20 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedBoolFilter<$PrismaModel>
     _max?: NestedBoolFilter<$PrismaModel>
+  }
+
+  export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
   export type IntWithAggregatesFilter<$PrismaModel = never> = {
@@ -22477,17 +22560,6 @@ export namespace Prisma {
     not?: NestedEnumCouponTypeFilter<$PrismaModel> | $Enums.CouponType
   }
 
-  export type DateTimeNullableFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
-  }
-
   export type CouponCountOrderByAggregateInput = {
     id?: SortOrder
     code?: SortOrder
@@ -22558,20 +22630,6 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumCouponTypeFilter<$PrismaModel>
     _max?: NestedEnumCouponTypeFilter<$PrismaModel>
-  }
-
-  export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedDateTimeNullableFilter<$PrismaModel>
-    _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
   export type SavedAddressCountOrderByAggregateInput = {
@@ -23060,6 +23118,10 @@ export namespace Prisma {
 
   export type BoolFieldUpdateOperationsInput = {
     set?: boolean
+  }
+
+  export type NullableDateTimeFieldUpdateOperationsInput = {
+    set?: Date | string | null
   }
 
   export type IntFieldUpdateOperationsInput = {
@@ -23773,10 +23835,6 @@ export namespace Prisma {
     set?: $Enums.CouponType
   }
 
-  export type NullableDateTimeFieldUpdateOperationsInput = {
-    set?: Date | string | null
-  }
-
   export type CategoryUpdateOneWithoutCouponsNestedInput = {
     create?: XOR<CategoryCreateWithoutCouponsInput, CategoryUncheckedCreateWithoutCouponsInput>
     connectOrCreate?: CategoryCreateOrConnectWithoutCouponsInput
@@ -24113,6 +24171,17 @@ export namespace Prisma {
     not?: NestedBoolFilter<$PrismaModel> | boolean
   }
 
+  export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
   export type NestedIntFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[] | ListIntFieldRefInput<$PrismaModel>
@@ -24196,6 +24265,20 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedBoolFilter<$PrismaModel>
     _max?: NestedBoolFilter<$PrismaModel>
+  }
+
+  export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
   export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
@@ -24373,17 +24456,6 @@ export namespace Prisma {
     not?: NestedEnumCouponTypeFilter<$PrismaModel> | $Enums.CouponType
   }
 
-  export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
-  }
-
   export type NestedEnumCouponTypeWithAggregatesFilter<$PrismaModel = never> = {
     equals?: $Enums.CouponType | EnumCouponTypeFieldRefInput<$PrismaModel>
     in?: $Enums.CouponType[] | ListEnumCouponTypeFieldRefInput<$PrismaModel>
@@ -24392,20 +24464,6 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumCouponTypeFilter<$PrismaModel>
     _max?: NestedEnumCouponTypeFilter<$PrismaModel>
-  }
-
-  export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedDateTimeNullableFilter<$PrismaModel>
-    _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
   export type NestedEnumOrderStatusFilter<$PrismaModel = never> = {
@@ -24903,6 +24961,8 @@ export namespace Prisma {
     gender?: string | null
     phone?: string | null
     isEmailVerified?: boolean
+    emailOtpHash?: string | null
+    emailOtpExpiry?: Date | string | null
     coins?: number
     isBanned?: boolean
     banReason?: string | null
@@ -24930,6 +24990,8 @@ export namespace Prisma {
     gender?: string | null
     phone?: string | null
     isEmailVerified?: boolean
+    emailOtpHash?: string | null
+    emailOtpExpiry?: Date | string | null
     coins?: number
     isBanned?: boolean
     banReason?: string | null
@@ -24973,6 +25035,8 @@ export namespace Prisma {
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     isEmailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailOtpHash?: NullableStringFieldUpdateOperationsInput | string | null
+    emailOtpExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     coins?: IntFieldUpdateOperationsInput | number
     isBanned?: BoolFieldUpdateOperationsInput | boolean
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -25000,6 +25064,8 @@ export namespace Prisma {
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     isEmailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailOtpHash?: NullableStringFieldUpdateOperationsInput | string | null
+    emailOtpExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     coins?: IntFieldUpdateOperationsInput | number
     isBanned?: BoolFieldUpdateOperationsInput | boolean
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -25973,6 +26039,8 @@ export namespace Prisma {
     gender?: string | null
     phone?: string | null
     isEmailVerified?: boolean
+    emailOtpHash?: string | null
+    emailOtpExpiry?: Date | string | null
     coins?: number
     isBanned?: boolean
     banReason?: string | null
@@ -26000,6 +26068,8 @@ export namespace Prisma {
     gender?: string | null
     phone?: string | null
     isEmailVerified?: boolean
+    emailOtpHash?: string | null
+    emailOtpExpiry?: Date | string | null
     coins?: number
     isBanned?: boolean
     banReason?: string | null
@@ -26171,6 +26241,8 @@ export namespace Prisma {
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     isEmailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailOtpHash?: NullableStringFieldUpdateOperationsInput | string | null
+    emailOtpExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     coins?: IntFieldUpdateOperationsInput | number
     isBanned?: BoolFieldUpdateOperationsInput | boolean
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -26198,6 +26270,8 @@ export namespace Prisma {
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     isEmailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailOtpHash?: NullableStringFieldUpdateOperationsInput | string | null
+    emailOtpExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     coins?: IntFieldUpdateOperationsInput | number
     isBanned?: BoolFieldUpdateOperationsInput | boolean
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -26274,6 +26348,8 @@ export namespace Prisma {
     gender?: string | null
     phone?: string | null
     isEmailVerified?: boolean
+    emailOtpHash?: string | null
+    emailOtpExpiry?: Date | string | null
     coins?: number
     isBanned?: boolean
     banReason?: string | null
@@ -26301,6 +26377,8 @@ export namespace Prisma {
     gender?: string | null
     phone?: string | null
     isEmailVerified?: boolean
+    emailOtpHash?: string | null
+    emailOtpExpiry?: Date | string | null
     coins?: number
     isBanned?: boolean
     banReason?: string | null
@@ -26423,6 +26501,8 @@ export namespace Prisma {
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     isEmailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailOtpHash?: NullableStringFieldUpdateOperationsInput | string | null
+    emailOtpExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     coins?: IntFieldUpdateOperationsInput | number
     isBanned?: BoolFieldUpdateOperationsInput | boolean
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -26450,6 +26530,8 @@ export namespace Prisma {
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     isEmailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailOtpHash?: NullableStringFieldUpdateOperationsInput | string | null
+    emailOtpExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     coins?: IntFieldUpdateOperationsInput | number
     isBanned?: BoolFieldUpdateOperationsInput | boolean
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -26698,6 +26780,8 @@ export namespace Prisma {
     gender?: string | null
     phone?: string | null
     isEmailVerified?: boolean
+    emailOtpHash?: string | null
+    emailOtpExpiry?: Date | string | null
     coins?: number
     isBanned?: boolean
     banReason?: string | null
@@ -26725,6 +26809,8 @@ export namespace Prisma {
     gender?: string | null
     phone?: string | null
     isEmailVerified?: boolean
+    emailOtpHash?: string | null
+    emailOtpExpiry?: Date | string | null
     coins?: number
     isBanned?: boolean
     banReason?: string | null
@@ -26768,6 +26854,8 @@ export namespace Prisma {
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     isEmailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailOtpHash?: NullableStringFieldUpdateOperationsInput | string | null
+    emailOtpExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     coins?: IntFieldUpdateOperationsInput | number
     isBanned?: BoolFieldUpdateOperationsInput | boolean
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -26795,6 +26883,8 @@ export namespace Prisma {
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     isEmailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailOtpHash?: NullableStringFieldUpdateOperationsInput | string | null
+    emailOtpExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     coins?: IntFieldUpdateOperationsInput | number
     isBanned?: BoolFieldUpdateOperationsInput | boolean
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -26822,6 +26912,8 @@ export namespace Prisma {
     gender?: string | null
     phone?: string | null
     isEmailVerified?: boolean
+    emailOtpHash?: string | null
+    emailOtpExpiry?: Date | string | null
     coins?: number
     isBanned?: boolean
     banReason?: string | null
@@ -26849,6 +26941,8 @@ export namespace Prisma {
     gender?: string | null
     phone?: string | null
     isEmailVerified?: boolean
+    emailOtpHash?: string | null
+    emailOtpExpiry?: Date | string | null
     coins?: number
     isBanned?: boolean
     banReason?: string | null
@@ -27039,6 +27133,8 @@ export namespace Prisma {
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     isEmailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailOtpHash?: NullableStringFieldUpdateOperationsInput | string | null
+    emailOtpExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     coins?: IntFieldUpdateOperationsInput | number
     isBanned?: BoolFieldUpdateOperationsInput | boolean
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -27066,6 +27162,8 @@ export namespace Prisma {
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     isEmailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailOtpHash?: NullableStringFieldUpdateOperationsInput | string | null
+    emailOtpExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     coins?: IntFieldUpdateOperationsInput | number
     isBanned?: BoolFieldUpdateOperationsInput | boolean
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -27614,6 +27712,8 @@ export namespace Prisma {
     gender?: string | null
     phone?: string | null
     isEmailVerified?: boolean
+    emailOtpHash?: string | null
+    emailOtpExpiry?: Date | string | null
     coins?: number
     isBanned?: boolean
     banReason?: string | null
@@ -27641,6 +27741,8 @@ export namespace Prisma {
     gender?: string | null
     phone?: string | null
     isEmailVerified?: boolean
+    emailOtpHash?: string | null
+    emailOtpExpiry?: Date | string | null
     coins?: number
     isBanned?: boolean
     banReason?: string | null
@@ -27684,6 +27786,8 @@ export namespace Prisma {
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     isEmailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailOtpHash?: NullableStringFieldUpdateOperationsInput | string | null
+    emailOtpExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     coins?: IntFieldUpdateOperationsInput | number
     isBanned?: BoolFieldUpdateOperationsInput | boolean
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -27711,6 +27815,8 @@ export namespace Prisma {
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     isEmailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailOtpHash?: NullableStringFieldUpdateOperationsInput | string | null
+    emailOtpExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     coins?: IntFieldUpdateOperationsInput | number
     isBanned?: BoolFieldUpdateOperationsInput | boolean
     banReason?: NullableStringFieldUpdateOperationsInput | string | null

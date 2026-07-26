@@ -75,18 +75,20 @@ enum CouponType {
 }
 
 model User {
-  id              String  @id @default(cuid())
-  email           String  @unique
-  username        String? @unique
+  id              String    @id @default(cuid())
+  email           String    @unique
+  username        String?   @unique
   name            String?
   passwordHash    String?
-  role            Role    @default(USER)
+  role            Role      @default(USER)
   avatarUrl       String?
   gender          String?
   phone           String?
-  isEmailVerified Boolean @default(false)
-  coins           Int     @default(0)
-  isBanned        Boolean @default(false)
+  isEmailVerified Boolean   @default(false)
+  emailOtpHash    String?
+  emailOtpExpiry  DateTime?
+  coins           Int       @default(0)
+  isBanned        Boolean   @default(false)
   banReason       String?
 
   lastLogin     DateTime @default(now())

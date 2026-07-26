@@ -50,6 +50,55 @@ function publicUser(user: User): PublicUser {
 export default class AuthService {
   // === Standard Email/Password Auth ===
 
+
+  async sendVerifyMail(userId: string) {
+    const user = await userRepo.findById(userId);
+    if (!user) throw new UnauthorizedError("User not found.");
+    if (user.isEmailVerified) throw new ConflictError("Email already verified.");
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const hash = await bcrypt.hash(otp, 10);
+    const expiry = new Date(Date.now() + 10 * 60 * 1000); // 10 mins
+
+    await prisma.user.update({
+      where: { id: userId },
+      data: { emailOtpHash: hash, emailOtpExpiry: expiry },
+    });
+
+    const { sendVerificationEmailOTP } = await import("../config/email.js");
+    await sendVerificationEmailOTP(user.email, user.name ?? "User", otp);
+    return { success: true };
+  }
+
+  async verifyEmailOtp(userId: string, otp: string) {
+    const user = await userRepo.findById(userId);
+    if (!user) throw new UnauthorizedError("User not found.");
+    if (user.isEmailVerified) throw new ConflictError("Email already verified.");
+
+    if (!user.emailOtpHash || !user.emailOtpExpiry) {
+      throw new ConflictError("No verification OTP requested.");
+    }
+    if (new Date() > user.emailOtpExpiry) {
+      throw new ConflictError("Verification OTP expired.");
+    }
+
+    const isValid = await bcrypt.compare(otp, user.emailOtpHash);
+    if (!isValid) {
+      throw new ConflictError("Invalid verification OTP.");
+    }
+
+    await prisma.user.update({
+      where: { id: userId },
+      data: {
+        isEmailVerified: true,
+        emailOtpHash: null,
+        emailOtpExpiry: null,
+      },
+    });
+
+    return { success: true };
+  }
+
   async register(data: { email: string; name: string; password: string }): Promise<{
     user: PublicUser;
     tokens: TokenPair;

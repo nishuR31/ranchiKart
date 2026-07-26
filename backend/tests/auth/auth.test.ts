@@ -112,6 +112,7 @@ describe("Auth Endpoints", () => {
         method: "POST",
         url: "/api/v1/auth/refresh",
         payload: {}
+      });
 
       expect(res.statusCode).toBe(401);
     });

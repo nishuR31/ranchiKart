@@ -109,3 +109,24 @@ export async function sendPasswordlessLoginEmail(
     </div>`,
   );
 }
+
+export async function sendVerificationEmailOTP(
+  to: string,
+  name: string,
+  otp: string,
+) {
+  await send(
+    to,
+    `Verify your email for ${env.BUSINESS_NAME}`,
+    `<div style="font-family:sans-serif;max-width:600px;margin:auto;color:#1f2937">
+      <h1 style="color:#0f766e">Email Verification</h1>
+      <p>Hi ${name},</p>
+      <p>Your email verification code is:</p>
+      <div style="background:#f1f5f9;padding:16px;border-radius:8px;margin:20px 0;text-align:center;font-size:24px;letter-spacing:4px;font-weight:bold;color:#0f766e;">
+        ${otp}
+      </div>
+      <p>This code will expire in 10 minutes.</p>
+      <p style="margin-top: 24px; font-size: 12px; color: #6b7280;">If you didn't request this code, please ignore this email.</p>
+    </div>`,
+  );
+}
