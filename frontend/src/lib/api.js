@@ -39,7 +39,8 @@ api.interceptors.response.use(
       originalRequest._retry = true;
 
       try {
-        const { data } = await api.post("/auth/refresh", {});
+        const refreshToken = useAuthStore.getState().refreshToken;
+        const { data } = await api.post("/auth/refresh", { refreshToken });
 
         const accessToken = data?.accessToken;
 

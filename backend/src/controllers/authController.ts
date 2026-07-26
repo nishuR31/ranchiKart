@@ -203,8 +203,9 @@ export const googleCallback = asyncHandler(async (req: FastifyRequest, res: Fast
     const result = await authService.loginWithGoogleCode(oauthCode);
     res.cookie("accessToken", result.tokens.accessToken!, cookieOption("access"));
     res.cookie("refreshToken", result.tokens.refreshToken!, cookieOption("refresh"));
-    // Use URL fragment (#) instead of query param (?) to avoid token leaking in server logs/referrers
-    return res.redirect(`${domain}/auth#token=${result.tokens.accessToken}`);
+    return res.redirect(
+      `${domain}/auth#token=${result.tokens.accessToken}&refreshToken=${result.tokens.refreshToken}`
+    );
   } catch (err: any) {
     return res.redirect(`${domain}/auth?error=${encodeURIComponent(err?.message || "Google login failed")}`);
   }

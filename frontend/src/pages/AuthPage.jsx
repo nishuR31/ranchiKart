@@ -16,15 +16,17 @@ export default function AuthPage() {
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     let token = params.get("token");
+    let refreshToken = params.get("refreshToken");
     const error = params.get("error");
 
     if (!token && location.hash) {
       const hashParams = new URLSearchParams(location.hash.substring(1));
       token = hashParams.get("token");
+      refreshToken = hashParams.get("refreshToken");
     }
 
     if (token) {
-      useAuthStore.setState({ token });
+      useAuthStore.setState({ token, refreshToken });
       fetchUser().then(() => {
         showToast("Logged in successfully!");
         navigate("/", { replace: true });
