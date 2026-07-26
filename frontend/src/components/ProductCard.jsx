@@ -9,19 +9,19 @@ import { useNavigate } from "react-router-dom";
 export default function ProductCard({ product }) {
   const addToCart = useShopStore((s) => s.addToCart);
   const toggleWishlist = useShopStore((s) => s.toggleWishlist);
-  const token = useAuthStore((s) => s.token);
+  const user = useAuthStore((s) => s.user);
   const navigate = useNavigate();
   const off = discountPercent(product.basePrice, product.specifications?.mrp);
 
   function handleAdd(e) {
     e.preventDefault();
-    if (!token) return navigate("/auth");
+    if (!user) return navigate("/auth");
     addToCart(product.id, 1);
   }
 
   function handleWishlist(e) {
     e.preventDefault();
-    if (!token) return navigate("/auth");
+    if (!user) return navigate("/auth");
     toggleWishlist(product.id);
   }
 

@@ -21,7 +21,7 @@ export default function ProductPage() {
   const [submittingReview, setSubmittingReview] = useState(false);
 
   const { addToCart, toggleWishlist, showToast } = useShopStore();
-  const token = useAuthStore((s) => s.token);
+  const user = useAuthStore((s) => s.user);
 
   async function load() {
     setLoading(true);
@@ -51,24 +51,24 @@ export default function ProductPage() {
   const off = discountPercent(product.basePrice, product.specifications?.mrp);
 
   async function handleAdd() {
-    if (!token) return navigate("/auth");
+    if (!user) return navigate("/auth");
     await addToCart(product.id, qty);
   }
 
   async function handleBuyNow() {
-    if (!token) return navigate("/auth");
+    if (!user) return navigate("/auth");
     await addToCart(product.id, qty);
     navigate("/cart");
   }
 
   async function handleWishlist() {
-    if (!token) return navigate("/auth");
+    if (!user) return navigate("/auth");
     await toggleWishlist(product.id);
   }
 
   async function submitReview(e) {
     e.preventDefault();
-    if (!token) return navigate("/auth");
+    if (!user) return navigate("/auth");
     setSubmittingReview(true);
     try {
       await api.post("/reviews", { productId: product.id, ...reviewForm });

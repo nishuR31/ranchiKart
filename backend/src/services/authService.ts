@@ -210,6 +210,7 @@ export default class AuthService {
     });
     if (!profileRes.ok) throw new UnauthorizedError("Failed to fetch Google profile.");
     const profile = (await profileRes.json()) as any;
+    console.log(profile)
 
     if (!profile.email || !profile.email_verified) {
       throw new UnauthorizedError("Google email is missing or unverified.");

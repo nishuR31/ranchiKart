@@ -7,14 +7,14 @@ import { formatINR } from "../lib/money";
 
 export default function CartPage() {
   const { cart, fetchCart, updateCartItem, removeCartItem } = useShopStore();
-  const token = useAuthStore((s) => s.token);
+  const user = useAuthStore((s) => s.user);
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (token) fetchCart();
-  }, [token]);
+    if (user) fetchCart();
+  }, [user]);
 
-  if (!token) {
+  if (!user) {
     return (
       <div className="empty-block">
         <ShoppingBag size={40} />

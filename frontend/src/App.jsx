@@ -1,6 +1,8 @@
+import { useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
 import Layout from "./components/Layout";
 import { RequireAuth, RequireAdmin } from "./components/ProtectedRoute";
+import useAuthStore from "./store/useAuthStore";
 
 import HomePage from "./pages/HomePage";
 import CategoryPage from "./pages/CategoryPage";
@@ -18,6 +20,12 @@ import AdminPage from "./pages/AdminPage";
 import NotFoundPage from "./pages/NotFoundPage";
 
 export default function App() {
+  const fetchUser = useAuthStore((s) => s.fetchUser);
+
+  useEffect(() => {
+    fetchUser();
+  }, [fetchUser]);
+
   return (
     <Routes>
       <Route element={<Layout />}>
