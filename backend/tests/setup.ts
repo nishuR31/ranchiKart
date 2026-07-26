@@ -1,3 +1,5 @@
+process.env.NODE_ENV = "test";
+
 import { beforeAll, afterAll } from "vitest";
 import app from "../src/config/server.js";
 import { prisma } from "../src/config/prisma.js";
