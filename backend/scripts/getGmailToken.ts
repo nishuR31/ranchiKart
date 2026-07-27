@@ -10,6 +10,8 @@ if (!clientId || !clientSecret) {
   process.exit(1);
 }
 
+// https://developers.google.com/oauthplayground
+
 const oauth2Client = new google.auth.OAuth2(clientId, clientSecret, redirectUri);
 
 const authCode = process.argv[2];
