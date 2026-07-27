@@ -9,7 +9,7 @@ import {
 } from "../src/config/email.js";
 
 const TO = "dreamgf691@gmail.com";
-const TO2 = "technicaladityarathore@gmail.com";
+const TO2 = TO ?? "technicaladityarathore@gmail.com";
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 

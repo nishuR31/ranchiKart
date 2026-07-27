@@ -1,4 +1,13 @@
-import "dotenv/config";
+import dotenv from "dotenv";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+// Load .env from CWD, backend/.env, or relative to src/config
+dotenv.config();
+dotenv.config({ path: path.resolve(__dirname, "../../.env") });
+dotenv.config({ path: path.resolve(process.cwd(), "backend/.env") });
 import { z } from "zod";
 
 const envSchema = z.object({
@@ -38,7 +47,16 @@ const envSchema = z.object({
   SMTP_PASS: z.string().optional().or(z.literal("")),
   SMTP_FROM: z
     .string()
-    .default(`${process.env.BUSINESS_NAME || "RanchiKart"} <${process.env.SMTP_USER}>`),
+    .default(`${process.env.BUSINESS_NAME || "RanchiKart"} <${process.env.SMTP_USER || process.env.GMAIL_USER || ""}>`),
+
+  // Email Sending Provider Preference ("auto" | "gmail" | "smtp")
+  EMAIL_TRANSPORT: z.enum(["auto", "gmail", "smtp"]).default("auto"),
+
+  // Gmail API (HTTPS REST API for platforms like Render where outbound SMTP is blocked)
+  GMAIL_CLIENT_ID: z.string().optional().or(z.literal("")),
+  GMAIL_CLIENT_SECRET: z.string().optional().or(z.literal("")),
+  GMAIL_REFRESH_TOKEN: z.string().optional().or(z.literal("")),
+  GMAIL_USER: z.string().optional().or(z.literal("")),
 
   //Google OAuth
   GOOGLE_CLIENT_ID: z.string().optional().or(z.literal("")),

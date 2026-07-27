@@ -1,30 +1,91 @@
-import nodemailer from "nodemailer";
 import env from "./env.js";
+import {
+  sendViaGmailApi,
+  oauth2Client,
+  gmailApiConfigured,
+  tokenFetchFailedUntil,
+} from "../providers/gmailProvider.js";
+import {
+  sendViaSmtp,
+  nodemailerTransporter,
+  smtpConfigured,
+} from "../providers/nodemailerProvider.js";
 
-const smtpConfigured = !!(env.SMTP_HOST && env.SMTP_USER && env.SMTP_PASS);
+export type EmailTransportType = "gmail" | "smtp" | "auto";
 
-const transporter = smtpConfigured
-  ? nodemailer.createTransport({
-    host: env.SMTP_HOST,
-    port: env.SMTP_PORT,
-    secure: env.SMTP_PORT === 465,
-    auth: { user: env.SMTP_USER, pass: env.SMTP_PASS },
-    connectionTimeout: 5000,
-    greetingTimeout: 5000,
-    socketTimeout: 10000,
-  })
-  : null;
+export { sendViaGmailApi, oauth2Client, gmailApiConfigured };
+export { sendViaSmtp, nodemailerTransporter, smtpConfigured };
 
-async function send(to: string, subject: string, html: string) {
-  if (env.NODE_ENV !== "production" || process.env.NODE_ENV === "test" || !transporter) {
-    console.log(`[Email no-op] To: ${to} | Subject: ${subject}`);
+export async function send(
+  to: string,
+  subject: string,
+  html: string,
+  transport?: EmailTransportType
+) {
+  if (process.env.NODE_ENV === "test") {
+    console.log(`[Email test no-op] [Transport: ${transport || "auto"}] To: ${to} | Subject: ${subject}`);
     return;
   }
-  try {
-    await transporter.sendMail({ from: env.SMTP_FROM, to, subject, html });
-  } catch (err) {
-    console.error(`[Email error] To: ${to} | Subject: ${subject} |`, err);
+
+  const selectedTransport = transport || env.EMAIL_TRANSPORT || "auto";
+
+  // Choice 1: Force Gmail REST API Transport
+  if (selectedTransport === "gmail") {
+    try {
+      await sendViaGmailApi(to, subject, html);
+      console.log(`[Email sent via Gmail API] To: ${to} | Subject: ${subject}`);
+      return;
+    } catch (err) {
+      const errMsg = err instanceof Error ? err.message : String(err);
+      console.warn(`[Gmail API send error] To: ${to} | ${errMsg}`);
+      if (smtpConfigured && nodemailerTransporter) {
+        console.log(`[Email] Falling back to SMTP...`);
+        await sendViaSmtp(to, subject, html);
+        console.log(`[Email sent via SMTP (fallback)] To: ${to} | Subject: ${subject}`);
+        return;
+      }
+      throw err;
+    }
   }
+
+  // Choice 2: Force Standard Nodemailer SMTP Transport
+  if (selectedTransport === "smtp") {
+    try {
+      await sendViaSmtp(to, subject, html);
+      console.log(`[Email sent via SMTP] To: ${to} | Subject: ${subject}`);
+      return;
+    } catch (err) {
+      console.error(`[SMTP send error] To: ${to} | Subject: ${subject} |`, err);
+      throw err;
+    }
+  }
+
+  // Choice 3: Auto Mode — Try Gmail REST API first (if available and operational), then fallback to SMTP
+  if (gmailApiConfigured && tokenFetchFailedUntil <= Date.now()) {
+    try {
+      await sendViaGmailApi(to, subject, html);
+      console.log(`[Email sent via Gmail API (auto)] To: ${to} | Subject: ${subject}`);
+      return;
+    } catch (err) {
+      const errMsg = err instanceof Error ? err.message : String(err);
+      console.warn(`[Gmail API auto send error] To: ${to} | ${errMsg}`);
+      if (!smtpConfigured) return;
+      console.log(`[Email] Falling back to SMTP...`);
+    }
+  }
+
+  if (smtpConfigured && nodemailerTransporter) {
+    try {
+      await sendViaSmtp(to, subject, html);
+      console.log(`[Email sent via SMTP (auto)] To: ${to} | Subject: ${subject}`);
+      return;
+    } catch (err) {
+      console.error(`[SMTP auto send error] To: ${to} | Subject: ${subject} |`, err);
+      return;
+    }
+  }
+
+  console.log(`[Email no-op (unconfigured)] To: ${to} | Subject: ${subject}`);
 }
 
 /**
@@ -97,7 +158,7 @@ function renderBaseEmailTemplate(title: string, bodyHtml: string, preheader?: st
 }
 
 // 1. Welcome Email
-export async function sendWelcomeEmail(to: string, name: string) {
+export async function sendWelcomeEmail(to: string, name: string, transport?: EmailTransportType) {
   const title = `Welcome to ${env.BUSINESS_NAME}!`;
   const body = `
     <h1 style="margin: 0 0 16px 0; color: #0f172a; font-size: 24px; font-weight: 700; letter-spacing: -0.5px;text-align:center;">
@@ -118,7 +179,7 @@ export async function sendWelcomeEmail(to: string, name: string) {
     </div>
   `;
 
-  await send(to, title, renderBaseEmailTemplate(title, body, `Welcome to ${env.BUSINESS_NAME}, ${name}!`));
+  await send(to, title, renderBaseEmailTemplate(title, body, `Welcome to ${env.BUSINESS_NAME}, ${name}!`), transport);
 }
 
 // 2. Order Confirmation Email
@@ -127,6 +188,7 @@ export async function sendOrderConfirmation(
   name: string,
   orderId: string,
   total: number,
+  transport?: EmailTransportType,
 ) {
   const shortOrderId = orderId.slice(-8).toUpperCase();
   const title = `Order Confirmed: #${shortOrderId}`;
@@ -163,7 +225,7 @@ export async function sendOrderConfirmation(
     </div>
   `;
 
-  await send(to, title, renderBaseEmailTemplate(title, body, `Order #${shortOrderId} confirmed!`));
+  await send(to, title, renderBaseEmailTemplate(title, body, `Order #${shortOrderId} confirmed!`), transport);
 }
 
 // 3. Order Status Update Email
@@ -173,6 +235,7 @@ export async function sendOrderStatusUpdate(
   orderId: string,
   status: string,
   trackingId?: string,
+  transport?: EmailTransportType,
 ) {
   const shortOrderId = orderId.slice(-8).toUpperCase();
   const statusColors: Record<string, { bg: string; text: string; label: string }> = {
@@ -213,7 +276,7 @@ export async function sendOrderStatusUpdate(
     </div>
   `;
 
-  await send(to, title, renderBaseEmailTemplate(title, body, `Status update for Order #${shortOrderId}`));
+  await send(to, title, renderBaseEmailTemplate(title, body, `Status update for Order #${shortOrderId}`), transport);
 }
 
 // 4. Magic Link Login Email
@@ -222,6 +285,7 @@ export async function sendPasswordlessLoginEmail(
   name: string,
   link: string,
   expiresInMinutes: number = 15,
+  transport?: EmailTransportType,
 ) {
   const title = `Your Magic Login Link`;
   const body = `
@@ -262,7 +326,7 @@ export async function sendPasswordlessLoginEmail(
     </p>
   `;
 
-  await send(to, title, renderBaseEmailTemplate(title, body, `Log in to ${env.BUSINESS_NAME}`));
+  await send(to, title, renderBaseEmailTemplate(title, body, `Log in to ${env.BUSINESS_NAME}`), transport);
 }
 
 // 5. Verification OTP Email
@@ -270,6 +334,7 @@ export async function sendVerificationEmailOTP(
   to: string,
   name: string,
   otp: string,
+  transport?: EmailTransportType,
 ) {
   const title = `Verify Your Email`;
   const body = `
@@ -295,5 +360,5 @@ export async function sendVerificationEmailOTP(
     </p>
   `;
 
-  await send(to, title, renderBaseEmailTemplate(title, body, `Your verification code is ${otp}`));
+  await send(to, title, renderBaseEmailTemplate(title, body, `Your verification code is ${otp}`), transport);
 }
