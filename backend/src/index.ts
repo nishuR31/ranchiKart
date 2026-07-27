@@ -4,6 +4,8 @@ import prisma from "./config/prisma.js";
 import redis from "./config/redis.js";
 import { connectRedis } from "./config/redis.js";
 
+import UserService from "./services/userService.js";
+
 const PORT = Number(process.env.PORT) || Number(env.API_PORT);
 let HOST = "0.0.0.0";
 
@@ -13,6 +15,23 @@ const startServer = async () => {
     await app.listen({ port: PORT, host: HOST });
     console.log(`Server running on ${HOST}:${PORT}`);
     console.log(`API Docs: /docs`);
+
+    // Periodically purge soft-deleted user accounts older than 90 days
+    if (process.env.NODE_ENV !== "test") {
+      UserService.purgeExpiredSoftDeletedUsers()
+        .then((count) => {
+          if (count > 0) console.log(`[Account Cleanup] Purged ${count} expired user account(s).`);
+        })
+        .catch(console.error);
+
+      setInterval(() => {
+        UserService.purgeExpiredSoftDeletedUsers()
+          .then((count) => {
+            if (count > 0) console.log(`[Account Cleanup] Purged ${count} expired user account(s).`);
+          })
+          .catch(console.error);
+      }, 24 * 60 * 60 * 1000);
+    }
   } catch (err: any) {
     // Use console.error so it appears even when pino log level is "warn"
     console.error("[FATAL] Failed to start server:", err?.message || err);

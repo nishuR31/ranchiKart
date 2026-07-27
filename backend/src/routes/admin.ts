@@ -104,6 +104,11 @@ export async function adminRoutes(app: FastifyInstance) {
     schema: { params: idParamSchema, body: updateUserRoleSchema },
   }, adminController.updateUserRole);
 
+  app.patch("/admin/users/:id/restore", {
+    preHandler: adminGuard,
+    schema: { params: idParamSchema },
+  }, adminController.restoreUserAccount);
+
   // ── Coupons ──────────────────────────────────────────────────────────────────
   app.get("/admin/coupons", {
     preHandler: managerGuard,

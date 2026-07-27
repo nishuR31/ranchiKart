@@ -151,6 +151,11 @@ export default class AuthService {
         }),
       );
     }
+    if (user.isDeleted) {
+      throw new ForbiddenError(
+        "Your account has been deactivated and is scheduled for permanent deletion after 90 days. Please contact support if you wish to restore your account.",
+      );
+    }
 
     if (!user.passwordHash)
       throw new UnauthorizedError(

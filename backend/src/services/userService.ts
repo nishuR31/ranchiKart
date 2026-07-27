@@ -64,4 +64,39 @@ export default class UserService {
     if (!address) throw new NotFoundError("Address not found");
     await prisma.savedAddress.delete({ where: { id: addressId } });
   }
+
+  async softDeleteAccount(userId: string) {
+    const now = new Date();
+    const purgeDate = new Date(now.getTime() + 90 * 24 * 60 * 60 * 1000); // 90 days
+
+    return prisma.user.update({
+      where: { id: userId },
+      data: {
+        isDeleted: true,
+        deletedAt: now,
+        scheduledHardDeleteAt: purgeDate,
+        refreshToken: null,
+      },
+    });
+  }
+
+  static async purgeExpiredSoftDeletedUsers(): Promise<number> {
+    const now = new Date();
+    const expiredUsers = await prisma.user.findMany({
+      where: {
+        isDeleted: true,
+        scheduledHardDeleteAt: { lte: now },
+      },
+      select: { id: true },
+    });
+
+    if (expiredUsers.length === 0) return 0;
+    const userIds = expiredUsers.map((u) => u.id);
+
+    const result = await prisma.user.deleteMany({
+      where: { id: { in: userIds } },
+    });
+
+    return result.count;
+  }
 }

@@ -141,6 +141,9 @@ exports.Prisma.UserScalarFieldEnum = {
   refreshToken: 'refreshToken',
   totpSecret: 'totpSecret',
   isTotpEnabled: 'isTotpEnabled',
+  isDeleted: 'isDeleted',
+  deletedAt: 'deletedAt',
+  scheduledHardDeleteAt: 'scheduledHardDeleteAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };

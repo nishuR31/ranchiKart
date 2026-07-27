@@ -3,6 +3,11 @@ node_modules/
 dist/
 .turbo/
 
+
+#report 
+RanchiKart_SIP_Project_Report.docx
+*.docx
+  
 # Environment
 .env
 .env.local

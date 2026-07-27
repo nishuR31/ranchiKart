@@ -96,6 +96,10 @@ model User {
   refreshToken     String?
   totpSecret       String?
   isTotpEnabled    Boolean        @default(false)
+
+  isDeleted            Boolean        @default(false)
+  deletedAt            DateTime?
+  scheduledHardDeleteAt DateTime?
   
   orders           Order[]
   reviews          Review[]
@@ -108,6 +112,7 @@ model User {
   updatedAt        DateTime       @updatedAt
 
   @@index([email])
+  @@index([isDeleted, scheduledHardDeleteAt])
 }
 
 model PasskeyCredential {

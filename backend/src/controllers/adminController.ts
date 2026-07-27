@@ -350,3 +350,18 @@ export const deleteCategory = asyncHandler(async (req: FastifyRequest, res: Fast
     return handleError(err, res);
   }
 });
+
+export const restoreUserAccount = asyncHandler(async (req: FastifyRequest, res: FastifyReply) => {
+  const { id } = z.object({ id: z.string() }).parse(req.params);
+  try {
+    const user = await adminService.restoreUserAccount(req.user!.id, id);
+    return sendSuccess(
+      res,
+      "User account restored successfully by admin. Activation takes up to 7 business days.",
+      code("ok") as number,
+      { user },
+    );
+  } catch (err: any) {
+    return handleError(err, res);
+  }
+});

@@ -144,5 +144,53 @@ describe("Users Endpoints", () => {
       });
     });
   });
+
+  describe("DELETE /api/v1/users/me (Soft Delete & 90-Day Hard Delete)", () => {
+    it("should soft delete user account and schedule 90-day hard delete purge", async () => {
+      // Create a temporary user to test soft delete & hard delete purge
+      const tempUser = await prisma.user.create({
+        data: {
+          email: `tempdelete_${Date.now()}@example.com`,
+          name: "Temp Delete User",
+          passwordHash: "dummyhash",
+        },
+      });
+
+      const { generateAccessToken } = await import("../../src/utils/jwt.js");
+      const tempToken = await generateAccessToken({ id: tempUser.id, email: tempUser.email, role: tempUser.role });
+
+      const res = await app.inject({
+        method: "DELETE",
+        url: "/api/v1/users/me",
+        headers: { authorization: `Bearer ${tempToken}` },
+      });
+
+      expect(res.statusCode).toBe(200);
+      const body = JSON.parse(res.payload);
+      expect(body.success).toBe(true);
+      expect(body.data.deletedAt).toBeDefined();
+      expect(body.data.scheduledHardDeleteAt).toBeDefined();
+
+      const dbUser = await prisma.user.findUnique({ where: { id: tempUser.id } });
+      expect(dbUser?.isDeleted).toBe(true);
+      expect(dbUser?.scheduledHardDeleteAt).toBeDefined();
+
+      // Test Hard Delete Purge function for expired accounts
+      // Artificially set scheduledHardDeleteAt to 91 days ago
+      await prisma.user.update({
+        where: { id: tempUser.id },
+        data: {
+          scheduledHardDeleteAt: new Date(Date.now() - 91 * 24 * 60 * 60 * 1000),
+        },
+      });
+
+      const UserService = (await import("../../src/services/userService.js")).default;
+      const purgedCount = await UserService.purgeExpiredSoftDeletedUsers();
+      expect(purgedCount).toBeGreaterThanOrEqual(1);
+
+      const purgedUser = await prisma.user.findUnique({ where: { id: tempUser.id } });
+      expect(purgedUser).toBeNull();
+    });
+  });
 });
 

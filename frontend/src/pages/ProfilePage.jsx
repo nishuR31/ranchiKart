@@ -113,6 +113,31 @@ export default function ProfilePage() {
         )}
       </div>
 
+      <h2>Danger Zone</h2>
+      <div className="profile-card" style={{ border: "1px solid #fee2e2", backgroundColor: "#fff5f5" }}>
+        <h4 style={{ color: "#dc2626", margin: "0 0 8px 0" }}>Delete Account</h4>
+        <p style={{ fontSize: "0.9rem", color: "#4b5563", marginBottom: "12px" }}>
+          Deactivating your account will immediately hide your profile. All your personal data, saved addresses, and profile info will be permanently and irreversibly purged from our database after 90 days.
+        </p>
+        <button
+          className="btn btn-sm"
+          style={{ backgroundColor: "#dc2626", color: "#fff", border: "none" }}
+          onClick={async () => {
+            if (window.confirm("Are you sure you want to delete your account? Your account will be deactivated and permanently deleted after 90 days.")) {
+              try {
+                const { data } = await api.delete("/users/me");
+                showToast(data.message || "Account scheduled for deletion in 90 days.");
+                useAuthStore.getState().logout();
+              } catch (err) {
+                showToast(extractError(err, "Could not delete account"), "error");
+              }
+            }
+          }}
+        >
+          Delete My Account
+        </button>
+      </div>
+
       <h2>Saved Addresses</h2>
       {addresses.length === 0 ? (
         <p className="muted">No saved addresses yet. Add one during checkout.</p>

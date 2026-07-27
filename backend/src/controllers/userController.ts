@@ -74,3 +74,15 @@ export const deleteAddress = asyncHandler(async (req: FastifyRequest, res: Fasti
     return handleError(err, res);
   }
 });
+
+export const softDeleteAccount = asyncHandler(async (req: FastifyRequest, res: FastifyReply) => {
+  const user = await userService.softDeleteAccount(req.user!.id);
+
+  res.clearCookie("accessToken", { path: "/" });
+  res.clearCookie("refreshToken", { path: "/" });
+
+  return sendSuccess(res, "Account deactivated. All data will be permanently purged in 90 days.", code("ok") as number, {
+    deletedAt: user.deletedAt,
+    scheduledHardDeleteAt: user.scheduledHardDeleteAt,
+  });
+});

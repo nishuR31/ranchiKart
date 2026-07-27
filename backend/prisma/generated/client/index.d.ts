@@ -2405,6 +2405,9 @@ export namespace Prisma {
     refreshToken: string | null
     totpSecret: string | null
     isTotpEnabled: boolean | null
+    isDeleted: boolean | null
+    deletedAt: Date | null
+    scheduledHardDeleteAt: Date | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -2429,6 +2432,9 @@ export namespace Prisma {
     refreshToken: string | null
     totpSecret: string | null
     isTotpEnabled: boolean | null
+    isDeleted: boolean | null
+    deletedAt: Date | null
+    scheduledHardDeleteAt: Date | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -2453,6 +2459,9 @@ export namespace Prisma {
     refreshToken: number
     totpSecret: number
     isTotpEnabled: number
+    isDeleted: number
+    deletedAt: number
+    scheduledHardDeleteAt: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -2487,6 +2496,9 @@ export namespace Prisma {
     refreshToken?: true
     totpSecret?: true
     isTotpEnabled?: true
+    isDeleted?: true
+    deletedAt?: true
+    scheduledHardDeleteAt?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -2511,6 +2523,9 @@ export namespace Prisma {
     refreshToken?: true
     totpSecret?: true
     isTotpEnabled?: true
+    isDeleted?: true
+    deletedAt?: true
+    scheduledHardDeleteAt?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -2535,6 +2550,9 @@ export namespace Prisma {
     refreshToken?: true
     totpSecret?: true
     isTotpEnabled?: true
+    isDeleted?: true
+    deletedAt?: true
+    scheduledHardDeleteAt?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -2646,6 +2664,9 @@ export namespace Prisma {
     refreshToken: string | null
     totpSecret: string | null
     isTotpEnabled: boolean
+    isDeleted: boolean
+    deletedAt: Date | null
+    scheduledHardDeleteAt: Date | null
     createdAt: Date
     updatedAt: Date
     _count: UserCountAggregateOutputType | null
@@ -2689,6 +2710,9 @@ export namespace Prisma {
     refreshToken?: boolean
     totpSecret?: boolean
     isTotpEnabled?: boolean
+    isDeleted?: boolean
+    deletedAt?: boolean
+    scheduledHardDeleteAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     orders?: boolean | User$ordersArgs<ExtArgs>
@@ -2720,6 +2744,9 @@ export namespace Prisma {
     refreshToken?: boolean
     totpSecret?: boolean
     isTotpEnabled?: boolean
+    isDeleted?: boolean
+    deletedAt?: boolean
+    scheduledHardDeleteAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["user"]>
@@ -2744,6 +2771,9 @@ export namespace Prisma {
     refreshToken?: boolean
     totpSecret?: boolean
     isTotpEnabled?: boolean
+    isDeleted?: boolean
+    deletedAt?: boolean
+    scheduledHardDeleteAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["user"]>
@@ -2768,11 +2798,14 @@ export namespace Prisma {
     refreshToken?: boolean
     totpSecret?: boolean
     isTotpEnabled?: boolean
+    isDeleted?: boolean
+    deletedAt?: boolean
+    scheduledHardDeleteAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "username" | "name" | "passwordHash" | "role" | "avatarUrl" | "gender" | "phone" | "isEmailVerified" | "emailOtpHash" | "emailOtpExpiry" | "coins" | "isBanned" | "banReason" | "lastLogin" | "refreshToken" | "totpSecret" | "isTotpEnabled" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "username" | "name" | "passwordHash" | "role" | "avatarUrl" | "gender" | "phone" | "isEmailVerified" | "emailOtpHash" | "emailOtpExpiry" | "coins" | "isBanned" | "banReason" | "lastLogin" | "refreshToken" | "totpSecret" | "isTotpEnabled" | "isDeleted" | "deletedAt" | "scheduledHardDeleteAt" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     orders?: boolean | User$ordersArgs<ExtArgs>
     reviews?: boolean | User$reviewsArgs<ExtArgs>
@@ -2815,6 +2848,9 @@ export namespace Prisma {
       refreshToken: string | null
       totpSecret: string | null
       isTotpEnabled: boolean
+      isDeleted: boolean
+      deletedAt: Date | null
+      scheduledHardDeleteAt: Date | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["user"]>
@@ -3265,6 +3301,9 @@ export namespace Prisma {
     readonly refreshToken: FieldRef<"User", 'String'>
     readonly totpSecret: FieldRef<"User", 'String'>
     readonly isTotpEnabled: FieldRef<"User", 'Boolean'>
+    readonly isDeleted: FieldRef<"User", 'Boolean'>
+    readonly deletedAt: FieldRef<"User", 'DateTime'>
+    readonly scheduledHardDeleteAt: FieldRef<"User", 'DateTime'>
     readonly createdAt: FieldRef<"User", 'DateTime'>
     readonly updatedAt: FieldRef<"User", 'DateTime'>
   }
@@ -18422,6 +18461,9 @@ export namespace Prisma {
     refreshToken: 'refreshToken',
     totpSecret: 'totpSecret',
     isTotpEnabled: 'isTotpEnabled',
+    isDeleted: 'isDeleted',
+    deletedAt: 'deletedAt',
+    scheduledHardDeleteAt: 'scheduledHardDeleteAt',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -18925,6 +18967,9 @@ export namespace Prisma {
     refreshToken?: StringNullableFilter<"User"> | string | null
     totpSecret?: StringNullableFilter<"User"> | string | null
     isTotpEnabled?: BoolFilter<"User"> | boolean
+    isDeleted?: BoolFilter<"User"> | boolean
+    deletedAt?: DateTimeNullableFilter<"User"> | Date | string | null
+    scheduledHardDeleteAt?: DateTimeNullableFilter<"User"> | Date | string | null
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
     orders?: OrderListRelationFilter
@@ -18955,6 +19000,9 @@ export namespace Prisma {
     refreshToken?: SortOrderInput | SortOrder
     totpSecret?: SortOrderInput | SortOrder
     isTotpEnabled?: SortOrder
+    isDeleted?: SortOrder
+    deletedAt?: SortOrderInput | SortOrder
+    scheduledHardDeleteAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     orders?: OrderOrderByRelationAggregateInput
@@ -18988,6 +19036,9 @@ export namespace Prisma {
     refreshToken?: StringNullableFilter<"User"> | string | null
     totpSecret?: StringNullableFilter<"User"> | string | null
     isTotpEnabled?: BoolFilter<"User"> | boolean
+    isDeleted?: BoolFilter<"User"> | boolean
+    deletedAt?: DateTimeNullableFilter<"User"> | Date | string | null
+    scheduledHardDeleteAt?: DateTimeNullableFilter<"User"> | Date | string | null
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
     orders?: OrderListRelationFilter
@@ -19018,6 +19069,9 @@ export namespace Prisma {
     refreshToken?: SortOrderInput | SortOrder
     totpSecret?: SortOrderInput | SortOrder
     isTotpEnabled?: SortOrder
+    isDeleted?: SortOrder
+    deletedAt?: SortOrderInput | SortOrder
+    scheduledHardDeleteAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: UserCountOrderByAggregateInput
@@ -19050,6 +19104,9 @@ export namespace Prisma {
     refreshToken?: StringNullableWithAggregatesFilter<"User"> | string | null
     totpSecret?: StringNullableWithAggregatesFilter<"User"> | string | null
     isTotpEnabled?: BoolWithAggregatesFilter<"User"> | boolean
+    isDeleted?: BoolWithAggregatesFilter<"User"> | boolean
+    deletedAt?: DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
+    scheduledHardDeleteAt?: DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
     createdAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
   }
@@ -20216,6 +20273,9 @@ export namespace Prisma {
     refreshToken?: string | null
     totpSecret?: string | null
     isTotpEnabled?: boolean
+    isDeleted?: boolean
+    deletedAt?: Date | string | null
+    scheduledHardDeleteAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     orders?: OrderCreateNestedManyWithoutUserInput
@@ -20246,6 +20306,9 @@ export namespace Prisma {
     refreshToken?: string | null
     totpSecret?: string | null
     isTotpEnabled?: boolean
+    isDeleted?: boolean
+    deletedAt?: Date | string | null
+    scheduledHardDeleteAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     orders?: OrderUncheckedCreateNestedManyWithoutUserInput
@@ -20276,6 +20339,9 @@ export namespace Prisma {
     refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     totpSecret?: NullableStringFieldUpdateOperationsInput | string | null
     isTotpEnabled?: BoolFieldUpdateOperationsInput | boolean
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    scheduledHardDeleteAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orders?: OrderUpdateManyWithoutUserNestedInput
@@ -20306,6 +20372,9 @@ export namespace Prisma {
     refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     totpSecret?: NullableStringFieldUpdateOperationsInput | string | null
     isTotpEnabled?: BoolFieldUpdateOperationsInput | boolean
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    scheduledHardDeleteAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orders?: OrderUncheckedUpdateManyWithoutUserNestedInput
@@ -20336,6 +20405,9 @@ export namespace Prisma {
     refreshToken?: string | null
     totpSecret?: string | null
     isTotpEnabled?: boolean
+    isDeleted?: boolean
+    deletedAt?: Date | string | null
+    scheduledHardDeleteAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -20360,6 +20432,9 @@ export namespace Prisma {
     refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     totpSecret?: NullableStringFieldUpdateOperationsInput | string | null
     isTotpEnabled?: BoolFieldUpdateOperationsInput | boolean
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    scheduledHardDeleteAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -20384,6 +20459,9 @@ export namespace Prisma {
     refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     totpSecret?: NullableStringFieldUpdateOperationsInput | string | null
     isTotpEnabled?: BoolFieldUpdateOperationsInput | boolean
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    scheduledHardDeleteAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -21824,6 +21902,9 @@ export namespace Prisma {
     refreshToken?: SortOrder
     totpSecret?: SortOrder
     isTotpEnabled?: SortOrder
+    isDeleted?: SortOrder
+    deletedAt?: SortOrder
+    scheduledHardDeleteAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -21852,6 +21933,9 @@ export namespace Prisma {
     refreshToken?: SortOrder
     totpSecret?: SortOrder
     isTotpEnabled?: SortOrder
+    isDeleted?: SortOrder
+    deletedAt?: SortOrder
+    scheduledHardDeleteAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -21876,6 +21960,9 @@ export namespace Prisma {
     refreshToken?: SortOrder
     totpSecret?: SortOrder
     isTotpEnabled?: SortOrder
+    isDeleted?: SortOrder
+    deletedAt?: SortOrder
+    scheduledHardDeleteAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -24970,6 +25057,9 @@ export namespace Prisma {
     refreshToken?: string | null
     totpSecret?: string | null
     isTotpEnabled?: boolean
+    isDeleted?: boolean
+    deletedAt?: Date | string | null
+    scheduledHardDeleteAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     orders?: OrderCreateNestedManyWithoutUserInput
@@ -24999,6 +25089,9 @@ export namespace Prisma {
     refreshToken?: string | null
     totpSecret?: string | null
     isTotpEnabled?: boolean
+    isDeleted?: boolean
+    deletedAt?: Date | string | null
+    scheduledHardDeleteAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     orders?: OrderUncheckedCreateNestedManyWithoutUserInput
@@ -25044,6 +25137,9 @@ export namespace Prisma {
     refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     totpSecret?: NullableStringFieldUpdateOperationsInput | string | null
     isTotpEnabled?: BoolFieldUpdateOperationsInput | boolean
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    scheduledHardDeleteAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orders?: OrderUpdateManyWithoutUserNestedInput
@@ -25073,6 +25169,9 @@ export namespace Prisma {
     refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     totpSecret?: NullableStringFieldUpdateOperationsInput | string | null
     isTotpEnabled?: BoolFieldUpdateOperationsInput | boolean
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    scheduledHardDeleteAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orders?: OrderUncheckedUpdateManyWithoutUserNestedInput
@@ -26048,6 +26147,9 @@ export namespace Prisma {
     refreshToken?: string | null
     totpSecret?: string | null
     isTotpEnabled?: boolean
+    isDeleted?: boolean
+    deletedAt?: Date | string | null
+    scheduledHardDeleteAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     orders?: OrderCreateNestedManyWithoutUserInput
@@ -26077,6 +26179,9 @@ export namespace Prisma {
     refreshToken?: string | null
     totpSecret?: string | null
     isTotpEnabled?: boolean
+    isDeleted?: boolean
+    deletedAt?: Date | string | null
+    scheduledHardDeleteAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     orders?: OrderUncheckedCreateNestedManyWithoutUserInput
@@ -26250,6 +26355,9 @@ export namespace Prisma {
     refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     totpSecret?: NullableStringFieldUpdateOperationsInput | string | null
     isTotpEnabled?: BoolFieldUpdateOperationsInput | boolean
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    scheduledHardDeleteAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orders?: OrderUpdateManyWithoutUserNestedInput
@@ -26279,6 +26387,9 @@ export namespace Prisma {
     refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     totpSecret?: NullableStringFieldUpdateOperationsInput | string | null
     isTotpEnabled?: BoolFieldUpdateOperationsInput | boolean
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    scheduledHardDeleteAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orders?: OrderUncheckedUpdateManyWithoutUserNestedInput
@@ -26357,6 +26468,9 @@ export namespace Prisma {
     refreshToken?: string | null
     totpSecret?: string | null
     isTotpEnabled?: boolean
+    isDeleted?: boolean
+    deletedAt?: Date | string | null
+    scheduledHardDeleteAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     orders?: OrderCreateNestedManyWithoutUserInput
@@ -26386,6 +26500,9 @@ export namespace Prisma {
     refreshToken?: string | null
     totpSecret?: string | null
     isTotpEnabled?: boolean
+    isDeleted?: boolean
+    deletedAt?: Date | string | null
+    scheduledHardDeleteAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     orders?: OrderUncheckedCreateNestedManyWithoutUserInput
@@ -26510,6 +26627,9 @@ export namespace Prisma {
     refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     totpSecret?: NullableStringFieldUpdateOperationsInput | string | null
     isTotpEnabled?: BoolFieldUpdateOperationsInput | boolean
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    scheduledHardDeleteAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orders?: OrderUpdateManyWithoutUserNestedInput
@@ -26539,6 +26659,9 @@ export namespace Prisma {
     refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     totpSecret?: NullableStringFieldUpdateOperationsInput | string | null
     isTotpEnabled?: BoolFieldUpdateOperationsInput | boolean
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    scheduledHardDeleteAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orders?: OrderUncheckedUpdateManyWithoutUserNestedInput
@@ -26789,6 +26912,9 @@ export namespace Prisma {
     refreshToken?: string | null
     totpSecret?: string | null
     isTotpEnabled?: boolean
+    isDeleted?: boolean
+    deletedAt?: Date | string | null
+    scheduledHardDeleteAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     orders?: OrderCreateNestedManyWithoutUserInput
@@ -26818,6 +26944,9 @@ export namespace Prisma {
     refreshToken?: string | null
     totpSecret?: string | null
     isTotpEnabled?: boolean
+    isDeleted?: boolean
+    deletedAt?: Date | string | null
+    scheduledHardDeleteAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     orders?: OrderUncheckedCreateNestedManyWithoutUserInput
@@ -26863,6 +26992,9 @@ export namespace Prisma {
     refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     totpSecret?: NullableStringFieldUpdateOperationsInput | string | null
     isTotpEnabled?: BoolFieldUpdateOperationsInput | boolean
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    scheduledHardDeleteAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orders?: OrderUpdateManyWithoutUserNestedInput
@@ -26892,6 +27024,9 @@ export namespace Prisma {
     refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     totpSecret?: NullableStringFieldUpdateOperationsInput | string | null
     isTotpEnabled?: BoolFieldUpdateOperationsInput | boolean
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    scheduledHardDeleteAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orders?: OrderUncheckedUpdateManyWithoutUserNestedInput
@@ -26921,6 +27056,9 @@ export namespace Prisma {
     refreshToken?: string | null
     totpSecret?: string | null
     isTotpEnabled?: boolean
+    isDeleted?: boolean
+    deletedAt?: Date | string | null
+    scheduledHardDeleteAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     reviews?: ReviewCreateNestedManyWithoutUserInput
@@ -26950,6 +27088,9 @@ export namespace Prisma {
     refreshToken?: string | null
     totpSecret?: string | null
     isTotpEnabled?: boolean
+    isDeleted?: boolean
+    deletedAt?: Date | string | null
+    scheduledHardDeleteAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     reviews?: ReviewUncheckedCreateNestedManyWithoutUserInput
@@ -27142,6 +27283,9 @@ export namespace Prisma {
     refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     totpSecret?: NullableStringFieldUpdateOperationsInput | string | null
     isTotpEnabled?: BoolFieldUpdateOperationsInput | boolean
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    scheduledHardDeleteAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     reviews?: ReviewUpdateManyWithoutUserNestedInput
@@ -27171,6 +27315,9 @@ export namespace Prisma {
     refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     totpSecret?: NullableStringFieldUpdateOperationsInput | string | null
     isTotpEnabled?: BoolFieldUpdateOperationsInput | boolean
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    scheduledHardDeleteAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     reviews?: ReviewUncheckedUpdateManyWithoutUserNestedInput
@@ -27721,6 +27868,9 @@ export namespace Prisma {
     refreshToken?: string | null
     totpSecret?: string | null
     isTotpEnabled?: boolean
+    isDeleted?: boolean
+    deletedAt?: Date | string | null
+    scheduledHardDeleteAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     orders?: OrderCreateNestedManyWithoutUserInput
@@ -27750,6 +27900,9 @@ export namespace Prisma {
     refreshToken?: string | null
     totpSecret?: string | null
     isTotpEnabled?: boolean
+    isDeleted?: boolean
+    deletedAt?: Date | string | null
+    scheduledHardDeleteAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     orders?: OrderUncheckedCreateNestedManyWithoutUserInput
@@ -27795,6 +27948,9 @@ export namespace Prisma {
     refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     totpSecret?: NullableStringFieldUpdateOperationsInput | string | null
     isTotpEnabled?: BoolFieldUpdateOperationsInput | boolean
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    scheduledHardDeleteAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orders?: OrderUpdateManyWithoutUserNestedInput
@@ -27824,6 +27980,9 @@ export namespace Prisma {
     refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     totpSecret?: NullableStringFieldUpdateOperationsInput | string | null
     isTotpEnabled?: BoolFieldUpdateOperationsInput | boolean
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    scheduledHardDeleteAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orders?: OrderUncheckedUpdateManyWithoutUserNestedInput

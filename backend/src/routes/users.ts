@@ -32,4 +32,5 @@ export async function userRoutes(app: FastifyInstance) {
     preHandler: authenticate,
     schema: { body: updatePasswordSchema },
   }, authController.changePassword);
+  app.delete("/users/me", { preHandler: authenticate }, userController.softDeleteAccount);
 }

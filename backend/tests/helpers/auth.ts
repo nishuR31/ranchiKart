@@ -36,6 +36,11 @@ export const getUserToken = async () => {
   let user = await prisma.user.findUnique({ where: { email } });
   if (!user) {
     user = await userFactory.create({ email, password, role: "USER", isEmailVerified: true });
+  } else if (user.isDeleted) {
+    await prisma.user.update({
+      where: { email },
+      data: { isDeleted: false, deletedAt: null, scheduledHardDeleteAt: null },
+    });
   }
 
   const res = await app.inject({

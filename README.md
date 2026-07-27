@@ -465,8 +465,9 @@ All routes are mounted under `/api/v1`. Auto‑generated Swagger docs are availa
     </td>
     <td align="center" valign="top" width="20%">
           <a href="https://github.com/surxz">
-      <img src="https://github.com/surxz.png" width="80" style="border-radius:50%;" alt="Suraj" /><br />
-      <sub><b>Suraj</b></sub><br />
+      <img src="https://github.com/surxz.png" width="80" style="border-radius:50%;" alt="Suraj" />
+      <br />
+      <sub><b>Suraj</b></sub></a><br />
       <sub>• Quality Assurance<br />• Functional & UI Testing<br />• Bug Reporting & E2E</sub>
     </td>
      <td align="center" valign="top" width="20%">

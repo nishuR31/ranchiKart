@@ -590,4 +590,31 @@ export default class AdminService {
       },
     });
   }
+
+  async restoreUserAccount(adminId: string, userId: string) {
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (!user) throw new NotFoundError("User not found");
+    if (!user.isDeleted) throw new BadRequestError("User account is not soft-deleted");
+
+    const restored = await prisma.user.update({
+      where: { id: userId },
+      data: {
+        isDeleted: false,
+        deletedAt: null,
+        scheduledHardDeleteAt: null,
+      },
+    });
+
+    await prisma.adminLog.create({
+      data: {
+        adminId,
+        action: "RESTORE_USER_ACCOUNT",
+        entity: "User",
+        entityId: userId,
+        meta: { email: user.email },
+      },
+    });
+
+    return restored;
+  }
 }
