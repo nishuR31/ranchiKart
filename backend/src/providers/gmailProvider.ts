@@ -90,7 +90,12 @@ const streamTransporter = nodemailer.createTransport({
 /**
  * Send email via Gmail REST API (HTTPS Port 443)
  */
-export async function sendViaGmailApi(to: string, subject: string, html: string): Promise<void> {
+export async function sendViaGmailApi(
+  to: string,
+  subject: string,
+  html: string,
+  attachments?: import("./nodemailerProvider.js").MailAttachment[],
+): Promise<void> {
   await getGmailAccessToken();
 
   const fromSender =
@@ -105,6 +110,7 @@ export async function sendViaGmailApi(to: string, subject: string, html: string)
     to,
     subject,
     html,
+    attachments,
   });
 
   const rawMessageBuffer = Buffer.isBuffer(info.message)

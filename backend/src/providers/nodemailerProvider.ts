@@ -15,7 +15,18 @@ export const nodemailerTransporter = smtpConfigured
     })
   : null;
 
-export async function sendViaSmtp(to: string, subject: string, html: string): Promise<void> {
+export type MailAttachment = {
+  filename: string;
+  content: Buffer;
+  contentType: string;
+};
+
+export async function sendViaSmtp(
+  to: string,
+  subject: string,
+  html: string,
+  attachments?: MailAttachment[],
+): Promise<void> {
   if (!smtpConfigured || !nodemailerTransporter) {
     throw new Error("SMTP transporter is not configured. Missing SMTP_HOST, SMTP_USER, or SMTP_PASS.");
   }
@@ -24,5 +35,6 @@ export async function sendViaSmtp(to: string, subject: string, html: string): Pr
     to,
     subject,
     html,
+    attachments,
   });
 }

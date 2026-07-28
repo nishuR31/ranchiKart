@@ -9,18 +9,22 @@ import {
   sendViaSmtp,
   nodemailerTransporter,
   smtpConfigured,
+  type MailAttachment,
 } from "../providers/nodemailerProvider.js";
 
 export type EmailTransportType = "gmail" | "smtp" | "auto";
+export type { MailAttachment };
 
 export { sendViaGmailApi, oauth2Client, gmailApiConfigured };
 export { sendViaSmtp, nodemailerTransporter, smtpConfigured };
+
 
 export async function send(
   to: string,
   subject: string,
   html: string,
-  transport?: EmailTransportType
+  transport?: EmailTransportType,
+  attachments?: MailAttachment[],
 ) {
   if (process.env.NODE_ENV === "test") {
     console.log(`[Email test no-op] [Transport: ${transport || "auto"}] To: ${to} | Subject: ${subject}`);
@@ -32,7 +36,7 @@ export async function send(
   // Choice 1: Force Gmail REST API Transport
   if (selectedTransport === "gmail") {
     try {
-      await sendViaGmailApi(to, subject, html);
+      await sendViaGmailApi(to, subject, html, attachments);
       console.log(`[Email sent via Gmail API] To: ${to} | Subject: ${subject}`);
       return;
     } catch (err) {
@@ -40,7 +44,7 @@ export async function send(
       console.warn(`[Gmail API send error] To: ${to} | ${errMsg}`);
       if (smtpConfigured && nodemailerTransporter) {
         console.log(`[Email] Falling back to SMTP...`);
-        await sendViaSmtp(to, subject, html);
+        await sendViaSmtp(to, subject, html, attachments);
         console.log(`[Email sent via SMTP (fallback)] To: ${to} | Subject: ${subject}`);
         return;
       }
@@ -51,7 +55,7 @@ export async function send(
   // Choice 2: Force Standard Nodemailer SMTP Transport
   if (selectedTransport === "smtp") {
     try {
-      await sendViaSmtp(to, subject, html);
+      await sendViaSmtp(to, subject, html, attachments);
       console.log(`[Email sent via SMTP] To: ${to} | Subject: ${subject}`);
       return;
     } catch (err) {
@@ -63,7 +67,7 @@ export async function send(
   // Choice 3: Auto Mode — Try Gmail REST API first (if available and operational), then fallback to SMTP
   if (gmailApiConfigured && tokenFetchFailedUntil <= Date.now()) {
     try {
-      await sendViaGmailApi(to, subject, html);
+      await sendViaGmailApi(to, subject, html, attachments);
       console.log(`[Email sent via Gmail API (auto)] To: ${to} | Subject: ${subject}`);
       return;
     } catch (err) {
@@ -76,7 +80,7 @@ export async function send(
 
   if (smtpConfigured && nodemailerTransporter) {
     try {
-      await sendViaSmtp(to, subject, html);
+      await sendViaSmtp(to, subject, html, attachments);
       console.log(`[Email sent via SMTP (auto)] To: ${to} | Subject: ${subject}`);
       return;
     } catch (err) {
@@ -87,6 +91,7 @@ export async function send(
 
   console.log(`[Email no-op (unconfigured)] To: ${to} | Subject: ${subject}`);
 }
+
 
 /**
  * Base Responsive HTML Email Template Wrapper
@@ -228,7 +233,191 @@ export async function sendOrderConfirmation(
   await send(to, title, renderBaseEmailTemplate(title, body, `Order #${shortOrderId} confirmed!`), transport);
 }
 
-// 3. Order Status Update Email
+// 3. Invoice Email — sent after payment is confirmed
+export type InvoiceItem = {
+  name: string;
+  variant?: string;
+  quantity: number;
+  unitPrice: number; // in paise
+  total: number;     // in paise
+};
+
+export type InvoiceData = {
+  orderId: string;
+  createdAt: Date | string;
+  items: InvoiceItem[];
+  subtotal: number;       // paise
+  shippingFee: number;    // paise
+  discountAmount: number; // paise
+  total: number;          // paise
+  paymentMethod: string;
+  address: {
+    fullName: string;
+    phone: string;
+    line1: string;
+    line2?: string;
+    city: string;
+    state: string;
+    pincode: string;
+  };
+  couponCode?: string;
+};
+
+export async function sendInvoiceEmail(
+  to: string,
+  name: string,
+  invoice: InvoiceData,
+  transport?: EmailTransportType,
+  pdfBuffer?: Buffer,
+) {
+  const shortOrderId = invoice.orderId.slice(-8).toUpperCase();
+  const title = `Invoice for Order #${shortOrderId} — ${env.BUSINESS_NAME}`;
+  const orderDate = new Date(invoice.createdAt).toLocaleDateString("en-IN", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+
+  const fmt = (paise: number) => `₹${(paise / 100).toFixed(2)}`;
+
+  const itemsHtml = invoice.items
+    .map(
+      (item) => `
+      <tr>
+        <td style="padding: 12px 8px; border-bottom: 1px solid #f1f5f9; color: #1e293b; font-size: 14px;">
+          <strong>${item.name}</strong>
+          ${item.variant ? `<br /><span style="color: #64748b; font-size: 12px;">${item.variant}</span>` : ""}
+        </td>
+        <td style="padding: 12px 8px; border-bottom: 1px solid #f1f5f9; color: #475569; font-size: 14px; text-align: center;">
+          ${item.quantity}
+        </td>
+        <td style="padding: 12px 8px; border-bottom: 1px solid #f1f5f9; color: #475569; font-size: 14px; text-align: right;">
+          ${fmt(item.unitPrice)}
+        </td>
+        <td style="padding: 12px 8px; border-bottom: 1px solid #f1f5f9; color: #0f172a; font-size: 14px; font-weight: 600; text-align: right;">
+          ${fmt(item.total)}
+        </td>
+      </tr>`,
+    )
+    .join("");
+
+  const body = `
+    <!-- Invoice Header -->
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 28px;">
+      <div>
+        <h1 style="margin: 0 0 6px 0; color: #0f172a; font-size: 22px; font-weight: 800;">Invoice</h1>
+        <p style="margin: 0; color: #64748b; font-size: 13px;">Thank you for your purchase, <strong>${name}</strong>!</p>
+      </div>
+      <div style="text-align: right;">
+        <span style="display: inline-block; background: #fff7ed; border: 1px solid #fed7aa; border-radius: 6px; padding: 4px 12px; font-size: 12px; font-weight: 700; color: #c2410c; letter-spacing: 0.5px;">PAID</span>
+      </div>
+    </div>
+
+    <!-- Order Meta -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 28px;">
+      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px;">
+        <p style="margin: 0 0 4px 0; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #64748b;">Order Reference</p>
+        <p style="margin: 0; font-size: 15px; font-weight: 700; color: #0f172a; font-family: monospace;">#${shortOrderId}</p>
+        <p style="margin: 6px 0 0 0; font-size: 12px; color: #64748b;">${orderDate}</p>
+      </div>
+      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px;">
+        <p style="margin: 0 0 4px 0; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #64748b;">Payment Method</p>
+        <p style="margin: 0; font-size: 15px; font-weight: 600; color: #0f172a;">${invoice.paymentMethod.replace("_", " ")}</p>
+        ${invoice.couponCode ? `<p style="margin: 6px 0 0 0; font-size: 12px; color: #15803d;">Coupon: <strong>${invoice.couponCode}</strong></p>` : ""}
+      </div>
+    </div>
+
+    <!-- Shipping Address -->
+    <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px; margin-bottom: 28px;">
+      <p style="margin: 0 0 8px 0; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #64748b;">Ship To</p>
+      <p style="margin: 0; font-size: 14px; font-weight: 700; color: #0f172a;">${invoice.address.fullName}</p>
+      <p style="margin: 2px 0; font-size: 13px; color: #475569;">${invoice.address.line1}${invoice.address.line2 ? ", " + invoice.address.line2 : ""}</p>
+      <p style="margin: 2px 0; font-size: 13px; color: #475569;">${invoice.address.city}, ${invoice.address.state} — ${invoice.address.pincode}</p>
+      <p style="margin: 4px 0 0 0; font-size: 13px; color: #64748b;">📞 ${invoice.address.phone}</p>
+    </div>
+
+    <!-- Items Table -->
+    <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="border-collapse: collapse; margin-bottom: 24px;">
+      <thead>
+        <tr style="background: #0f172a;">
+          <th style="padding: 10px 8px; text-align: left; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #94a3b8;">Item</th>
+          <th style="padding: 10px 8px; text-align: center; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #94a3b8;">Qty</th>
+          <th style="padding: 10px 8px; text-align: right; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #94a3b8;">Unit Price</th>
+          <th style="padding: 10px 8px; text-align: right; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #94a3b8;">Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${itemsHtml}
+      </tbody>
+    </table>
+
+    <!-- Totals -->
+    <div style="margin-left: auto; max-width: 280px;">
+      <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0">
+        <tr>
+          <td style="padding: 6px 0; color: #64748b; font-size: 13px;">Subtotal</td>
+          <td align="right" style="padding: 6px 0; color: #1e293b; font-size: 13px; font-weight: 600;">${fmt(invoice.subtotal)}</td>
+        </tr>
+        <tr>
+          <td style="padding: 6px 0; color: #64748b; font-size: 13px;">Shipping</td>
+          <td align="right" style="padding: 6px 0; color: #1e293b; font-size: 13px; font-weight: 600;">${invoice.shippingFee === 0 ? '<span style="color: #15803d; font-weight: 700;">FREE</span>' : fmt(invoice.shippingFee)}</td>
+        </tr>
+        ${invoice.discountAmount > 0 ? `
+        <tr>
+          <td style="padding: 6px 0; color: #15803d; font-size: 13px;">Discount${invoice.couponCode ? ` (${invoice.couponCode})` : ""}</td>
+          <td align="right" style="padding: 6px 0; color: #15803d; font-size: 13px; font-weight: 600;">−${fmt(invoice.discountAmount)}</td>
+        </tr>` : ""}
+        <tr>
+          <td colspan="2" style="padding: 8px 0;"><hr style="border: 0; border-top: 2px solid #e2e8f0; margin: 0;" /></td>
+        </tr>
+        <tr>
+          <td style="padding: 8px 0; color: #0f172a; font-size: 16px; font-weight: 800;">Total Paid</td>
+          <td align="right" style="padding: 8px 0; color: #ea580c; font-size: 18px; font-weight: 800;">${fmt(invoice.total)}</td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- PDF Download notice -->
+    ${pdfBuffer ? `
+    <div style="background: #f0fdf4; border: 1px solid #86efac; border-radius: 10px; padding: 14px 18px; margin: 28px 0 4px 0; display: flex; align-items: center; gap: 10px;">
+      <span style="font-size: 20px;">&#x1F4CE;</span>
+      <div>
+        <p style="margin: 0; font-size: 13px; font-weight: 700; color: #15803d;">PDF Invoice Attached</p>
+        <p style="margin: 2px 0 0 0; font-size: 12px; color: #166534;">Your invoice is attached to this email as <strong>invoice-${shortOrderId}.pdf</strong>. You can download and keep it for your records.</p>
+      </div>
+    </div>` : ""}
+
+    <!-- CTA -->
+    <div style="text-align: center; margin: 28px 0 8px 0;">
+      <a href="${env.WEB_ORIGIN}/orders" style="background: linear-gradient(135deg, #ea580c 0%, #f97316 100%); color: #ffffff; padding: 14px 32px; text-decoration: none; border-radius: 8px; font-weight: 700; font-size: 15px; display: inline-block; box-shadow: 0 4px 12px rgba(234, 88, 12, 0.25);">
+        Track Your Order
+      </a>
+    </div>
+
+    <p style="margin: 20px 0 0 0; font-size: 12px; color: #94a3b8; text-align: center; line-height: 1.6;">
+      This is an automatically generated invoice. Please keep it for your records.
+    </p>
+  `;
+
+  const attachments: MailAttachment[] = pdfBuffer
+    ? [{
+        filename: `invoice-${shortOrderId}.pdf`,
+        content: pdfBuffer,
+        contentType: "application/pdf",
+      }]
+    : [];
+
+  await send(
+    to,
+    title,
+    renderBaseEmailTemplate(title, body, `Your invoice for Order #${shortOrderId} — ${fmt(invoice.total)} paid`),
+    transport,
+    attachments.length > 0 ? attachments : undefined,
+  );
+}
+
+
+// 4. Order Status Update Email
 export async function sendOrderStatusUpdate(
   to: string,
   name: string,

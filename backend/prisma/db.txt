@@ -19,6 +19,7 @@ Columns
 -------
 id                  String (PK, cuid)
 email               String (Unique)
+username            String (Nullable, Unique)
 name                String (Nullable)
 passwordHash        String (Nullable)
 role                Role Enum (USER | MANAGER | ADMIN | SELLER) (Default: USER)
@@ -26,6 +27,8 @@ avatarUrl           String (Nullable)
 gender              String (Nullable)
 phone               String (Nullable)
 isEmailVerified     Boolean (Default: false)
+emailOtpHash        String (Nullable)
+emailOtpExpiry      DateTime (Nullable)
 coins               Integer (Default: 0)
 isBanned            Boolean (Default: false)
 banReason           String (Nullable)
@@ -33,6 +36,9 @@ lastLogin           DateTime (Default: now)
 refreshToken        String (Nullable)
 totpSecret          String (Nullable)
 isTotpEnabled       Boolean (Default: false)
+isDeleted           Boolean (Default: false)
+deletedAt           DateTime (Nullable)
+scheduledHardDeleteAt DateTime (Nullable)
 createdAt           DateTime (Default: now)
 updatedAt           DateTime (updatedAt)
 
@@ -49,7 +55,9 @@ User
 Indexes
 -------
 UNIQUE(email)
+UNIQUE(username)
 INDEX(email)
+INDEX(isDeleted, scheduledHardDeleteAt)
 
 ============================================================
 TABLE : PasskeyCredential
@@ -402,6 +410,7 @@ Many Orders -----> One User
 One Order
  ├── Many OrderItems
  ├── Many Payments
+ ├── Many Reviews
  └── Optional Coupon
 
 Indexes

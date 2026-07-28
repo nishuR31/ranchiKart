@@ -11,6 +11,9 @@ import {
 } from "../utils/response.js";
 import { code } from "status-map";
 import { BadRequestError, NotFoundError } from "../utils/errors.js";
+import { generateInvoicePdf } from "../utils/invoicePdf.js";
+import type { InvoiceData } from "../config/email.js";
+
 
 const orderService = new OrderService();
 
@@ -82,3 +85,51 @@ export const getOrders = asyncHandler(async (req: FastifyRequest, res: FastifyRe
   const result = await orderService.getOrders(req.user!.id, query);
   return sendSuccess(res, "Orders fetched", code("ok") as number, result);
 });
+
+export const downloadInvoice = asyncHandler(async (req: FastifyRequest, res: FastifyReply) => {
+  const { id } = z.object({ id: z.string() }).parse(req.params);
+
+  try {
+    const order = await orderService.getOrder(id, req.user!.id);
+
+    if (order.status !== "PAID" && order.status !== "PROCESSING" &&
+        order.status !== "SHIPPED" && order.status !== "DELIVERED") {
+      return badRequestError(res, "Invoice is only available for paid orders");
+    }
+
+    const invoiceItems = order.items.map((item: any) => ({
+      name: item.product.name,
+      variant: item.variant?.name,
+      quantity: item.quantity,
+      unitPrice: item.unitPrice,
+      total: item.total,
+    }));
+
+    const invoiceData: InvoiceData = {
+      orderId: order.id,
+      createdAt: order.createdAt,
+      items: invoiceItems,
+      subtotal: order.subtotal,
+      shippingFee: order.shippingFee,
+      discountAmount: order.discountAmount,
+      total: order.total,
+      paymentMethod: order.paymentMethod,
+      address: order.address as InvoiceData["address"],
+      couponCode: (order as any).coupon?.code,
+    };
+
+    const pdfBuffer = await generateInvoicePdf(invoiceData);
+    const shortId = order.id.slice(-8).toUpperCase();
+    const filename = `invoice-${shortId}.pdf`;
+
+    return res
+      .code(200)
+      .header("Content-Type", "application/pdf")
+      .header("Content-Disposition", `attachment; filename="${filename}"`)
+      .header("Content-Length", pdfBuffer.length)
+      .send(pdfBuffer);
+  } catch (err: any) {
+    return handleError(err, res);
+  }
+});
+
