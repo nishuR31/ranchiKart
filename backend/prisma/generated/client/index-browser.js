@@ -405,7 +405,8 @@ exports.PaymentMethod = exports.$Enums.PaymentMethod = {
   CARD: 'CARD',
   CRYPTO: 'CRYPTO',
   NET_BANKING: 'NET_BANKING',
-  COINS: 'COINS'
+  COINS: 'COINS',
+  COD: 'COD'
 };
 
 exports.PaymentProvider = exports.$Enums.PaymentProvider = {

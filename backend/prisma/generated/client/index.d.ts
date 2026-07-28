@@ -137,7 +137,8 @@ export const PaymentMethod: {
   CARD: 'CARD',
   CRYPTO: 'CRYPTO',
   NET_BANKING: 'NET_BANKING',
-  COINS: 'COINS'
+  COINS: 'COINS',
+  COD: 'COD'
 };
 
 export type PaymentMethod = (typeof PaymentMethod)[keyof typeof PaymentMethod]

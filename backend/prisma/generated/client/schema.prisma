@@ -55,6 +55,7 @@ enum PaymentMethod {
   CRYPTO
   NET_BANKING
   COINS
+  COD
 }
 
 enum PaymentProvider {
@@ -110,7 +111,7 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@index([email])
+  @@index([email, username])
   @@index([isDeleted, scheduledHardDeleteAt])
 }
 
