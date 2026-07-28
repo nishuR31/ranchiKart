@@ -6,7 +6,7 @@ import { userFactory } from "../factories/user.factory.js";
 
 describe("Auth Endpoints", () => {
   const testUser = {
-    email: "dreamgf691@gmail.com",
+    email: `dreamgf691+auth_${Date.now()}_${Math.floor(Math.random() * 10000)}@gmail.com`,
     password: "Password123!",
     name: faker.person.fullName(),
     phone: "1234567890",
@@ -20,7 +20,7 @@ describe("Auth Endpoints", () => {
   });
 
   describe("POST /api/v1/auth/register", () => {
-    it("should register a new user successfully", async () => {
+    it("should register a new user successfully and persist account in real database", async () => {
       const res = await app.inject({
         method: "POST",
         url: "/api/v1/auth/register",
@@ -31,6 +31,13 @@ describe("Auth Endpoints", () => {
       const body = JSON.parse(res.payload);
       expect(body.success).toBe(true);
       expect(body.message).toBe("User registered successfully");
+
+      // Verify the newly registered user account exists in the database
+      const dbUser = await prisma.user.findUnique({ where: { email: testUser.email } });
+      expect(dbUser).not.toBeNull();
+      expect(dbUser?.email).toBe(testUser.email);
+      expect(dbUser?.name).toBe(testUser.name);
+      expect(dbUser?.passwordHash).not.toBeNull();
     });
 
     it("should fail if user already exists", async () => {
@@ -89,6 +96,9 @@ describe("Auth Endpoints", () => {
         refreshToken = refreshCookie.value;
       }
       expect(accessToken).toBeDefined();
+      const accessCookie = cookies.find((c) => c.name === "accessToken");
+      expect(accessCookie).toBeDefined();
+      expect(accessCookie?.value).toBe(accessToken);
     });
   });
 
@@ -119,11 +129,23 @@ describe("Auth Endpoints", () => {
   });
 
   describe("GET /api/v1/auth/me", () => {
-    it("should get current user profile", async () => {
+    it("should get current user profile using Bearer token", async () => {
       const res = await app.inject({
         method: "GET",
         url: "/api/v1/auth/me",
         headers: { authorization: `Bearer ${accessToken}` },
+      });
+
+      expect(res.statusCode).toBe(200);
+      const body = JSON.parse(res.payload);
+      expect(body.data.user.email).toBe(testUser.email);
+    });
+
+    it("should get current user profile using Cookie authentication", async () => {
+      const res = await app.inject({
+        method: "GET",
+        url: "/api/v1/auth/me",
+        headers: { cookie: `accessToken=${accessToken}; refreshToken=${refreshToken}` },
       });
 
       expect(res.statusCode).toBe(200);

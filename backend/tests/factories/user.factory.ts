@@ -3,7 +3,7 @@ import { prisma } from "../../src/config/prisma.js";
 
 export const userFactory = {
   build: (overrides = {}) => ({
-    email: "dreamgf691@gmail.com",
+    email: `dreamgf691+${Date.now()}@gmail.com`,
     password: "Password123!",
     name: faker.person.fullName(),
     phone: faker.phone.number({ style: 'national' }).replace(/[^0-9]/g, '').slice(0, 10),

@@ -1,6 +1,7 @@
 import { prisma } from "../config/prisma.js";
 import { Prisma } from "../../prisma/generated/client/index.js";
 import { AppError, ConflictError, InternalServerError, NotFoundError } from "../utils/errors.js";
+import { withRetry } from "../utils/retry.js";
 
 function handlePrismaError(error: any, modelName: string, operation: string): never {
   if (error instanceof Prisma.PrismaClientKnownRequestError) {
@@ -29,7 +30,8 @@ export default class BaseRepository<T = any> {
       throw new AppError(`A ${modelName} model name (string) is required for BaseRepository.`);
     }
     this.modelName = modelName;
-    this.model = (prisma as any)[modelName];
+    const modelKey = modelName.charAt(0).toLowerCase() + modelName.slice(1);
+    this.model = (prisma as any)[modelKey];
 
     if (!this.model || typeof this.model.findUnique !== "function") {
       throw new NotFoundError(`${modelName} not found or is invalid in Prisma Client.`);
@@ -38,53 +40,53 @@ export default class BaseRepository<T = any> {
 
   async create(data: any, options: any = {}): Promise<T> {
     try {
-      return await this.model.create({ data, ...options });
+      return await withRetry(() => this.model.create({ data, ...options }));
     } catch (error) {
-      handlePrismaError(error, this.modelName, "creation");
+      return handlePrismaError(error, this.modelName, "creation");
     }
   }
 
   async findById(id: string, options: any = {}): Promise<T> {
     try {
-      const record = await this.model.findUnique({ where: { id }, ...options });
+      const record = await withRetry(() => this.model.findUnique({ where: { id }, ...options }));
       if (!record) throw new NotFoundError(`${this.modelName} with ID ${id} not found`);
-      return record;
+      return record as T;
     } catch (error) {
       if (error instanceof NotFoundError) throw error;
-      handlePrismaError(error, this.modelName, "fetching");
+      return handlePrismaError(error, this.modelName, "fetching");
     }
   }
 
   async findOne(where: any, options: any = {}): Promise<T | null> {
     try {
-      return await this.model.findFirst({ where, ...options });
+      return await withRetry(() => this.model.findFirst({ where, ...options }));
     } catch (error) {
-      handlePrismaError(error, this.modelName, "fetching one");
+      return handlePrismaError(error, this.modelName, "fetching one");
     }
   }
 
   async findAll(options: any = {}): Promise<T[]> {
     try {
-      return await this.model.findMany({ ...options });
+      return await withRetry(() => this.model.findMany({ ...options }));
     } catch (error) {
-      handlePrismaError(error, this.modelName, "fetching all");
+      return handlePrismaError(error, this.modelName, "fetching all");
     }
   }
 
   async update(id: string, data: any, options: any = {}): Promise<T> {
     try {
-      return await this.model.update({ where: { id }, data, ...options });
+      return await withRetry(() => this.model.update({ where: { id }, data, ...options }));
     } catch (error) {
-      handlePrismaError(error, this.modelName, "updating");
+      return handlePrismaError(error, this.modelName, "updating");
     }
   }
 
   async delete(id: string, options: any = {}): Promise<boolean> {
     try {
-      await this.model.delete({ where: { id }, ...options });
+      await withRetry(() => this.model.delete({ where: { id }, ...options }));
       return true;
     } catch (error) {
-      handlePrismaError(error, this.modelName, "deleting");
+      return handlePrismaError(error, this.modelName, "deleting");
     }
   }
 }

@@ -26,7 +26,7 @@ export async function send(
   transport?: EmailTransportType,
   attachments?: MailAttachment[],
 ) {
-  if (process.env.NODE_ENV === "test") {
+  if (env.NODE_ENV === "test") {
     console.log(`[Email test no-op] [Transport: ${transport || "auto"}] To: ${to} | Subject: ${subject}`);
     return;
   }
@@ -413,10 +413,10 @@ export async function sendInvoiceEmail(
 
   const attachments: MailAttachment[] = pdfBuffer
     ? [{
-        filename: `invoice-${shortOrderId}.pdf`,
-        content: pdfBuffer,
-        contentType: "application/pdf",
-      }]
+      filename: `invoice-${shortOrderId}.pdf`,
+      content: pdfBuffer,
+      contentType: "application/pdf",
+    }]
     : [];
 
   await send(

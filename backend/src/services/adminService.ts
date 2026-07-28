@@ -1,6 +1,7 @@
 import { OrderStatus, type Prisma, ProductKind } from "../../prisma/generated/client/index.js";
 import { prisma } from "../config/prisma.js";
 import { sendOrderStatusUpdate } from "../config/email.js";
+import { sendOrderInvoiceEmail } from "./orderService.js";
 import { NotFoundError, BadRequestError } from "../utils/errors.js";
 import { Role } from "../types/index.js";
 
@@ -216,6 +217,10 @@ export default class AdminService {
       data.status,
       data.trackingId,
     ).catch(console.error);
+
+    if (data.status === OrderStatus.PAID || data.status === OrderStatus.PROCESSING) {
+      sendOrderInvoiceEmail(order.id).catch(console.error);
+    }
 
     return {
       order: updated,

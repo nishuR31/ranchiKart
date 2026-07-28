@@ -11,6 +11,7 @@ interface PerformanceRecord {
 const records: PerformanceRecord[] = [];
 
 export const injectAndMeasure = async (options: any) => {
+  await app.ready();
   const start = performance.now();
   const res = await app.inject(options);
   const end = performance.now();

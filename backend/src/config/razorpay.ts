@@ -3,7 +3,12 @@ import Razorpay from "razorpay";
 import env from "./env.js";
 
 export function razorpayConfigured(): boolean {
-  return Boolean(env.RAZORPAY_KEY_ID && env.RAZORPAY_KEY_SECRET);
+  return Boolean(
+    env.RAZORPAY_KEY_ID &&
+    !env.RAZORPAY_KEY_ID.includes("xxxx") &&
+    env.RAZORPAY_KEY_SECRET &&
+    !env.RAZORPAY_KEY_SECRET.includes("xxxx")
+  );
 }
 
 function testKeysConfigured(): boolean {

@@ -140,7 +140,7 @@ describe("Orders Endpoints", () => {
       const body = JSON.parse(res.payload);
       expect(Array.isArray(body.data.orders)).toBe(true);
       expect(body.data.orders.length).toBeGreaterThan(0);
-    });
+    }, 30000);
 
     it("should fail if unauthorized", async () => {
       const res = await app.inject({

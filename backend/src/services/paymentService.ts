@@ -138,7 +138,7 @@ export default class PaymentService {
       });
 
       return updatedPayment;
-    });
+    }, { maxWait: 15000, timeout: 30000 });
 
     // Send invoice email (fire-and-forget — non-critical)
     sendOrderInvoiceEmail(data.orderId).catch((err) =>

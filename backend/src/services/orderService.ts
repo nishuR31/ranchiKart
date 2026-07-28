@@ -169,72 +169,69 @@ export default class OrderService {
     // race conditions and ensure atomicity
     const order = await prisma.$transaction(
       async (tx) => {
-      // Re-check coupon availability inside the transaction to prevent races
-      if (couponId) {
-        const coupon = await tx.coupon.findUnique({ where: { id: couponId } });
-        if (!coupon || (coupon.maxUses !== null && coupon.usedCount >= coupon.maxUses)) {
-          throw new BadRequestError("Coupon is no longer available");
-        }
-      }
-
-      // Validate and reduce stock for each product/variant
-      for (const item of data.items) {
-        if (item.variantId) {
-          const variant = await tx.productVariant.findUnique({ where: { id: item.variantId } });
-          if (!variant || variant.stock < item.quantity) {
-            throw new BadRequestError("Insufficient stock for requested item variant");
+        // Re-check coupon availability inside the transaction to prevent races
+        if (couponId) {
+          const coupon = await tx.coupon.findUnique({ where: { id: couponId } });
+          if (!coupon || (coupon.maxUses !== null && coupon.usedCount >= coupon.maxUses)) {
+            throw new BadRequestError("Coupon is no longer available");
           }
-          await tx.productVariant.update({
-            where: { id: item.variantId },
-            data: { stock: { decrement: item.quantity } },
-          });
-        } else {
-          const product = await tx.product.findUnique({ where: { id: item.productId } });
-          if (!product || product.stock < item.quantity) {
-            throw new BadRequestError(`Insufficient stock for ${product?.name ?? "product"}`);
-          }
-          await tx.product.update({
-            where: { id: item.productId },
-            data: { stock: { decrement: item.quantity } },
-          });
         }
-      }
 
-      const created = await tx.order.create({
-        data: {
-          userId,
-          paymentMethod: data.paymentMethod,
-          status: data.paymentMethod === "COD" ? OrderStatus.PROCESSING : OrderStatus.PENDING_PAYMENT,
-          subtotal,
-          shippingFee,
-          discountAmount,
-          total,
-          address: data.address,
-          notes: data.notes,
-          ...(couponId ? { couponId } : {}),
-          items: { create: orderItems },
-        },
-        include: { items: { include: { product: true, variant: true } }, coupon: true },
-      });
+        // Validate and reduce stock for each product/variant
+        for (const item of data.items) {
+          if (item.variantId) {
+            const variant = await tx.productVariant.findUnique({ where: { id: item.variantId } });
+            if (!variant || variant.stock < item.quantity) {
+              throw new BadRequestError("Insufficient stock for requested item variant");
+            }
+            await tx.productVariant.update({
+              where: { id: item.variantId },
+              data: { stock: { decrement: item.quantity } },
+            });
+          } else {
+            const product = await tx.product.findUnique({ where: { id: item.productId } });
+            if (!product || product.stock < item.quantity) {
+              throw new BadRequestError(`Insufficient stock for ${product?.name ?? "product"}`);
+            }
+            await tx.product.update({
+              where: { id: item.productId },
+              data: { stock: { decrement: item.quantity } },
+            });
+          }
+        }
 
-      if (couponId) {
-        await tx.coupon.update({
-          where: { id: couponId },
-          data: { usedCount: { increment: 1 } },
+        const created = await tx.order.create({
+          data: {
+            userId,
+            paymentMethod: data.paymentMethod,
+            status: data.paymentMethod === "COD" ? OrderStatus.PROCESSING : OrderStatus.PENDING_PAYMENT,
+            subtotal,
+            shippingFee,
+            discountAmount,
+            total,
+            address: data.address,
+            notes: data.notes,
+            ...(couponId ? { couponId } : {}),
+            items: { create: orderItems },
+          },
+          include: { items: { include: { product: true, variant: true } }, coupon: true },
         });
-      }
 
-      return created;
-    }, { timeout: 15000 });
+        if (couponId) {
+          await tx.coupon.update({
+            where: { id: couponId },
+            data: { usedCount: { increment: 1 } },
+          });
+        }
 
-    // Send order confirmation and invoice emails (fire-and-forget — non-critical)
+        return created;
+      }, { maxWait: 15000, timeout: 30000 });
+
+    // Send invoice email (fire-and-forget — non-critical)
     const user = await prisma.user.findUnique({ where: { id: userId } });
     if (user) {
-      sendOrderConfirmation(user.email, user.name ?? "User", order.id, order.total).catch(console.error);
-      // For COD orders, send the invoice email immediately (marked as COD)
-      if (order.paymentMethod === "COD") {
-        sendOrderInvoiceEmail(order.id).catch(console.error);
-      }
+      await sendOrderConfirmation(user.email, user.name ?? "User", order.id, order.total).catch(console.error);
+      await sendOrderInvoiceEmail(order.id).catch(console.error);
     }
 
     return order;
