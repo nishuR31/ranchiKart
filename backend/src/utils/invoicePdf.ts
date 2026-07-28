@@ -115,18 +115,29 @@ export async function generateInvoicePdf(invoice: InvoiceData): Promise<Buffer> 
     drawHRule(doc, y);
     y += 16;
 
-    // ── PAID STAMP ────────────────────────────────────────────────────────────
+    // ── STATUS STAMP ────────────────────────────────────────────────────────────
+    const computedStatus =
+      invoice.paymentStatus ||
+      (invoice.paymentMethod === "COD" ? "COD" : "PAID");
+
+    const stampConfig =
+      computedStatus === "COD"
+        ? { label: "CASH ON DELIVERY", color: "#1d4ed8", x: 400, w: 116 }
+        : computedStatus === "PENDING"
+          ? { label: "PAYMENT PENDING", color: "#a16207", x: 400, w: 116 }
+          : { label: "✓ PAID", color: BRAND_ORANGE, x: 440, w: 76 };
+
     doc
       .save()
-      .roundedRect(440, y - 6, 76, 22, 4)
+      .roundedRect(stampConfig.x, y - 6, stampConfig.w, 22, 4)
       .lineWidth(1)
-      .stroke(BRAND_ORANGE)
+      .stroke(stampConfig.color)
       .restore();
     doc
-      .fillColor(BRAND_ORANGE)
+      .fillColor(stampConfig.color)
       .font("Helvetica-Bold")
-      .fontSize(9)
-      .text("✓ PAID", 441, y - 1, { width: 74, align: "center" });
+      .fontSize(computedStatus === "PAID" ? 9 : 7.5)
+      .text(stampConfig.label, stampConfig.x + 1, y - 1, { width: stampConfig.w - 2, align: "center" });
 
     // ── SHIP TO ───────────────────────────────────────────────────────────────
     doc.fillColor(BRAND_GRAY).font("Helvetica").fontSize(8).text("SHIP TO", 40, y);

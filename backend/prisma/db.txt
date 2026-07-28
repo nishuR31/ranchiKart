@@ -56,7 +56,7 @@ Indexes
 -------
 UNIQUE(email)
 UNIQUE(username)
-INDEX(email)
+INDEX(email, username)
 INDEX(isDeleted, scheduledHardDeleteAt)
 
 ============================================================

@@ -6,8 +6,7 @@ import {
   razorpayConfigured,
   verifyRazorpaySignature,
 } from "../config/razorpay.js";
-import { sendInvoiceEmail, type InvoiceItem } from "../config/email.js";
-import { generateInvoicePdf } from "../utils/invoicePdf.js";
+import { sendOrderInvoiceEmail } from "./orderService.js";
 import { BadRequestError, InternalServerError, NotFoundError } from "../utils/errors.js";
 
 
@@ -134,65 +133,9 @@ export default class PaymentService {
     });
 
     // Send invoice email (fire-and-forget — non-critical)
-    prisma.order
-      .findUnique({
-        where: { id: data.orderId },
-        include: {
-          user: true,
-          items: { include: { product: true, variant: true } },
-          coupon: true,
-        },
-      })
-      .then(async (paidOrder) => {
-        if (!paidOrder?.user?.email) return;
-
-        const invoiceItems: InvoiceItem[] = paidOrder.items.map((item: any) => ({
-          name: item.product.name,
-          variant: item.variant?.name,
-          quantity: item.quantity,
-          unitPrice: item.unitPrice,
-          total: item.total,
-        }));
-
-        const address = paidOrder.address as {
-          fullName: string;
-          phone: string;
-          line1: string;
-          line2?: string;
-          city: string;
-          state: string;
-          pincode: string;
-        };
-
-        const invoiceData = {
-          orderId: paidOrder.id,
-          createdAt: paidOrder.createdAt,
-          items: invoiceItems,
-          subtotal: paidOrder.subtotal,
-          shippingFee: paidOrder.shippingFee,
-          discountAmount: paidOrder.discountAmount,
-          total: paidOrder.total,
-          paymentMethod: paidOrder.paymentMethod,
-          address,
-          couponCode: paidOrder.coupon?.code,
-        };
-
-        // Generate PDF invoice (soft-fail — email still sends without attachment)
-        const pdfBuf = await generateInvoicePdf(invoiceData).catch((err) => {
-          console.error("[Invoice PDF generation error]", err);
-          return undefined;
-        });
-
-        return sendInvoiceEmail(
-          paidOrder.user.email,
-          paidOrder.user.name ?? "Customer",
-          invoiceData,
-          undefined,  // transport (auto)
-          pdfBuf,     // attach PDF
-        );
-
-      })
-      .catch((err) => console.error("[Invoice email error]", err));
+    sendOrderInvoiceEmail(data.orderId).catch((err) =>
+      console.error("[Invoice email error]", err),
+    );
 
     return updated;
   }

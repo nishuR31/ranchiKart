@@ -116,6 +116,27 @@ describe("Invoice PDF — generateInvoicePdf", () => {
     // All 3 items should fit in the PDF without error
     expect(pdf.slice(0, 4).toString("ascii")).toBe("%PDF");
   });
+
+  it("should generate PDF for Cash on Delivery (COD) order", async () => {
+    const codInvoice: InvoiceData = {
+      ...MOCK_INVOICE,
+      paymentMethod: "COD",
+      paymentStatus: "COD",
+    };
+    const pdf = await generateInvoicePdf(codInvoice);
+    expect(pdf.slice(0, 4).toString("ascii")).toBe("%PDF");
+    expect(pdf.length).toBeGreaterThan(2 * 1024);
+  });
+
+  it("should generate PDF for PENDING payment order", async () => {
+    const pendingInvoice: InvoiceData = {
+      ...MOCK_INVOICE,
+      paymentStatus: "PENDING",
+    };
+    const pdf = await generateInvoicePdf(pendingInvoice);
+    expect(pdf.slice(0, 4).toString("ascii")).toBe("%PDF");
+    expect(pdf.length).toBeGreaterThan(2 * 1024);
+  });
 });
 
 // ──────────────────────────────────────────────────────────

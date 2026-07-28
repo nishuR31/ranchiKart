@@ -251,6 +251,7 @@ export type InvoiceData = {
   discountAmount: number; // paise
   total: number;          // paise
   paymentMethod: string;
+  paymentStatus?: "PAID" | "COD" | "PENDING";
   address: {
     fullName: string;
     phone: string;
@@ -279,6 +280,17 @@ export async function sendInvoiceEmail(
   });
 
   const fmt = (paise: number) => `₹${(paise / 100).toFixed(2)}`;
+
+  const computedStatus =
+    invoice.paymentStatus ||
+    (invoice.paymentMethod === "COD" ? "COD" : "PAID");
+
+  const badgeConfig =
+    computedStatus === "COD"
+      ? { label: "COD (PAY ON DELIVERY)", bg: "#eff6ff", border: "#93c5fd", color: "#1d4ed8" }
+      : computedStatus === "PENDING"
+        ? { label: "PAYMENT PENDING", bg: "#fefce8", border: "#fde047", color: "#a16207" }
+        : { label: "PAID", bg: "#fff7ed", border: "#fed7aa", color: "#c2410c" };
 
   const itemsHtml = invoice.items
     .map(
@@ -309,7 +321,7 @@ export async function sendInvoiceEmail(
         <p style="margin: 0; color: #64748b; font-size: 13px;">Thank you for your purchase, <strong>${name}</strong>!</p>
       </div>
       <div style="text-align: right;">
-        <span style="display: inline-block; background: #fff7ed; border: 1px solid #fed7aa; border-radius: 6px; padding: 4px 12px; font-size: 12px; font-weight: 700; color: #c2410c; letter-spacing: 0.5px;">PAID</span>
+        <span style="display: inline-block; background: ${badgeConfig.bg}; border: 1px solid ${badgeConfig.border}; border-radius: 6px; padding: 4px 12px; font-size: 12px; font-weight: 700; color: ${badgeConfig.color}; letter-spacing: 0.5px;">${badgeConfig.label}</span>
       </div>
     </div>
 

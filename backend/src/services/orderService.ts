@@ -1,11 +1,76 @@
 import { OrderStatus, PaymentMethod, type Prisma } from "../../prisma/generated/client/index.js";
 import { prisma } from "../config/prisma.js";
 import { assertSize, unitPrice } from "../config/pricing.js";
-import { sendOrderConfirmation } from "../config/email.js";
+import { sendOrderConfirmation, sendInvoiceEmail, type InvoiceItem } from "../config/email.js";
+import { generateInvoicePdf } from "../utils/invoicePdf.js";
 import OrderRepository from "../repositories/orderRepository.js";
 import { BadRequestError, NotFoundError } from "../utils/errors.js";
 
 const orderRepo = new OrderRepository();
+
+export async function sendOrderInvoiceEmail(orderId: string) {
+  const order = await prisma.order.findUnique({
+    where: { id: orderId },
+    include: {
+      user: true,
+      items: { include: { product: true, variant: true } },
+      coupon: true,
+    },
+  });
+  if (!order?.user?.email) return;
+
+  const invoiceItems: InvoiceItem[] = order.items.map((item: any) => ({
+    name: item.product?.name ?? "Product",
+    variant: item.variant?.name,
+    quantity: item.quantity,
+    unitPrice: item.unitPrice,
+    total: item.total,
+  }));
+
+  const address = order.address as {
+    fullName: string;
+    phone: string;
+    line1: string;
+    line2?: string;
+    city: string;
+    state: string;
+    pincode: string;
+  };
+
+  const paymentStatus =
+    order.status === "PAID"
+      ? "PAID"
+      : order.paymentMethod === "COD"
+        ? "COD"
+        : "PENDING";
+
+  const invoiceData = {
+    orderId: order.id,
+    createdAt: order.createdAt,
+    items: invoiceItems,
+    subtotal: order.subtotal,
+    shippingFee: order.shippingFee,
+    discountAmount: order.discountAmount,
+    total: order.total,
+    paymentMethod: order.paymentMethod,
+    paymentStatus: paymentStatus as "PAID" | "COD" | "PENDING",
+    address,
+    couponCode: order.coupon?.code,
+  };
+
+  const pdfBuf = await generateInvoicePdf(invoiceData).catch((err) => {
+    console.error("[Invoice PDF generation error]", err);
+    return undefined;
+  });
+
+  return sendInvoiceEmail(
+    order.user.email,
+    order.user.name ?? "Customer",
+    invoiceData,
+    undefined,
+    pdfBuf,
+  );
+}
 
 type CheckoutItem = {
   productId: string;
@@ -161,12 +226,14 @@ export default class OrderService {
       return created;
     }, { timeout: 15000 });
 
-    // Send email outside the transaction (non-critical, fire-and-forget)
+    // Send order confirmation and invoice emails (fire-and-forget — non-critical)
     const user = await prisma.user.findUnique({ where: { id: userId } });
     if (user) {
-      sendOrderConfirmation(user.email, user.name ?? "User", order.id, order.total).catch(
-        console.error,
-      );
+      sendOrderConfirmation(user.email, user.name ?? "User", order.id, order.total).catch(console.error);
+      // For COD orders, send the invoice email immediately (marked as COD)
+      if (order.paymentMethod === "COD") {
+        sendOrderInvoiceEmail(order.id).catch(console.error);
+      }
     }
 
     return order;

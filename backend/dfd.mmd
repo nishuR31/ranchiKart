@@ -14,25 +14,26 @@ flowchart TD
     AdminProcess("5.0\nAdmin Operations")
 
     %% Data Stores
-    DB_User[(D1: Users, Passkeys & Tokens)]
-    DB_Product[(D2: Products & Categories)]
-    DB_Order[(D3: Orders & OrderItems)]
+    DB_User[(D1: Users, Passkeys & Saved Addresses)]
+    DB_Product[(D2: Products, Categories, Variants, Reviews & Wishlists)]
+    DB_Order[(D3: Orders, OrderItems & Coupons)]
     DB_Payment[(D4: Payments)]
+    DB_AdminLog[(D5: Admin Audit Logs)]
 
     %% Data Flows - Authentication
     Customer -- "Credentials, TOTP, Passkey" --> AuthProcess
     AuthProcess -- "Auth State, Tokens" --> Customer
     GoogleOAuth -- "OAuth Code/Profile" --> AuthProcess
     AuthProcess -- "Email Auth Link" --> EmailProvider
-    AuthProcess -- "Read/Write User Data" --> DB_User
+    AuthProcess -- "Read/Write User & Address Data" --> DB_User
 
     %% Data Flows - Catalog
-    Customer -- "Search & Filter queries" --> CatalogProcess
-    CatalogProcess -- "Product details" --> Customer
-    CatalogProcess -- "Read Product Data" --> DB_Product
+    Customer -- "Search, Filter, Reviews & Wishlist" --> CatalogProcess
+    CatalogProcess -- "Product details, Reviews" --> Customer
+    CatalogProcess -- "Read/Write Catalog Data" --> DB_Product
 
     %% Data Flows - Orders
-    Customer -- "Cart items, Checkout request" --> OrderProcess
+    Customer -- "Cart items, Checkout, Coupon request" --> OrderProcess
     OrderProcess -- "Order Status updates" --> Customer
     OrderProcess -- "Order confirmation" --> EmailProvider
     OrderProcess -- "Read/Write Order Data" --> DB_Order
@@ -54,11 +55,12 @@ flowchart TD
     AdminProcess -- "Manage Catalog" --> DB_Product
     AdminProcess -- "Manage Orders" --> DB_Order
     AdminProcess -- "Manage Payments" --> DB_Payment
+    AdminProcess -- "Write Audit Logs" --> DB_AdminLog
 
     classDef entity fill:#f9f,stroke:#333,stroke-width:2px;
-    classDef process fill:#bbf,stroke:#333,stroke-width:2px,shape:circle;
+    classDef process fill:#bbf,stroke:#333,stroke-width:2px;
     classDef datastore fill:#ffb,stroke:#333,stroke-width:2px;
 
     class Customer,Admin,GoogleOAuth,PaymentGateway,EmailProvider entity;
     class AuthProcess,CatalogProcess,OrderProcess,PaymentProcess,AdminProcess process;
-    class DB_User,DB_Product,DB_Order,DB_Payment datastore;
+    class DB_User,DB_Product,DB_Order,DB_Payment,DB_AdminLog datastore;
