@@ -81,15 +81,18 @@ export default class AdminService {
       revenue,
     }));
 
-    const topProductDetails = await Promise.all(
-      topProducts.map(async (item) => {
-        const product = await prisma.product.findUnique({
-          where: { id: item.productId },
-          select: { id: true, name: true, imageUrl: true, slug: true },
-        });
-        return { ...item, product };
-      }),
-    );
+    const productIds = topProducts.map((p) => p.productId);
+    const productsData = await prisma.product.findMany({
+      where: { id: { in: productIds } },
+      select: { id: true, name: true, imageUrl: true, slug: true },
+    });
+    
+    const productMap = new Map(productsData.map((p) => [p.id, p]));
+
+    const topProductDetails = topProducts.map((item) => ({
+      ...item,
+      product: productMap.get(item.productId) || null,
+    }));
 
     return {
       stats: {

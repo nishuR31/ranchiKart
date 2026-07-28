@@ -98,7 +98,7 @@ export const downloadInvoice = asyncHandler(async (req: FastifyRequest, res: Fas
     }
 
     const invoiceItems = order.items.map((item: any) => ({
-      name: item.product.name,
+      name: item.product?.name ?? "Unknown Product",
       variant: item.variant?.name,
       quantity: item.quantity,
       unitPrice: item.unitPrice,

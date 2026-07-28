@@ -22,14 +22,6 @@ function drawHRule(doc: PDFKit.PDFDocument, y: number, color = BRAND_BORDER) {
     .restore();
 }
 
-function hexToRgb(hex: string): [number, number, number] {
-  const h = hex.replace("#", "");
-  return [
-    parseInt(h.substring(0, 2), 16),
-    parseInt(h.substring(2, 4), 16),
-    parseInt(h.substring(4, 6), 16),
-  ];
-}
 
 /**
  * Generates a professional A4 PDF invoice and returns it as a Buffer.
@@ -63,14 +55,14 @@ export async function generateInvoicePdf(invoice: InvoiceData): Promise<Buffer> 
     // ── HEADER BANNER ─────────────────────────────────────────────────────────
     doc
       .rect(0, 0, 595, 90)
-      .fill(BRAND_DARK);
+      .fill(BRAND_LIGHT);
 
     // Orange accent bar at very top
     doc.rect(0, 0, 595, 5).fill(BRAND_ORANGE);
 
     // Brand name
     doc
-      .fillColor("#ffffff")
+      .fillColor(BRAND_DARK)
       .font("Helvetica-Bold")
       .fontSize(26)
       .text("Ranchi", 40, 25, { continued: true })
@@ -78,20 +70,20 @@ export async function generateInvoicePdf(invoice: InvoiceData): Promise<Buffer> 
       .text("Kart");
 
     doc
-      .fillColor("#94a3b8")
+      .fillColor(BRAND_GRAY)
       .font("Helvetica")
       .fontSize(8)
       .text("RANCHI'S OWN ONLINE STORE", 40, 56);
 
     // Invoice label on right
     doc
-      .fillColor("#ffffff")
+      .fillColor(BRAND_DARK)
       .font("Helvetica-Bold")
       .fontSize(20)
       .text("INVOICE", 0, 30, { align: "right", width: 555 });
 
     doc
-      .fillColor("#94a3b8")
+      .fillColor(BRAND_GRAY)
       .font("Helvetica")
       .fontSize(9)
       .text(`#${shortId}`, 0, 55, { align: "right", width: 555 });
@@ -124,11 +116,11 @@ export async function generateInvoicePdf(invoice: InvoiceData): Promise<Buffer> 
     y += 16;
 
     // ── PAID STAMP ────────────────────────────────────────────────────────────
-    const [or, og, ob] = hexToRgb(BRAND_ORANGE);
     doc
       .save()
       .roundedRect(440, y - 6, 76, 22, 4)
-      .fillAndStroke(`rgba(${or},${og},${ob},0.10)`, BRAND_ORANGE)
+      .lineWidth(1)
+      .stroke(BRAND_ORANGE)
       .restore();
     doc
       .fillColor(BRAND_ORANGE)
@@ -170,9 +162,9 @@ export async function generateInvoicePdf(invoice: InvoiceData): Promise<Buffer> 
     };
 
     // Table header row
-    doc.rect(40, y, pageWidth, 20).fill(BRAND_DARK);
+    doc.rect(40, y, pageWidth, 20).fill(BRAND_LIGHT);
     const headerY = y + 6;
-    doc.fillColor("#94a3b8").font("Helvetica-Bold").fontSize(8);
+    doc.fillColor(BRAND_GRAY).font("Helvetica-Bold").fontSize(8);
     doc.text("ITEM",       COL.item.x,  headerY);
     doc.text("QTY",        COL.qty.x,   headerY, { width: COL.qty.w,   align: "center" });
     doc.text("UNIT PRICE", COL.unit.x,  headerY, { width: COL.unit.w,  align: "right"  });
@@ -183,7 +175,7 @@ export async function generateInvoicePdf(invoice: InvoiceData): Promise<Buffer> 
     // Item rows
     for (let i = 0; i < invoice.items.length; i++) {
       const item = invoice.items[i];
-      const rowBg = i % 2 === 0 ? "#ffffff" : BRAND_LIGHT;
+      const rowBg = i % 2 === 0 ? "#ffffff" : "#fafafa";
 
       // Estimate row height
       const rowH = item.variant ? 34 : 22;
@@ -278,9 +270,15 @@ export async function generateInvoicePdf(invoice: InvoiceData): Promise<Buffer> 
     y += 8;
 
     // Grand total row
-    doc.rect(350, y - 2, 205, 26).fill(BRAND_DARK);
     doc
-      .fillColor("#ffffff")
+      .save()
+      .rect(350, y - 2, 205, 26)
+      .lineWidth(1)
+      .stroke(BRAND_ORANGE)
+      .restore();
+
+    doc
+      .fillColor(BRAND_DARK)
       .font("Helvetica-Bold")
       .fontSize(11)
       .text("TOTAL PAID", 355, y + 6, { width: totalsLabelW + 5 });
@@ -314,11 +312,11 @@ export async function generateInvoicePdf(invoice: InvoiceData): Promise<Buffer> 
 
     // ── FOOTER ────────────────────────────────────────────────────────────────
     const footerY = doc.page.height - 50;
-    doc.rect(0, footerY - 5, 595, 55).fill(BRAND_DARK);
+    doc.rect(0, footerY - 5, 595, 55).fill(BRAND_LIGHT);
     doc.rect(0, footerY - 5, 595, 4).fill(BRAND_ORANGE);
 
     doc
-      .fillColor("#94a3b8")
+      .fillColor(BRAND_GRAY)
       .font("Helvetica")
       .fontSize(8)
       .text(

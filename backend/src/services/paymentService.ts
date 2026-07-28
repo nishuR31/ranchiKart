@@ -37,7 +37,7 @@ export default class PaymentService {
     }
 
     const client = getRazorpayClient();
-    const receipt = `exkart_${order.id.slice(0, 18)}`;
+    const receipt = `ranchikart_${order.id.slice(0, 15)}`;
 
     if (!client && env.NODE_ENV === "production") {
       throw new InternalServerError("Razorpay keys are not configured");

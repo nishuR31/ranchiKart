@@ -36,6 +36,7 @@ type CheckoutData = {
 export default class OrderService {
   async createOrder(userId: string, data: CheckoutData) {
     const orderItems: Prisma.OrderItemUncheckedCreateWithoutOrderInput[] = [];
+    const itemCategoryIds = new Set<string>();
 
     for (const item of data.items) {
       const product = await prisma.product.findUniqueOrThrow({
@@ -45,6 +46,7 @@ export default class OrderService {
 
       if (!product.isActive) throw new BadRequestError(`${product.name} is not available`);
       assertSize(product, item.customWidthMm, item.customHeightMm);
+      itemCategoryIds.add(product.categoryId);
 
       const variant = item.variantId
         ? product.variants.find((v: any) => v.id === item.variantId)
@@ -68,6 +70,7 @@ export default class OrderService {
     }
 
     const subtotal = orderItems.reduce((sum, item) => sum + item.total, 0);
+    // Shipping fee is intentionally calculated on the pre-discount subtotal
     const shippingFee = subtotal > 99900 ? 0 : 6900;
 
     let discountAmount = 0;
@@ -84,6 +87,9 @@ export default class OrderService {
         (coupon.maxUses === null || coupon.usedCount < coupon.maxUses) &&
         subtotal >= coupon.minOrderAmount
       ) {
+        if (coupon.categoryId && (itemCategoryIds.size > 1 || !itemCategoryIds.has(coupon.categoryId))) {
+          throw new BadRequestError("This coupon is only valid for a specific category of products");
+        }
         discountAmount =
           coupon.type === "PERCENT"
             ? Math.round((subtotal * coupon.value) / 100)

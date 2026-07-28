@@ -35,9 +35,6 @@ import {
 } from "../utils/passkey.js";
 import { isEmail } from "../utils/isEmail.js";
 
-
-
-
 const userRepo = new UserRepository();
 
 type PublicUser = Omit<User, "passwordHash" | "totpSecret" | "refreshToken">;
@@ -197,7 +194,9 @@ export default class AuthService {
     }
 
     const user = await userRepo.findById(decoded.id);
+    if (!user) throw new UnauthorizedError("User not found.");
     if (user.isBanned) throw new ForbiddenError("Account is banned.");
+    if (user.isDeleted) throw new ForbiddenError("Account has been deactivated.");
 
     const tokens = generateTokenPair({ id: user.id, email: user.email, role: user.role });
     await storeRefreshToken(user.id, tokens.refreshToken!);
@@ -264,7 +263,7 @@ export default class AuthService {
     });
     if (!profileRes.ok) throw new UnauthorizedError("Failed to fetch Google profile.");
     const profile = (await profileRes.json()) as any;
-    console.log(profile)
+    // Note: profile.sub is the stable Google user ID
 
     if (!profile.email || !profile.email_verified) {
       throw new UnauthorizedError("Google email is missing or unverified.");
