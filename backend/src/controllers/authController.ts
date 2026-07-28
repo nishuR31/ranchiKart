@@ -45,6 +45,13 @@ export const register = asyncHandler(async (req: FastifyRequest, res: FastifyRep
       email: z.string().email(),
       name: z.string().min(2).max(80),
       password: z.string().min(8).max(120),
+      phone: z
+        .string()
+        .trim()
+        .regex(/^(\+91[\s-]?)?[6-9]\d{9}$/, {
+          message: "Enter a valid Indian mobile number",
+        })
+        .optional(),
     })
     .parse(req.body);
 
@@ -217,8 +224,7 @@ export const requestMagicLink = asyncHandler(async (req: FastifyRequest, res: Fa
   const { email } = z.object({ email: z.string().email() }).parse(req.body);
   try {
     const token = await authService.generateMagicLinkToken(email);
-    const link = `${env.NODE_ENV === "production" ? env.WEB_ORIGIN : "http://localhost:5173/api"}/v1/auth/magic-link/verify?token=${token}`;
-    // const link = `${env.WEB_ORIGIN}/magic-link/verify?token=${token}&time=${Date.now().toString()}&`;
+    const link = `${domain}/api/v1/auth/magic-link/verify?token=${token}`;
     // Look up the user for the email greeting — but don't leak whether the user exists
     await sendPasswordlessLoginEmail(email, "User", link, 15);
     // Never return the link/token in the response — it must only be accessible via email

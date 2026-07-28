@@ -107,6 +107,10 @@ export default class PaymentService {
 
     if (!payment) throw new NotFoundError("Payment not found");
 
+    if (payment.status === PaymentStatus.CAPTURED) {
+      return payment;
+    }
+
     const isMock = payment.providerOrderId.startsWith("mock_");
     const verified =
       isMock ||
@@ -118,18 +122,22 @@ export default class PaymentService {
 
     if (!verified) throw new BadRequestError("Payment signature verification failed");
 
-    const updated = await prisma.payment.update({
-      where: { id: payment.id },
-      data: {
-        status: PaymentStatus.CAPTURED,
-        providerPaymentId: data.razorpay_payment_id,
-        providerSignature: data.razorpay_signature,
-      },
-    });
+    const updated = await prisma.$transaction(async (tx) => {
+      const updatedPayment = await tx.payment.update({
+        where: { id: payment.id },
+        data: {
+          status: PaymentStatus.CAPTURED,
+          providerPaymentId: data.razorpay_payment_id,
+          providerSignature: data.razorpay_signature,
+        },
+      });
 
-    await prisma.order.update({
-      where: { id: data.orderId },
-      data: { status: OrderStatus.PAID },
+      await tx.order.update({
+        where: { id: data.orderId },
+        data: { status: OrderStatus.PAID },
+      });
+
+      return updatedPayment;
     });
 
     // Send invoice email (fire-and-forget — non-critical)

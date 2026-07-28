@@ -33,6 +33,7 @@ import {
   createPasskeyAuthenticationOptions,
   verifyPasskeyAuthentication,
 } from "../utils/passkey.js";
+import type { AuthenticatorTransportFuture as AuthenticatorTransport } from "@simplewebauthn/types";
 import { isEmail } from "../utils/isEmail.js";
 
 const userRepo = new UserRepository();

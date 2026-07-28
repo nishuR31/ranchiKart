@@ -204,6 +204,7 @@ export default class OrderService {
         data: {
           userId,
           paymentMethod: data.paymentMethod,
+          status: data.paymentMethod === "COD" ? OrderStatus.PROCESSING : OrderStatus.PENDING_PAYMENT,
           subtotal,
           shippingFee,
           discountAmount,
