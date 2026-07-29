@@ -231,7 +231,7 @@ export default class OrderService {
     const user = await prisma.user.findUnique({ where: { id: userId } });
     if (user) {
       await sendOrderConfirmation(user.email, user.name ?? "User", order.id, order.total).catch(console.error);
-      await sendOrderInvoiceEmail(order.id).catch(console.error);
+      // await sendOrderInvoiceEmail(order.id).catch(console.error);
     }
 
     return order;

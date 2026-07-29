@@ -208,7 +208,7 @@ export default class AuthService {
   // === Google OAuth ===
 
   private assertGoogleConfig() {
-    if (!env.GOOGLE_CLIENT_ID || !env.GOOGLE_CLIENT_SECRET || !env.GOOGLE_CALLBACK_URL) {
+    if (!env.GOOGLE_CLIENT_ID || !env.GOOGLE_CLIENT_SECRET) {
       throw new InternalServerError("Google OAuth is not configured.");
     }
   }
@@ -220,10 +220,10 @@ export default class AuthService {
   private getCallbackUrl(): string {
     // Must be identical in both the auth URL and the token exchange.
     // Google rejects the code if redirect_uri doesn't match exactly.
-    return env.NODE_ENV === "production"
-      ? env.GOOGLE_CALLBACK_URL!
-      : "http://localhost:5173/api/v1/auth/google/callback";
-    // : "http://localhost:3000/api/v1/auth/google/callback";
+    if (env.GOOGLE_CALLBACK_URL && env.GOOGLE_CALLBACK_URL.trim() !== "") {
+      return env.GOOGLE_CALLBACK_URL;
+    }
+    return `http://localhost:${env.API_PORT}/api/v1/auth/google/callback`;
   }
 
   getGoogleAuthUrl(state: string) {

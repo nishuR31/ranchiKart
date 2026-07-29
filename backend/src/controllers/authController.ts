@@ -22,7 +22,7 @@ import {
 import { sendPasswordlessLoginEmail } from "../config/email.js";
 import cookieOption from "../utils/cookieOptions.js";
 import env from "../config/env.js";
-const domain = env.NODE_ENV === "development" ? "http://localhost:5173" : env.WEB_ORIGIN
+const domain = (env.WEB_ORIGIN || "http://localhost:5173").replace(/\/$/, "");
 
 
 const authService = new AuthService();
