@@ -35,14 +35,14 @@ import {
 } from "../utils/passkey.js";
 import type { AuthenticatorTransportFuture as AuthenticatorTransport } from "@simplewebauthn/types";
 import { isEmail } from "../utils/isEmail.js";
+import { safeUser, SafeUser } from "../utils/safeUser.js";
 
 const userRepo = new UserRepository();
 
-type PublicUser = Omit<User, "passwordHash" | "totpSecret" | "refreshToken">;
+type PublicUser = SafeUser;
 
 function publicUser(user: User): PublicUser {
-  const { passwordHash: _, totpSecret: __, refreshToken: ___, ...safe } = user;
-  return safe;
+  return safeUser(user)!;
 }
 
 export default class AuthService {

@@ -47,6 +47,11 @@ describe("Users Endpoints", () => {
       expect(res.statusCode).toBe(200);
       const body = JSON.parse(res.payload);
       expect(body.data.user.name).toBe("Updated Name");
+      expect(body.data.user.passwordHash).toBeUndefined();
+      expect(body.data.user.totpSecret).toBeUndefined();
+      expect(body.data.user.refreshToken).toBeUndefined();
+      expect(body.data.user.emailOtpHash).toBeUndefined();
+      expect(body.data.user.emailOtpExpiry).toBeUndefined();
     });
   });
 

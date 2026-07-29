@@ -5,6 +5,7 @@ import asyncHandler from "../utils/asyncHandler.js";
 import { sendSuccess, notFoundError, internalServerError } from "../utils/response.js";
 import { code } from "status-map";
 import { NotFoundError } from "../utils/errors.js";
+import { safeUser } from "../utils/safeUser.js";
 
 const userService = new UserService();
 
@@ -38,7 +39,7 @@ export const updateProfile = asyncHandler(async (req: FastifyRequest, res: Fasti
   };
 
   const user = await userService.updateProfile(req.user!.id, body);
-  return sendSuccess(res, "Profile updated", code("ok") as number, { user });
+  return sendSuccess(res, "Profile updated", code("ok") as number, { user: safeUser(user) });
 });
 
 export const getAddresses = asyncHandler(async (req: FastifyRequest, res: FastifyReply) => {

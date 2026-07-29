@@ -1,6 +1,7 @@
 import { prisma } from "../config/prisma.js";
 import UserRepository from "../repositories/userRepository.js";
 import { NotFoundError } from "../utils/errors.js";
+import { safeUser } from "../utils/safeUser.js";
 
 const userRepo = new UserRepository();
 
@@ -42,7 +43,8 @@ export default class UserService {
   }
 
   async updateProfile(userId: string, data: UpdateProfileData) {
-    return userRepo.updateProfile(userId, data);
+    const updated = await userRepo.updateProfile(userId, data);
+    return safeUser(updated);
   }
 
   async getAddresses(userId: string) {
