@@ -10,7 +10,7 @@ import {
   Users,
 } from "lucide-react";
 import api, { extractError } from "../lib/api";
-import { formatINR } from "../lib/money";
+import { formatINR, formatCompactINR } from "../lib/money";
 import { Skeleton } from "../components/Loaders";
 import useShopStore from "../store/useShopStore";
 import useAuthStore from "../store/useAuthStore";
@@ -87,7 +87,7 @@ function DashboardTab() {
   return (
     <div>
       <div className="stat-cards">
-        <div className="stat-card"><span>Total Revenue</span><strong>{formatINR(stats.stats?.totalRevenue ?? 0)}</strong></div>
+        <div className="stat-card"><span>Total Revenue</span><strong>{formatCompactINR(stats.stats?.totalRevenue ?? 0)}</strong></div>
         <div className="stat-card"><span>Orders</span><strong>{stats.stats?.totalOrders ?? 0}</strong></div>
         <div className="stat-card"><span>Customers</span><strong>{stats.stats?.totalUsers ?? 0}</strong></div>
         <div className="stat-card"><span>Products</span><strong>{stats.stats?.totalProducts ?? 0}</strong></div>
@@ -95,7 +95,8 @@ function DashboardTab() {
       {stats.recentOrders?.length > 0 && (
         <>
           <h3>Recent Orders</h3>
-          <div className="table-wrapper">
+          {loading ? <div><Skeleton width="100%" height={400} /></div> : (
+        <div className="table-wrapper">
           <table className="admin-table">
             <thead><tr><th>Order #</th><th>Customer</th><th>Total</th><th>Status</th></tr></thead>
             <tbody>
@@ -122,6 +123,7 @@ function DashboardTab() {
 // PATCH /admin/products/:id/featured
 function ProductsTab() {
   const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [categories, setCategories] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({
@@ -131,6 +133,7 @@ function ProductsTab() {
   const showToast = useShopStore((s) => s.showToast);
 
   async function load() {
+    setLoading(true);
     try {
       const [prodRes, catRes] = await Promise.all([
         api.get("/admin/products"),
@@ -145,7 +148,7 @@ function ProductsTab() {
       }
     } catch (err) {
       console.error("Failed to load products/categories", err);
-    }
+    } finally { setLoading(false); }
   }
 
   useEffect(() => { load(); }, []);
@@ -227,6 +230,7 @@ function ProductsTab() {
           <button className="btn btn-primary btn-sm" type="submit">Save Product</button>
         </form>
       )}
+      {loading ? <div><Skeleton width="100%" height={400} /></div> :
 
       <div className="table-wrapper">
           <table className="admin-table">
@@ -254,6 +258,7 @@ function ProductsTab() {
         </tbody>
       </table>
         </div>
+      }
     </div>
   );
 }
@@ -331,6 +336,7 @@ function CategoriesTab() {
 // GET /admin/orders   PUT /admin/orders/:id/status
 function OrdersTab() {
   const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
   const showToast = useShopStore((s) => s.showToast);
 
   async function load() {
@@ -475,6 +481,7 @@ function CouponsTab() {
 // GET /admin/users   PATCH /admin/users/:id/ban   PATCH /admin/users/:id/role
 function UsersTab() {
   const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
   const showToast = useShopStore((s) => s.showToast);
 
   async function load() {

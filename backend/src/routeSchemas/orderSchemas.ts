@@ -8,7 +8,7 @@ const _checkoutZod = z.object({
   paymentMethod: z.nativeEnum(PaymentMethod),
   address: z.object({
     fullName: z.string().min(2),
-    phone: z.string().min(8),
+    phone: z.string().regex(/^(\+91[\s-]?)?[6-9]\d{9}$/, "Invalid phone number format"),
     line1: z.string().min(4),
     line2: z.string().optional(),
     city: z.string().min(2),

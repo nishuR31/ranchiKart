@@ -118,7 +118,7 @@ export default function HomePage() {
 
   return (
     <div className="home-page">
-      {showSnowfall && <Snowfall color="rgba(255, 255, 255, 0.4)" snowflakeCount={100} />}
+      {showSnowfall && <Snowfall color="rgba(255, 255, 255, 0.4)" snowflakeCount={100} style={{ position: 'fixed', width: '100vw', height: '100vh', zIndex: 10, pointerEvents: 'none' }} />}
 
       {/* ── Hero Banner ──────────────────────────────────────────────────── */}
       <section className="hero">

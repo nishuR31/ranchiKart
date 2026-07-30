@@ -23,7 +23,7 @@ export const updateProfile = asyncHandler(async (req: FastifyRequest, res: Fasti
   const raw = z
     .object({
       name: z.string().min(2).max(80).optional(),
-      phone: z.string().min(8).max(15).optional(),
+      phone: z.string().regex(/^(\+91[\s-]?)?[6-9]\d{9}$/, "Invalid phone number format").optional(),
       // Accepted from plain-JSON callers that already have a hosted URL
       avatarUrl: z.string().url().optional(),
       // Injected by avatarImageMiddleware after sharp→imgbb processing
@@ -52,7 +52,7 @@ export const addAddress = asyncHandler(async (req: FastifyRequest, res: FastifyR
     .object({
       label: z.string().max(30).default("Home"),
       fullName: z.string().min(2),
-      phone: z.string().min(8),
+      phone: z.string().regex(/^(\+91[\s-]?)?[6-9]\d{9}$/, "Invalid phone number format"),
       line1: z.string().min(4),
       line2: z.string().optional(),
       city: z.string().min(2),

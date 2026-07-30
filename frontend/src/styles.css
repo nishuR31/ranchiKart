@@ -259,6 +259,9 @@ input, select, textarea { font-family: inherit; }
 .category-strip a:hover { color: var(--brand); }
 .category-strip a:hover::after { right: 0; }
 
+.mobile-only-links { display: none; }
+.mobile-nav-divider { border: 0; height: 1px; background: var(--border); margin: 8px 0; }
+
 /* ---------- Buttons ---------- */
 .btn {
   display: inline-flex;
@@ -1030,11 +1033,24 @@ html.dark .status-cancelled { background: rgba(239, 91, 82, 0.18); color: #ef5b5
 }
 
 @media (max-width: 640px) {
+  .mobile-only-links { display: none; }
   .menu-toggle { display: block; }
   .search-bar { order: 3; flex-basis: 100%; max-width: none; }
   .navbar-inner { flex-wrap: wrap; }
   .category-strip { display: none; flex-direction: column; gap: 10px; border-top: none; }
   .category-strip.open { display: flex; }
+  
+  .mobile-only-links {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 4px;
+  }
+  .mobile-only-links a {
+    font-weight: 600;
+    color: var(--text);
+  }
+
   .hero { flex-direction: column; align-items: flex-start; padding: 28px 24px 52px; }
   .cart-item { grid-template-columns: 60px 1fr; grid-template-rows: auto auto; }
   .order-row { grid-template-columns: 1fr; text-align: left; }

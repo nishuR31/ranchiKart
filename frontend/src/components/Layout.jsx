@@ -160,6 +160,14 @@ export default function Layout() {
 
         {/* Dynamic category strip from API */}
         <div className={`category-strip ${menuOpen ? "open" : ""}`}>
+          <div className="mobile-only-links">
+            <Link to="/" onClick={() => setMenuOpen(false)}>Home</Link>
+            <Link to="/orders" onClick={() => setMenuOpen(false)}>My Orders</Link>
+            <Link to="/wishlist" onClick={() => setMenuOpen(false)}>Wishlist</Link>
+            <Link to="/profile" onClick={() => setMenuOpen(false)}>Profile</Link>
+            <Link to="/settings" onClick={() => setMenuOpen(false)}>Settings</Link>
+            <hr className="mobile-nav-divider" />
+          </div>
           {NAV_CATS.map((cat) => (
             <Link
               key={cat.slug}
