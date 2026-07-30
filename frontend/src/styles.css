@@ -202,20 +202,22 @@ input, select, textarea { font-family: inherit; }
 
 .account-menu { position: relative; }
 .account-dropdown {
-  display: none;
   position: absolute;
-  right: 0;
   top: 100%;
-  background: var(--surface);
+  right: 0;
+  background: var(--bg);
   border: 1px solid var(--border);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-lg);
-  min-width: 190px;
-  padding: 8px;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  min-width: 180px;
+  display: none;
   flex-direction: column;
-  z-index: 60;
+  padding: 8px 0;
+  z-index: 100;
+  margin-top: 8px;
 }
-.account-menu:hover .account-dropdown { display: flex; }
+.account-menu:hover .account-dropdown,
+.account-menu.open .account-dropdown { display: flex; }
 .account-name { font-weight: 700; padding: 6px 10px; color: var(--text-muted); font-size: 13px; }
 .account-dropdown a,
 .account-dropdown button {

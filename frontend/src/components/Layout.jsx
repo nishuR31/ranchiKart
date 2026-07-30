@@ -136,12 +136,20 @@ export default function Layout() {
               {cart.count > 0 && <span className="badge">{cart.count}</span>}
             </Link>
             {user ? (
-              <div className="account-menu">
-                <button className="icon-btn account-btn" title="Account">
+              <div 
+                className={`account-menu ${accountMenuOpen ? 'open' : ''}`}
+                onMouseEnter={() => setAccountMenuOpen(true)}
+                onMouseLeave={() => setAccountMenuOpen(false)}
+              >
+                <button 
+                  className="icon-btn account-btn" 
+                  title="Account" 
+                  onClick={() => setAccountMenuOpen(v => !v)}
+                >
                   <User size={20} />
                   <ChevronDown size={14} />
                 </button>
-                <div className="account-dropdown">
+                <div className="account-dropdown" onClick={() => setAccountMenuOpen(false)}>
                   <div className="account-name">Hi, {user.name?.split(" ")[0] ?? "User"}</div>
                   <Link to="/profile"><User size={14} /> Profile</Link>
                   <Link to="/orders"><PackageCheck size={14} /> My Orders</Link>

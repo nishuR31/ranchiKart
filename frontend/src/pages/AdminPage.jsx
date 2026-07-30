@@ -101,7 +101,7 @@ function DashboardTab() {
             <tbody>
               {stats.recentOrders.map((o) => (
                 <tr key={o.id}>
-                  <td>{o.orderNumber}</td>
+                  <td>{o.id.slice(-8).toUpperCase()}</td>
                   <td>{o.user?.name ?? o.userName}</td>
                   <td>{formatINR(o.total)}</td>
                   <td>{o.status}</td>
@@ -339,8 +339,13 @@ function OrdersTab() {
   const showToast = useShopStore((s) => s.showToast);
 
   async function load() {
-    const { data } = await api.get("/admin/orders");
-    setOrders(data.orders ?? data ?? []);
+    setLoading(true);
+    try {
+      const { data } = await api.get("/admin/orders");
+      setOrders(data.orders ?? data ?? []);
+    } finally {
+      setLoading(false);
+    }
   }
   useEffect(() => { load(); }, []);
 
@@ -363,7 +368,7 @@ function OrdersTab() {
             <tbody>
               {orders.map((o) => (
                 <tr key={o.id}>
-                  <td>{o.orderNumber}</td>
+                  <td>{o.id.slice(-8).toUpperCase()}</td>
                   <td>{o.user?.name}<br /><small>{o.address?.line1}, {o.address?.city}</small></td>
                   <td>{formatINR(o.total)}</td>
                   <td>{o.paymentMethod} · {o.paymentStatus}</td>
