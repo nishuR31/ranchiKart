@@ -1,5 +1,6 @@
 import { User } from "../../prisma/generated/client/index.js";
 import BaseRepository from "./baseRepository.js";
+import { isEmail } from "../utils/isEmail.js";
 
 export default class UserRepository extends BaseRepository<User> {
   constructor() {
@@ -12,6 +13,13 @@ export default class UserRepository extends BaseRepository<User> {
 
   async findByUsername(username: string): Promise<User | null> {
     return this.findOne({ username });
+  }
+
+  async findByEmailOrUsername(emailOrUsername: string): Promise<User | null> {
+    if (isEmail(emailOrUsername)) {
+      return this.findByEmail(emailOrUsername);
+    }
+    return this.findByUsername(emailOrUsername);
   }
 
   async updatePassword(userId: string, passwordHash: string): Promise<User> {

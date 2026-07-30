@@ -50,52 +50,52 @@ export default class CatalogService {
     const limit = query.limit ?? 24;
     const page = query.page ?? 1;
 
-    const category = query.category
-      ? await withRetry(() =>
-        prisma.category.findUnique({
-          where: { slug: query.category },
-          include: { children: true },
-        })
-      )
-      : null;
-    const categoryIds = category
-      ? [category.id, ...category.children.map((c: any) => c.id)]
-      : undefined;
-
-    type OrderByClause =
-      { basePrice: "asc" | "desc" } | { rating: "asc" | "desc" } | { createdAt: "asc" | "desc" };
-
-    const orderBy: OrderByClause =
-      query.sort === "price_asc"
-        ? { basePrice: "asc" }
-        : query.sort === "price_desc"
-          ? { basePrice: "desc" }
-          : query.sort === "rating"
-            ? { rating: "desc" }
-            : { createdAt: "desc" };
-
-    const where = {
-      isActive: true,
-      categoryId: categoryIds ? { in: categoryIds } : undefined,
-      kind: query.kind,
-      isFeatured: query.featured,
-      basePrice:
-        query.minPrice !== undefined || query.maxPrice !== undefined
-          ? { gte: query.minPrice, lte: query.maxPrice }
-          : undefined,
-      rating: query.minRating !== undefined ? { gte: query.minRating } : undefined,
-      ...(query.q
-        ? {
-          OR: [
-            { name: { contains: query.q, mode: "insensitive" as const } },
-            { description: { contains: query.q, mode: "insensitive" as const } },
-          ],
-        }
-        : {}),
-    };
-
     const cacheKey = `catalog:products:${JSON.stringify({ ...query, page, limit })}`.slice(0, 200);
     return getOrSet(cacheKey, 60, async () => {
+      const category = query.category
+        ? await withRetry(() =>
+          prisma.category.findUnique({
+            where: { slug: query.category },
+            include: { children: true },
+          })
+        )
+        : null;
+      const categoryIds = category
+        ? [category.id, ...category.children.map((c: any) => c.id)]
+        : undefined;
+
+      const where = {
+        isActive: true,
+        categoryId: categoryIds ? { in: categoryIds } : undefined,
+        kind: query.kind,
+        isFeatured: query.featured,
+        basePrice:
+          query.minPrice !== undefined || query.maxPrice !== undefined
+            ? { gte: query.minPrice, lte: query.maxPrice }
+            : undefined,
+        rating: query.minRating !== undefined ? { gte: query.minRating } : undefined,
+        ...(query.q
+          ? {
+            OR: [
+              { name: { contains: query.q, mode: "insensitive" as const } },
+              { description: { contains: query.q, mode: "insensitive" as const } },
+            ],
+          }
+          : {}),
+      };
+
+      type OrderByClause =
+        { basePrice: "asc" | "desc" } | { rating: "asc" | "desc" } | { createdAt: "asc" | "desc" };
+
+      const orderBy: OrderByClause =
+        query.sort === "price_asc"
+          ? { basePrice: "asc" }
+          : query.sort === "price_desc"
+            ? { basePrice: "desc" }
+            : query.sort === "rating"
+              ? { rating: "desc" }
+              : { createdAt: "desc" };
+
       const [products, total] = await withRetry(() =>
         Promise.all([
           prisma.product.findMany({

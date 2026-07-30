@@ -296,12 +296,12 @@ export default class AuthService {
 
   // === Magic Links / Passwordless ===
 
-  async generateMagicLinkToken(email: string): Promise<string> {
-    const user = await userRepo.findByEmail(email.toLowerCase());
+  async generateMagicLinkToken(emailOrUsername: string): Promise<{ token: string; email: string }> {
+    const user = await userRepo.findByEmailOrUsername(emailOrUsername.toLowerCase());
     if (!user) throw new NotFoundError("User not found.");
 
     const token = generateAccessToken({ id: user.id, email: user.email, role: user.role });
-    return token;
+    return { token, email: user.email };
   };
 
   async verifyMagicLink(token: string): Promise<{ user: PublicUser, tokens: TokenPair }> {
@@ -404,8 +404,8 @@ export default class AuthService {
     return true;
   }
 
-  async generatePasskeyAuthenticationOptions(email: string) {
-    const user = await userRepo.findByEmail(email.toLowerCase());
+  async generatePasskeyAuthenticationOptions(emailOrUsername: string) {
+    const user = await userRepo.findByEmailOrUsername(emailOrUsername.toLowerCase());
     if (!user) throw new NotFoundError("User not found.");
 
     const passkeys = await prisma.passkeyCredential.findMany({ where: { userId: user.id } });

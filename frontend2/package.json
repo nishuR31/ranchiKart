@@ -1,0 +1,30 @@
+{
+  "name": "ranchikart-client",
+  "version": "2.3.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "img": "bun run scripts/image.js && find public -name \"*.png\" -exec optipng -o7 {} \\;",
+    "docker:prod": "docker build -t prod -f Dockerfile .",
+    "docker:dev": "docker build -t dev -f Dockerfile_Dev .",
+    "sitemap": "bun run scripts/sitemap.js"
+  },
+  "dependencies": {
+    "@simplewebauthn/browser": "^13.3.0",
+    "axios": "^1.7.7",
+    "lucide-react": "^0.441.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.26.2",
+    "sharp": "^0.35.3",
+    "zustand": "^4.5.5"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^6.0.3",
+    "lighthouse": "^13.4.0",
+    "vite": "^8.1.4"
+  }
+}

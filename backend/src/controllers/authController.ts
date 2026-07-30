@@ -223,14 +223,14 @@ export const googleCallback = asyncHandler(async (req: FastifyRequest, res: Fast
 // === Magic Links ===
 
 export const requestMagicLink = asyncHandler(async (req: FastifyRequest, res: FastifyReply) => {
-  const { email } = z.object({ email: z.string().email() }).parse(req.body);
+  const { emailOrUsername } = z.object({ emailOrUsername: z.string() }).parse(req.body);
   try {
-    const token = await authService.generateMagicLinkToken(email);
+    const { token, email } = await authService.generateMagicLinkToken(emailOrUsername);
     const link = `${domain}/api/v1/auth/magic-link/verify?token=${token}`;
     // Look up the user for the email greeting — but don't leak whether the user exists
     await sendPasswordlessLoginEmail(email, "User", link, 15);
     // Never return the link/token in the response — it must only be accessible via email
-    return sendSuccess(res, "If an account with that email exists, a magic link has been sent.", code("ok") as number, null);
+    return sendSuccess(res, "If an account with that email or username exists, a magic link has been sent.", code("ok") as number, null);
   } catch (err: any) {
     // Return generic success even on error to prevent email enumeration
     return sendSuccess(res, "If an account with that email exists, a magic link has been sent.", code("ok") as number, null);
@@ -314,9 +314,9 @@ export const verifyPasskeyRegistration = asyncHandler(
 
 export const generatePasskeyAuthentication = asyncHandler(
   async (req: FastifyRequest, res: FastifyReply) => {
-    const { email } = z.object({ email: z.string().email() }).parse(req.body);
+    const { emailOrUsername } = z.object({ emailOrUsername: z.string() }).parse(req.body);
     try {
-      const { options, userId } = await authService.generatePasskeyAuthenticationOptions(email);
+      const { options, userId } = await authService.generatePasskeyAuthenticationOptions(emailOrUsername);
       res.cookie("passkey_auth_user", userId, {
         httpOnly: true,
         secure: env.NODE_ENV === "production" ? true : false,

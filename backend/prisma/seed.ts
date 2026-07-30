@@ -47,11 +47,71 @@ const indianLastNames = ["Sharma", "Patel", "Singh", "Kumar", "Das", "Kaur", "Gu
 const indianCities = ["Bengaluru", "Mumbai", "Delhi", "Hyderabad", "Chennai", "Kolkata", "Pune", "Ahmedabad", "Jaipur", "Surat", "Lucknow", "Kanpur", "Nagpur", "Indore", "Thane", "Bhopal", "Visakhapatnam"];
 const indianStates = ["Karnataka", "Maharashtra", "Delhi", "Telangana", "Tamil Nadu", "West Bengal", "Gujarat", "Rajasthan", "Uttar Pradesh", "Madhya Pradesh", "Andhra Pradesh"];
 
-const generateSlug = (name: string) => name.toLowerCase().replace(/[^a-z0-9]+/g, "-") + "-" + rand(1000, 9999);
+const kindToCategoryName: Record<string, string> = {
+  EATABLE: "Grocery & Gourmet Foods",
+  STATIONERY: "Books & Stationery",
+  ELECTRONIC: "Electronics & Gadgets",
+  CLOTHING: "Fashion & Apparel",
+  SHOE: "Footwear",
+  BAG: "Bags & Luggage",
+  ACCESSORY: "Accessories",
+  JEWELLERY: "Jewellery",
+  BEAUTY: "Beauty & Personal Care",
+  HEALTH: "Health & Wellness",
+  SPORT: "Sports & Fitness",
+  HOME: "Home Decor",
+  KITCHEN: "Kitchen & Dining",
+  GARDEN: "Garden & Outdoors",
+  PET: "Pet Supplies",
+  BABY: "Baby Products",
+  TOY: "Toys & Games",
+  STAMP: "Stamps & Seals",
+  BOARD: "Boards & Signs",
+  OTHER: "Miscellaneous"
+};
+
+const kindToSubcategories: Record<string, string[]> = {
+  EATABLE: ["Snacks & Sweets", "Beverages", "Cooking Essentials"],
+  STATIONERY: ["Office Supplies", "Notebooks & Diaries", "Pens & Pencils"],
+  ELECTRONIC: ["Mobile Accessories", "Computers & Laptops", "Audio & Video"],
+  CLOTHING: ["Men's Clothing", "Women's Clothing", "Winter Wear"],
+  SHOE: ["Sports Shoes", "Casual Shoes", "Formal Shoes"],
+  BAG: ["Backpacks", "Handbags", "Travel Bags"],
+  ACCESSORY: ["Sunglasses", "Watches", "Belts & Wallets"],
+  JEWELLERY: ["Necklaces", "Rings", "Earrings"],
+  BEAUTY: ["Skincare", "Makeup", "Haircare"],
+  HEALTH: ["Supplements", "Fitness Equipment", "Medical Supplies"],
+  SPORT: ["Cricket", "Football", "Yoga & Fitness"],
+  HOME: ["Bedding", "Home Decor", "Lighting"],
+  KITCHEN: ["Cookware", "Tableware", "Storage"],
+  GARDEN: ["Plants & Seeds", "Gardening Tools", "Pots & Planters"],
+  PET: ["Dog Supplies", "Cat Supplies", "Pet Grooming"],
+  BABY: ["Baby Care", "Baby Clothing", "Diapering"],
+  TOY: ["Action Figures", "Educational Toys", "Board Games"],
+  STAMP: ["Rubber Stamps", "Custom Stamps", "Ink Pads"],
+  BOARD: ["Whiteboards", "Notice Boards", "Chalkboards"],
+  OTHER: ["Gift Cards", "Party Supplies", "Festive Needs"]
+};
+
+const generateSlug = (name: string) => name.toLowerCase().replace(/[^a-z0-9]+/g, "-");
 
 async function main() {
   console.log("🚀 Starting vast database seed...");
   const startTime = Date.now();
+
+  console.log("🧹 Clearing old seed data...");
+  await prisma.payment.deleteMany();
+  await prisma.orderItem.deleteMany();
+  await prisma.order.deleteMany();
+  await prisma.coupon.deleteMany();
+  await prisma.wishlist.deleteMany();
+  await prisma.review.deleteMany();
+  await prisma.productVariant.deleteMany();
+  await prisma.product.deleteMany();
+  await prisma.category.deleteMany();
+  await prisma.savedAddress.deleteMany();
+  // Don't delete users to avoid losing admin/login, or you can uncomment below if you want a fresh user base:
+  // await prisma.user.deleteMany();
 
   // ── 1. GENERATE CATEGORIES ──────────────────────────────────────────
   console.log("📦 Generating Categories...");
@@ -59,17 +119,38 @@ async function main() {
   const categoriesMap = new Map<string, string>(); // slug -> id
   const categoryObjs: any[] = [];
 
+  // Safe keywords for loremflickr to prevent NSFW results from random specific keywords
+  const safeKeywords: Record<string, string> = {
+    CLOTHING: "clothes,fashion",
+    ACCESSORY: "accessory,jewelry",
+    ELECTRONIC: "gadget,electronics",
+    HOME: "furniture,home",
+    BEAUTY: "cosmetics,skincare",
+    EATABLE: "food,grocery",
+    BAG: "bag,backpack",
+    FOOTWEAR: "shoes,sneakers",
+    BOOK: "book,stationery",
+    TOY: "toy,game",
+    BOARD: "boardgame,chess",
+    BABY: "babytoys,crib",
+    GARDEN: "plant,garden",
+    HEALTH: "vitamin,health",
+    SPORT: "sport,fitness",
+    OTHER: "product,box"
+  };
+
   for (const kind of kinds) {
-    // Parent category
-    const parentSlug = generateSlug(`${kind} Core`);
+    const parentName = kindToCategoryName[kind] || kind;
+    const parentSlug = generateSlug(parentName);
+    const safeKey = safeKeywords[kind] || "product";
     const parent = await prisma.category.upsert({
       where: { slug: parentSlug },
       update: {},
       create: {
         slug: parentSlug,
-        name: `${kind} Core`,
-        description: `All ${kind} products`,
-        imageUrl: `https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?w=400&q=80`,
+        name: parentName,
+        description: `All ${parentName.toLowerCase()}`,
+        imageUrl: `https://loremflickr.com/800/800/${safeKey}?random=${rand(1, 10000)}`,
         kind: kind,
       }
     });
@@ -77,16 +158,17 @@ async function main() {
     categoryObjs.push(parent);
 
     // Subcategories
-    for (let i = 0; i < 3; i++) {
-      const subSlug = generateSlug(`${kind} Sub ${i}`);
+    const subs = kindToSubcategories[kind] || ["Essentials", "Premium", "Basic"];
+    for (const subName of subs) {
+      const subSlug = generateSlug(`${parentName} ${subName}`);
       const sub = await prisma.category.upsert({
         where: { slug: subSlug },
         update: {},
         create: {
           slug: subSlug,
-          name: `${kind} Essentials ${i + 1}`,
-          description: `Premium selection of ${kind} items`,
-          imageUrl: `https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?w=400&q=80`,
+          name: subName,
+          description: `Premium selection of ${subName.toLowerCase()}`,
+          imageUrl: `https://loremflickr.com/800/800/${safeKey},${subName.split(" ")[0].toLowerCase()}?random=${rand(1, 10000)}`,
           kind: kind,
           parentId: parent.id
         }
@@ -114,8 +196,11 @@ async function main() {
       const material = pick(materials);
       const name = `${adjective} ${baseName}`;
       const slug = generateSlug(name);
-      const basePrice = rand(100, 10000) * 100; // 100 to 10000 INR in paisa
+      // More reasonable prices: 50 to 3000 INR
+      const basePrice = rand(50, 3000) * 100;
       const category = pick(subCategories) || categoryObjs.find(c => c.kind === kind);
+
+      const safeKey = safeKeywords[kind] || "product";
 
       productsList.push({
         slug,
@@ -123,10 +208,10 @@ async function main() {
         description: `This ${adjective.toLowerCase()} ${baseName.toLowerCase()} is crafted from high-quality ${material.toLowerCase()}. Perfect for everyday use, offering great durability and style.`,
         kind,
         categoryId: category!.id,
-        imageUrl: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&q=80", // generic product image
+        imageUrl: `https://loremflickr.com/800/800/${safeKey}?random=${rand(1, 10000)}`,
         gallery: [
-          "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&q=80",
-          "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&q=80"
+          `https://loremflickr.com/800/800/${safeKey}?random=${rand(1, 10000)}`,
+          `https://loremflickr.com/800/800/${safeKey}?random=${rand(1, 10000)}`
         ],
         basePrice,
         currency: "INR",
