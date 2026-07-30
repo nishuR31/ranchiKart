@@ -95,7 +95,6 @@ function DashboardTab() {
       {stats.recentOrders?.length > 0 && (
         <>
           <h3>Recent Orders</h3>
-          {loading ? <div><Skeleton width="100%" height={400} /></div> : (
         <div className="table-wrapper">
           <table className="admin-table">
             <thead><tr><th>Order #</th><th>Customer</th><th>Total</th><th>Status</th></tr></thead>
@@ -357,27 +356,28 @@ function OrdersTab() {
 
   return (
     <div>
-      <h3>Orders ({orders.length})</h3>
-      <div className="table-wrapper">
+      {loading ? <div><Skeleton width="100%" height={400} /></div> : (
+        <div className="table-wrapper">
           <table className="admin-table">
-        <thead><tr><th>Order #</th><th>Customer</th><th>Total</th><th>Payment</th><th>Status</th></tr></thead>
-        <tbody>
-          {orders.map((o) => (
-            <tr key={o.id}>
-              <td>{o.orderNumber}</td>
-              <td>{o.user?.name}<br /><small>{o.address?.line1}, {o.address?.city}</small></td>
-              <td>{formatINR(o.total)}</td>
-              <td>{o.paymentMethod} · {o.paymentStatus}</td>
-              <td>
-                <select value={o.status} onChange={(e) => updateStatus(o.id, e.target.value)}>
-                  {ORDER_STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
-                </select>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+            <thead><tr><th>Order #</th><th>Customer</th><th>Total</th><th>Payment</th><th>Status</th></tr></thead>
+            <tbody>
+              {orders.map((o) => (
+                <tr key={o.id}>
+                  <td>{o.orderNumber}</td>
+                  <td>{o.user?.name}<br /><small>{o.address?.line1}, {o.address?.city}</small></td>
+                  <td>{formatINR(o.total)}</td>
+                  <td>{o.paymentMethod} · {o.paymentStatus}</td>
+                  <td>
+                    <select value={o.status} onChange={(e) => updateStatus(o.id, e.target.value)}>
+                      {ORDER_STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
+                    </select>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
+      )}
     </div>
   );
 }
