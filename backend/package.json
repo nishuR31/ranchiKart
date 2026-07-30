@@ -1,6 +1,6 @@
 {
   "name": "@ranchiKart/api",
-  "version": "2.2.0",
+  "version": "2.4.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -33,6 +33,7 @@
     "@fastify/swagger": "^9.7.0",
     "@fastify/swagger-ui": "^6.0.0",
     "@prisma/client": "^6.9.0",
+    "@prisma/internals": "^6.9.0",
     "@simplewebauthn/server": "12.0.0",
     "@types/nodemailer": "^8.0.0",
     "argon2": "^0.43.0",

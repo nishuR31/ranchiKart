@@ -1,0 +1,769 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 1742" width="1100" height="1742" style="background:#f8fafc;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif">
+<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+    <path d="M 0 1 L 10 5 L 0 9 z" fill="#475569"/>
+  </marker>
+  <filter id="shadow" x="-3%" y="-3%" width="106%" height="106%">
+    <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#0f172a" flood-opacity="0.07"/>
+  </filter>
+</defs>
+<rect x="45" y="45" width="200" height="638" rx="5" fill="#ffffff" stroke="#cbd5e1" stroke-width="1" filter="url(#shadow)"/>
+<rect x="45" y="45" width="200" height="32" rx="5" fill="#f1f5f9"/>
+<rect x="45" y="72" width="200" height="5" fill="#f1f5f9"/>
+<line x1="45" y1="77" x2="245" y2="77" stroke="#cbd5e1" stroke-width="1"/>
+<text x="55" y="65" font-size="12" font-weight="700" fill="#0f172a">User</text>
+<rect x="51" y="81" width="18" height="12" rx="2" fill="#2563eb"/>
+<text x="60" y="90" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#ffffff">PK</text>
+<text x="72" y="91" font-size="9.5" font-weight="500" fill="#334155">id</text>
+<text x="239" y="91" text-anchor="end" font-size="8.5" fill="#94a3b8">String</text>
+<rect x="46" y="97" width="198" height="20" fill="#f8fafc"/>
+<rect x="51" y="101" width="18" height="12" rx="2" fill="#7c3aed"/>
+<text x="60" y="110" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#ffffff">UQ</text>
+<text x="72" y="111" font-size="9.5" font-weight="500" fill="#334155">email</text>
+<text x="239" y="111" text-anchor="end" font-size="8.5" fill="#94a3b8">String</text>
+<rect x="51" y="121" width="18" height="12" rx="2" fill="#7c3aed"/>
+<text x="60" y="130" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#ffffff">UQ</text>
+<text x="72" y="131" font-size="9.5" font-weight="500" fill="#334155">username</text>
+<text x="239" y="131" text-anchor="end" font-size="8.5" fill="#94a3b8">String?</text>
+<rect x="46" y="137" width="198" height="20" fill="#f8fafc"/>
+<text x="51" y="151" font-size="9.5" font-weight="500" fill="#334155">name</text>
+<text x="239" y="151" text-anchor="end" font-size="8.5" fill="#94a3b8">String?</text>
+<text x="51" y="171" font-size="9.5" font-weight="500" fill="#334155">passwordHash</text>
+<text x="239" y="171" text-anchor="end" font-size="8.5" fill="#94a3b8">String?</text>
+<rect x="46" y="177" width="198" height="20" fill="#f8fafc"/>
+<text x="51" y="191" font-size="9.5" font-weight="500" fill="#334155">role</text>
+<text x="239" y="191" text-anchor="end" font-size="8.5" fill="#94a3b8">Role</text>
+<text x="51" y="211" font-size="9.5" font-weight="500" fill="#334155">avatarUrl</text>
+<text x="239" y="211" text-anchor="end" font-size="8.5" fill="#94a3b8">String?</text>
+<rect x="46" y="217" width="198" height="20" fill="#f8fafc"/>
+<text x="51" y="231" font-size="9.5" font-weight="500" fill="#334155">gender</text>
+<text x="239" y="231" text-anchor="end" font-size="8.5" fill="#94a3b8">String?</text>
+<text x="51" y="251" font-size="9.5" font-weight="500" fill="#334155">phone</text>
+<text x="239" y="251" text-anchor="end" font-size="8.5" fill="#94a3b8">String?</text>
+<rect x="46" y="257" width="198" height="20" fill="#f8fafc"/>
+<text x="51" y="271" font-size="9.5" font-weight="500" fill="#334155">isEmailVerified</text>
+<text x="239" y="271" text-anchor="end" font-size="8.5" fill="#94a3b8">Boolean</text>
+<text x="51" y="291" font-size="9.5" font-weight="500" fill="#334155">emailOtpHash</text>
+<text x="239" y="291" text-anchor="end" font-size="8.5" fill="#94a3b8">String?</text>
+<rect x="46" y="297" width="198" height="20" fill="#f8fafc"/>
+<text x="51" y="311" font-size="9.5" font-weight="500" fill="#334155">emailOtpExpiry</text>
+<text x="239" y="311" text-anchor="end" font-size="8.5" fill="#94a3b8">DateTime?</text>
+<text x="51" y="331" font-size="9.5" font-weight="500" fill="#334155">coins</text>
+<text x="239" y="331" text-anchor="end" font-size="8.5" fill="#94a3b8">Int</text>
+<rect x="46" y="337" width="198" height="20" fill="#f8fafc"/>
+<text x="51" y="351" font-size="9.5" font-weight="500" fill="#334155">isBanned</text>
+<text x="239" y="351" text-anchor="end" font-size="8.5" fill="#94a3b8">Boolean</text>
+<text x="51" y="371" font-size="9.5" font-weight="500" fill="#334155">banReason</text>
+<text x="239" y="371" text-anchor="end" font-size="8.5" fill="#94a3b8">String?</text>
+<rect x="46" y="377" width="198" height="20" fill="#f8fafc"/>
+<text x="51" y="391" font-size="9.5" font-weight="500" fill="#334155">lastLogin</text>
+<text x="239" y="391" text-anchor="end" font-size="8.5" fill="#94a3b8">DateTime</text>
+<text x="51" y="411" font-size="9.5" font-weight="500" fill="#334155">refreshToken</text>
+<text x="239" y="411" text-anchor="end" font-size="8.5" fill="#94a3b8">String?</text>
+<rect x="46" y="417" width="198" height="20" fill="#f8fafc"/>
+<text x="51" y="431" font-size="9.5" font-weight="500" fill="#334155">totpSecret</text>
+<text x="239" y="431" text-anchor="end" font-size="8.5" fill="#94a3b8">String?</text>
+<text x="51" y="451" font-size="9.5" font-weight="500" fill="#334155">isTotpEnabled</text>
+<text x="239" y="451" text-anchor="end" font-size="8.5" fill="#94a3b8">Boolean</text>
+<rect x="46" y="457" width="198" height="20" fill="#f8fafc"/>
+<text x="51" y="471" font-size="9.5" font-weight="500" fill="#334155">isDeleted</text>
+<text x="239" y="471" text-anchor="end" font-size="8.5" fill="#94a3b8">Boolean</text>
+<text x="51" y="491" font-size="9.5" font-weight="500" fill="#334155">deletedAt</text>
+<text x="239" y="491" text-anchor="end" font-size="8.5" fill="#94a3b8">DateTime?</text>
+<rect x="46" y="497" width="198" height="20" fill="#f8fafc"/>
+<text x="51" y="511" font-size="9.5" font-weight="500" fill="#334155">scheduledHardDeleteAt</text>
+<text x="239" y="511" text-anchor="end" font-size="8.5" fill="#94a3b8">DateTime?</text>
+<rect x="51" y="521" width="18" height="12" rx="2" fill="#059669"/>
+<text x="60" y="530" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#ffffff">FK</text>
+<text x="72" y="531" font-size="9.5" font-weight="500" fill="#334155">orders</text>
+<text x="239" y="531" text-anchor="end" font-size="8.5" fill="#94a3b8">Order[]</text>
+<rect x="46" y="537" width="198" height="20" fill="#f8fafc"/>
+<rect x="51" y="541" width="18" height="12" rx="2" fill="#059669"/>
+<text x="60" y="550" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#ffffff">FK</text>
+<text x="72" y="551" font-size="9.5" font-weight="500" fill="#334155">reviews</text>
+<text x="239" y="551" text-anchor="end" font-size="8.5" fill="#94a3b8">Review[]</text>
+<rect x="51" y="561" width="18" height="12" rx="2" fill="#059669"/>
+<text x="60" y="570" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#ffffff">FK</text>
+<text x="72" y="571" font-size="9.5" font-weight="500" fill="#334155">wishlist</text>
+<text x="239" y="571" text-anchor="end" font-size="8.5" fill="#94a3b8">Wishlist[]</text>
+<rect x="46" y="577" width="198" height="20" fill="#f8fafc"/>
+<rect x="51" y="581" width="18" height="12" rx="2" fill="#059669"/>
+<text x="60" y="590" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#ffffff">FK</text>
+<text x="72" y="591" font-size="9.5" font-weight="500" fill="#334155">savedAddresses</text>
+<text x="239" y="591" text-anchor="end" font-size="8.5" fill="#94a3b8">SavedAddress[]</text>
+<rect x="51" y="601" width="18" height="12" rx="2" fill="#059669"/>
+<text x="60" y="610" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#ffffff">FK</text>
+<text x="72" y="611" font-size="9.5" font-weight="500" fill="#334155">adminLogs</text>
+<text x="239" y="611" text-anchor="end" font-size="8.5" fill="#94a3b8">AdminLog[]</text>
+<rect x="46" y="617" width="198" height="20" fill="#f8fafc"/>
+<rect x="51" y="621" width="18" height="12" rx="2" fill="#059669"/>
+<text x="60" y="630" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#ffffff">FK</text>
+<text x="72" y="631" font-size="9.5" font-weight="500" fill="#334155">passkeys</text>
+<text x="239" y="631" text-anchor="end" font-size="8.5" fill="#94a3b8">PasskeyCredential[]</text>
+<text x="51" y="651" font-size="9.5" font-weight="500" fill="#334155">createdAt</text>
+<text x="239" y="651" text-anchor="end" font-size="8.5" fill="#94a3b8">DateTime</text>
+<rect x="46" y="657" width="198" height="20" fill="#f8fafc"/>
+<text x="51" y="671" font-size="9.5" font-weight="500" fill="#334155">updatedAt</text>
+<text x="239" y="671" text-anchor="end" font-size="8.5" fill="#94a3b8">DateTime</text>
+<rect x="45" y="723" width="200" height="218" rx="5" fill="#ffffff" stroke="#cbd5e1" stroke-width="1" filter="url(#shadow)"/>
+<rect x="45" y="723" width="200" height="32" rx="5" fill="#f1f5f9"/>
+<rect x="45" y="750" width="200" height="5" fill="#f1f5f9"/>
+<line x1="45" y1="755" x2="245" y2="755" stroke="#cbd5e1" stroke-width="1"/>
+<text x="55" y="743" font-size="12" font-weight="700" fill="#0f172a">PasskeyCredential</text>
+<rect x="51" y="759" width="18" height="12" rx="2" fill="#2563eb"/>
+<text x="60" y="768" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#ffffff">PK</text>
+<text x="72" y="769" font-size="9.5" font-weight="500" fill="#334155">id</text>
+<text x="239" y="769" text-anchor="end" font-size="8.5" fill="#94a3b8">String</text>
+<rect x="46" y="775" width="198" height="20" fill="#f8fafc"/>
+<rect x="51" y="779" width="18" height="12" rx="2" fill="#059669"/>
+<text x="60" y="788" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#ffffff">FK</text>
+<text x="72" y="789" font-size="9.5" font-weight="500" fill="#334155">userId</text>
+<text x="239" y="789" text-anchor="end" font-size="8.5" fill="#94a3b8">String</text>
+<rect x="51" y="799" width="18" height="12" rx="2" fill="#059669"/>
+<text x="60" y="808" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#ffffff">FK</text>
+<text x="72" y="809" font-size="9.5" font-weight="500" fill="#334155">user</text>
+<text x="239" y="809" text-anchor="end" font-size="8.5" fill="#94a3b8">User</text>
+<rect x="46" y="815" width="198" height="20" fill="#f8fafc"/>
+<rect x="51" y="819" width="18" height="12" rx="2" fill="#7c3aed"/>
+<text x="60" y="828" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#ffffff">UQ</text>
+<text x="72" y="829" font-size="9.5" font-weight="500" fill="#334155">credentialID</text>
+<text x="239" y="829" text-anchor="end" font-size="8.5" fill="#94a3b8">String</text>
+<text x="51" y="849" font-size="9.5" font-weight="500" fill="#334155">credentialPublicKey</text>
+<text x="239" y="849" text-anchor="end" font-size="8.5" fill="#94a3b8">Bytes</text>
+<rect x="46" y="855" width="198" height="20" fill="#f8fafc"/>
+<text x="51" y="869" font-size="9.5" font-weight="500" fill="#334155">counter</text>
+<text x="239" y="869" text-anchor="end" font-size="8.5" fill="#94a3b8">BigInt</text>
+<text x="51" y="889" font-size="9.5" font-weight="500" fill="#334155">transports</text>
+<text x="239" y="889" text-anchor="end" font-size="8.5" fill="#94a3b8">String[]</text>
+<rect x="46" y="895" width="198" height="20" fill="#f8fafc"/>
+<text x="51" y="909" font-size="9.5" font-weight="500" fill="#334155">createdAt</text>
+<text x="239" y="909" text-anchor="end" font-size="8.5" fill="#94a3b8">DateTime</text>
+<text x="51" y="929" font-size="9.5" font-weight="500" fill="#334155">updatedAt</text>
+<text x="239" y="929" text-anchor="end" font-size="8.5" fill="#94a3b8">DateTime</text>
+<rect x="855" y="45" width="200" height="298" rx="5" fill="#ffffff" stroke="#cbd5e1" stroke-width="1" filter="url(#shadow)"/>
+<rect x="855" y="45" width="200" height="32" rx="5" fill="#f1f5f9"/>
+<rect x="855" y="72" width="200" height="5" fill="#f1f5f9"/>
+<line x1="855" y1="77" x2="1055" y2="77" stroke="#cbd5e1" stroke-width="1"/>
+<text x="865" y="65" font-size="12" font-weight="700" fill="#0f172a">Category</text>
+<rect x="861" y="81" width="18" height="12" rx="2" fill="#2563eb"/>
+<text x="870" y="90" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#ffffff">PK</text>
+<text x="882" y="91" font-size="9.5" font-weight="500" fill="#334155">id</text>
+<text x="1049" y="91" text-anchor="end" font-size="8.5" fill="#94a3b8">String</text>
+<rect x="856" y="97" width="198" height="20" fill="#f8fafc"/>
+<rect x="861" y="101" width="18" height="12" rx="2" fill="#7c3aed"/>
+<text x="870" y="110" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#ffffff">UQ</text>
+<text x="882" y="111" font-size="9.5" font-weight="500" fill="#334155">slug</text>
+<text x="1049" y="111" text-anchor="end" font-size="8.5" fill="#94a3b8">String</text>
+<text x="861" y="131" font-size="9.5" font-weight="500" fill="#334155">name</text>
+<text x="1049" y="131" text-anchor="end" font-size="8.5" fill="#94a3b8">String</text>
+<rect x="856" y="137" width="198" height="20" fill="#f8fafc"/>
+<text x="861" y="151" font-size="9.5" font-weight="500" fill="#334155">description</text>
+<text x="1049" y="151" text-anchor="end" font-size="8.5" fill="#94a3b8">String</text>
+<text x="861" y="171" font-size="9.5" font-weight="500" fill="#334155">imageUrl</text>
+<text x="1049" y="171" text-anchor="end" font-size="8.5" fill="#94a3b8">String</text>
+<rect x="856" y="177" width="198" height="20" fill="#f8fafc"/>
+<text x="861" y="191" font-size="9.5" font-weight="500" fill="#334155">kind</text>
+<text x="1049" y="191" text-anchor="end" font-size="8.5" fill="#94a3b8">ProductKind</text>
+<rect x="861" y="201" width="18" height="12" rx="2" fill="#059669"/>
+<text x="870" y="210" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#ffffff">FK</text>
+<text x="882" y="211" font-size="9.5" font-weight="500" fill="#334155">parentId</text>
+<text x="1049" y="211" text-anchor="end" font-size="8.5" fill="#94a3b8">String?</text>
+<rect x="856" y="217" width="198" height="20" fill="#f8fafc"/>
+<rect x="861" y="221" width="18" height="12" rx="2" fill="#059669"/>
+<text x="870" y="230" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#ffffff">FK</text>
+<text x="882" y="231" font-size="9.5" font-weight="500" fill="#334155">parent</text>
+<text x="1049" y="231" text-anchor="end" font-size="8.5" fill="#94a3b8">Category?</text>
+<rect x="861" y="241" width="18" height="12" rx="2" fill="#059669"/>
+<text x="870" y="250" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#ffffff">FK</text>
+<text x="882" y="251" font-size="9.5" font-weight="500" fill="#334155">children</text>
+<text x="1049" y="251" text-anchor="end" font-size="8.5" fill="#94a3b8">Category[]</text>
+<rect x="856" y="257" width="198" height="20" fill="#f8fafc"/>
+<rect x="861" y="261" width="18" height="12" rx="2" fill="#059669"/>
+<text x="870" y="270" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#ffffff">FK</text>
+<text x="882" y="271" font-size="9.5" font-weight="500" fill="#334155">products</text>
+<text x="1049" y="271" text-anchor="end" font-size="8.5" fill="#94a3b8">Product[]</text>
+<rect x="861" y="281" width="18" height="12" rx="2" fill="#059669"/>
+<text x="870" y="290" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#ffffff">FK</text>
+<text x="882" y="291" font-size="9.5" font-weight="500" fill="#334155">coupons</text>
+<text x="1049" y="291" text-anchor="end" font-size="8.5" fill="#94a3b8">Coupon[]</text>
+<rect x="856" y="297" width="198" height="20" fill="#f8fafc"/>
+<text x="861" y="311" font-size="9.5" font-weight="500" fill="#334155">createdAt</text>
+<text x="1049" y="311" text-anchor="end" font-size="8.5" fill="#94a3b8">DateTime</text>
+<text x="861" y="331" font-size="9.5" font-weight="500" fill="#334155">updatedAt</text>
+<text x="1049" y="331" text-anchor="end" font-size="8.5" fill="#94a3b8">DateTime</text>
+<rect x="585" y="45" width="200" height="758" rx="5" fill="#ffffff" stroke="#cbd5e1" stroke-width="1" filter="url(#shadow)"/>
+<rect x="585" y="45" width="200" height="32" rx="5" fill="#f1f5f9"/>
+<rect x="585" y="72" width="200" height="5" fill="#f1f5f9"/>
+<line x1="585" y1="77" x2="785" y2="77" stroke="#cbd5e1" stroke-width="1"/>
+<text x="595" y="65" font-size="12" font-weight="700" fill="#0f172a">Product</text>
+<rect x="591" y="81" width="18" height="12" rx="2" fill="#2563eb"/>
+<text x="600" y="90" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#ffffff">PK</text>
+<text x="612" y="91" font-size="9.5" font-weight="500" fill="#334155">id</text>
+<text x="779" y="91" text-anchor="end" font-size="8.5" fill="#94a3b8">String</text>
+<rect x="586" y="97" width="198" height="20" fill="#f8fafc"/>
+<rect x="591" y="101" width="18" height="12" rx="2" fill="#059669"/>
+<text x="600" y="110" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#ffffff">FK</text>
+<text x="612" y="111" font-size="9.5" font-weight="500" fill="#334155">categoryId</text>
+<text x="779" y="111" text-anchor="end" font-size="8.5" fill="#94a3b8">String</text>
+<rect x="591" y="121" width="18" height="12" rx="2" fill="#059669"/>
+<text x="600" y="130" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#ffffff">FK</text>
+<text x="612" y="131" font-size="9.5" font-weight="500" fill="#334155">category</text>
+<text x="779" y="131" text-anchor="end" font-size="8.5" fill="#94a3b8">Category</text>
+<rect x="586" y="137" width="198" height="20" fill="#f8fafc"/>
+<rect x="591" y="141" width="18" height="12" rx="2" fill="#7c3aed"/>
+<text x="600" y="150" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#ffffff">UQ</text>
+<text x="612" y="151" font-size="9.5" font-weight="500" fill="#334155">slug</text>
+<text x="779" y="151" text-anchor="end" font-size="8.5" fill="#94a3b8">String</text>
+<text x="591" y="171" font-size="9.5" font-weight="500" fill="#334155">name</text>
+<text x="779" y="171" text-anchor="end" font-size="8.5" fill="#94a3b8">String</text>
+<rect x="586" y="177" width="198" height="20" fill="#f8fafc"/>
+<text x="591" y="191" font-size="9.5" font-weight="500" fill="#334155">description</text>
+<text x="779" y="191" text-anchor="end" font-size="8.5" fill="#94a3b8">String</text>
+<text x="591" y="211" font-size="9.5" font-weight="500" fill="#334155">kind</text>
+<text x="779" y="211" text-anchor="end" font-size="8.5" fill="#94a3b8">ProductKind</text>
+<rect x="586" y="217" width="198" height="20" fill="#f8fafc"/>
+<text x="591" y="231" font-size="9.5" font-weight="500" fill="#334155">imageUrl</text>
+<text x="779" y="231" text-anchor="end" font-size="8.5" fill="#94a3b8">String</text>
+<text x="591" y="251" font-size="9.5" font-weight="500" fill="#334155">gallery</text>
+<text x="779" y="251" text-anchor="end" font-size="8.5" fill="#94a3b8">Json</text>
+<rect x="586" y="257" width="198" height="20" fill="#f8fafc"/>
+<text x="591" y="271" font-size="9.5" font-weight="500" fill="#334155">basePrice</text>
+<text x="779" y="271" text-anchor="end" font-size="8.5" fill="#94a3b8">Int</text>
+<text x="591" y="291" font-size="9.5" font-weight="500" fill="#334155">currency</text>
+<text x="779" y="291" text-anchor="end" font-size="8.5" fill="#94a3b8">String</text>
+<rect x="586" y="297" width="198" height="20" fill="#f8fafc"/>
+<text x="591" y="311" font-size="9.5" font-weight="500" fill="#334155">stock</text>
+<text x="779" y="311" text-anchor="end" font-size="8.5" fill="#94a3b8">Int</text>
+<text x="591" y="331" font-size="9.5" font-weight="500" fill="#334155">isActive</text>
+<text x="779" y="331" text-anchor="end" font-size="8.5" fill="#94a3b8">Boolean</text>
+<rect x="586" y="337" width="198" height="20" fill="#f8fafc"/>
+<text x="591" y="351" font-size="9.5" font-weight="500" fill="#334155">isFeatured</text>
+<text x="779" y="351" text-anchor="end" font-size="8.5" fill="#94a3b8">Boolean</text>
+<text x="591" y="371" font-size="9.5" font-weight="500" fill="#334155">tags</text>
+<text x="779" y="371" text-anchor="end" font-size="8.5" fill="#94a3b8">Json</text>
+<rect x="586" y="377" width="198" height="20" fill="#f8fafc"/>
+<text x="591" y="391" font-size="9.5" font-weight="500" fill="#334155">highlights</text>
+<text x="779" y="391" text-anchor="end" font-size="8.5" fill="#94a3b8">Json</text>
+<text x="591" y="411" font-size="9.5" font-weight="500" fill="#334155">specifications</text>
+<text x="779" y="411" text-anchor="end" font-size="8.5" fill="#94a3b8">Json</text>
+<rect x="586" y="417" width="198" height="20" fill="#f8fafc"/>
+<text x="591" y="431" font-size="9.5" font-weight="500" fill="#334155">rating</text>
+<text x="779" y="431" text-anchor="end" font-size="8.5" fill="#94a3b8">Float</text>
+<text x="591" y="451" font-size="9.5" font-weight="500" fill="#334155">reviewCount</text>
+<text x="779" y="451" text-anchor="end" font-size="8.5" fill="#94a3b8">Int</text>
+<rect x="586" y="457" width="198" height="20" fill="#f8fafc"/>
+<text x="591" y="471" font-size="9.5" font-weight="500" fill="#334155">replacementDays</text>
+<text x="779" y="471" text-anchor="end" font-size="8.5" fill="#94a3b8">Int</text>
+<text x="591" y="491" font-size="9.5" font-weight="500" fill="#334155">returnEligible</text>
+<text x="779" y="491" text-anchor="end" font-size="8.5" fill="#94a3b8">Boolean</text>
+<rect x="586" y="497" width="198" height="20" fill="#f8fafc"/>
+<text x="591" y="511" font-size="9.5" font-weight="500" fill="#334155">warrantyText</text>
+<text x="779" y="511" text-anchor="end" font-size="8.5" fill="#94a3b8">String</text>
+<text x="591" y="531" font-size="9.5" font-weight="500" fill="#334155">dispatchDays</text>
+<text x="779" y="531" text-anchor="end" font-size="8.5" fill="#94a3b8">Int</text>
+<rect x="586" y="537" width="198" height="20" fill="#f8fafc"/>
+<text x="591" y="551" font-size="9.5" font-weight="500" fill="#334155">minWidthMm</text>
+<text x="779" y="551" text-anchor="end" font-size="8.5" fill="#94a3b8">Int?</text>
+<text x="591" y="571" font-size="9.5" font-weight="500" fill="#334155">maxWidthMm</text>
+<text x="779" y="571" text-anchor="end" font-size="8.5" fill="#94a3b8">Int?</text>
+<rect x="586" y="577" width="198" height="20" fill="#f8fafc"/>
+<text x="591" y="591" font-size="9.5" font-weight="500" fill="#334155">minHeightMm</text>
+<text x="779" y="591" text-anchor="end" font-size="8.5" fill="#94a3b8">Int?</text>
+<text x="591" y="611" font-size="9.5" font-weight="500" fill="#334155">maxHeightMm</text>
+<text x="779" y="611" text-anchor="end" font-size="8.5" fill="#94a3b8">Int?</text>
+<rect x="586" y="617" width="198" height="20" fill="#f8fafc"/>
+<text x="591" y="631" font-size="9.5" font-weight="500" fill="#334155">defaultWidthMm</text>
+<text x="779" y="631" text-anchor="end" font-size="8.5" fill="#94a3b8">Int?</text>
+<text x="591" y="651" font-size="9.5" font-weight="500" fill="#334155">defaultHeightMm</text>
+<text x="779" y="651" text-anchor="end" font-size="8.5" fill="#94a3b8">Int?</text>
+<rect x="586" y="657" width="198" height="20" fill="#f8fafc"/>
+<text x="591" y="671" font-size="9.5" font-weight="500" fill="#334155">options</text>
+<text x="779" y="671" text-anchor="end" font-size="8.5" fill="#94a3b8">Json</text>
+<rect x="591" y="681" width="18" height="12" rx="2" fill="#059669"/>
+<text x="600" y="690" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#ffffff">FK</text>
+<text x="612" y="691" font-size="9.5" font-weight="500" fill="#334155">variants</text>
+<text x="779" y="691" text-anchor="end" font-size="8.5" fill="#94a3b8">ProductVariant[]</text>
+<rect x="586" y="697" width="198" height="20" fill="#f8fafc"/>
+<rect x="591" y="701" width="18" height="12" rx="2" fill="#059669"/>
+<text x="600" y="710" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#ffffff">FK</text>
+<text x="612" y="711" font-size="9.5" font-weight="500" fill="#334155">orderItems</text>
+<text x="779" y="711" text-anchor="end" font-size="8.5" fill="#94a3b8">OrderItem[]</text>
+<rect x="591" y="721" width="18" height="12" rx="2" fill="#059669"/>
+<text x="600" y="730" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#ffffff">FK</text>
+<text x="612" y="731" font-size="9.5" font-weight="500" fill="#334155">reviews</text>
+<text x="779" y="731" text-anchor="end" font-size="8.5" fill="#94a3b8">Review[]</text>
+<rect x="586" y="737" width="198" height="20" fill="#f8fafc"/>
+<rect x="591" y="741" width="18" height="12" rx="2" fill="#059669"/>
+<text x="600" y="750" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#ffffff">FK</text>
+<text x="612" y="751" font-size="9.5" font-weight="500" fill="#334155">wishlistItems</text>
+<text x="779" y="751" text-anchor="end" font-size="8.5" fill="#94a3b8">Wishlist[]</text>
+<text x="591" y="771" font-size="9.5" font-weight="500" fill="#334155">createdAt</text>
+<text x="779" y="771" text-anchor="end" font-size="8.5" fill="#94a3b8">DateTime</text>
+<rect x="586" y="777" width="198" height="20" fill="#f8fafc"/>
+<text x="591" y="791" font-size="9.5" font-weight="500" fill="#334155">updatedAt</text>
+<text x="779" y="791" text-anchor="end" font-size="8.5" fill="#94a3b8">DateTime</text>
+<rect x="585" y="843" width="200" height="258" rx="5" fill="#ffffff" stroke="#cbd5e1" stroke-width="1" filter="url(#shadow)"/>
+<rect x="585" y="843" width="200" height="32" rx="5" fill="#f1f5f9"/>
+<rect x="585" y="870" width="200" height="5" fill="#f1f5f9"/>
+<line x1="585" y1="875" x2="785" y2="875" stroke="#cbd5e1" stroke-width="1"/>
+<text x="595" y="863" font-size="12" font-weight="700" fill="#0f172a">ProductVariant</text>
+<rect x="591" y="879" width="18" height="12" rx="2" fill="#2563eb"/>
+<text x="600" y="888" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#ffffff">PK</text>
+<text x="612" y="889" font-size="9.5" font-weight="500" fill="#334155">id</text>
+<text x="779" y="889" text-anchor="end" font-size="8.5" fill="#94a3b8">String</text>
+<rect x="586" y="895" width="198" height="20" fill="#f8fafc"/>
+<rect x="591" y="899" width="18" height="12" rx="2" fill="#059669"/>
+<text x="600" y="908" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#ffffff">FK</text>
+<text x="612" y="909" font-size="9.5" font-weight="500" fill="#334155">productId</text>
+<text x="779" y="909" text-anchor="end" font-size="8.5" fill="#94a3b8">String</text>
+<rect x="591" y="919" width="18" height="12" rx="2" fill="#059669"/>
+<text x="600" y="928" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#ffffff">FK</text>
+<text x="612" y="929" font-size="9.5" font-weight="500" fill="#334155">product</text>
+<text x="779" y="929" text-anchor="end" font-size="8.5" fill="#94a3b8">Product</text>
+<rect x="586" y="935" width="198" height="20" fill="#f8fafc"/>
+<text x="591" y="949" font-size="9.5" font-weight="500" fill="#334155">name</text>
+<text x="779" y="949" text-anchor="end" font-size="8.5" fill="#94a3b8">String</text>
+<rect x="591" y="959" width="18" height="12" rx="2" fill="#7c3aed"/>
+<text x="600" y="968" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#ffffff">UQ</text>
+<text x="612" y="969" font-size="9.5" font-weight="500" fill="#334155">sku</text>
+<text x="779" y="969" text-anchor="end" font-size="8.5" fill="#94a3b8">String</text>
+<rect x="586" y="975" width="198" height="20" fill="#f8fafc"/>
+<text x="591" y="989" font-size="9.5" font-weight="500" fill="#334155">priceDelta</text>
+<text x="779" y="989" text-anchor="end" font-size="8.5" fill="#94a3b8">Int</text>
+<text x="591" y="1009" font-size="9.5" font-weight="500" fill="#334155">attributes</text>
+<text x="779" y="1009" text-anchor="end" font-size="8.5" fill="#94a3b8">Json</text>
+<rect x="586" y="1015" width="198" height="20" fill="#f8fafc"/>
+<text x="591" y="1029" font-size="9.5" font-weight="500" fill="#334155">stock</text>
+<text x="779" y="1029" text-anchor="end" font-size="8.5" fill="#94a3b8">Int</text>
+<rect x="591" y="1039" width="18" height="12" rx="2" fill="#059669"/>
+<text x="600" y="1048" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#ffffff">FK</text>
+<text x="612" y="1049" font-size="9.5" font-weight="500" fill="#334155">orderItems</text>
+<text x="779" y="1049" text-anchor="end" font-size="8.5" fill="#94a3b8">OrderItem[]</text>
+<rect x="586" y="1055" width="198" height="20" fill="#f8fafc"/>
+<text x="591" y="1069" font-size="9.5" font-weight="500" fill="#334155">createdAt</text>
+<text x="779" y="1069" text-anchor="end" font-size="8.5" fill="#94a3b8">DateTime</text>
+<text x="591" y="1089" font-size="9.5" font-weight="500" fill="#334155">updatedAt</text>
+<text x="779" y="1089" text-anchor="end" font-size="8.5" fill="#94a3b8">DateTime</text>
+<rect x="585" y="1141" width="200" height="318" rx="5" fill="#ffffff" stroke="#cbd5e1" stroke-width="1" filter="url(#shadow)"/>
+<rect x="585" y="1141" width="200" height="32" rx="5" fill="#f1f5f9"/>
+<rect x="585" y="1168" width="200" height="5" fill="#f1f5f9"/>
+<line x1="585" y1="1173" x2="785" y2="1173" stroke="#cbd5e1" stroke-width="1"/>
+<text x="595" y="1161" font-size="12" font-weight="700" fill="#0f172a">Review</text>
+<rect x="591" y="1177" width="18" height="12" rx="2" fill="#2563eb"/>
+<text x="600" y="1186" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#ffffff">PK</text>
+<text x="612" y="1187" font-size="9.5" font-weight="500" fill="#334155">id</text>
+<text x="779" y="1187" text-anchor="end" font-size="8.5" fill="#94a3b8">String</text>
+<rect x="586" y="1193" width="198" height="20" fill="#f8fafc"/>
+<rect x="591" y="1197" width="18" height="12" rx="2" fill="#059669"/>
+<text x="600" y="1206" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#ffffff">FK</text>
+<text x="612" y="1207" font-size="9.5" font-weight="500" fill="#334155">productId</text>
+<text x="779" y="1207" text-anchor="end" font-size="8.5" fill="#94a3b8">String</text>
+<rect x="591" y="1217" width="18" height="12" rx="2" fill="#059669"/>
+<text x="600" y="1226" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#ffffff">FK</text>
+<text x="612" y="1227" font-size="9.5" font-weight="500" fill="#334155">product</text>
+<text x="779" y="1227" text-anchor="end" font-size="8.5" fill="#94a3b8">Product</text>
+<rect x="586" y="1233" width="198" height="20" fill="#f8fafc"/>
+<rect x="591" y="1237" width="18" height="12" rx="2" fill="#059669"/>
+<text x="600" y="1246" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#ffffff">FK</text>
+<text x="612" y="1247" font-size="9.5" font-weight="500" fill="#334155">userId</text>
+<text x="779" y="1247" text-anchor="end" font-size="8.5" fill="#94a3b8">String</text>
+<rect x="591" y="1257" width="18" height="12" rx="2" fill="#059669"/>
+<text x="600" y="1266" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#ffffff">FK</text>
+<text x="612" y="1267" font-size="9.5" font-weight="500" fill="#334155">user</text>
+<text x="779" y="1267" text-anchor="end" font-size="8.5" fill="#94a3b8">User</text>
+<rect x="586" y="1273" width="198" height="20" fill="#f8fafc"/>
+<rect x="591" y="1277" width="18" height="12" rx="2" fill="#059669"/>
+<text x="600" y="1286" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#ffffff">FK</text>
+<text x="612" y="1287" font-size="9.5" font-weight="500" fill="#334155">orderId</text>
+<text x="779" y="1287" text-anchor="end" font-size="8.5" fill="#94a3b8">String?</text>
+<rect x="591" y="1297" width="18" height="12" rx="2" fill="#059669"/>
+<text x="600" y="1306" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#ffffff">FK</text>
+<text x="612" y="1307" font-size="9.5" font-weight="500" fill="#334155">order</text>
+<text x="779" y="1307" text-anchor="end" font-size="8.5" fill="#94a3b8">Order?</text>
+<rect x="586" y="1313" width="198" height="20" fill="#f8fafc"/>
+<text x="591" y="1327" font-size="9.5" font-weight="500" fill="#334155">rating</text>
+<text x="779" y="1327" text-anchor="end" font-size="8.5" fill="#94a3b8">Int</text>
+<text x="591" y="1347" font-size="9.5" font-weight="500" fill="#334155">title</text>
+<text x="779" y="1347" text-anchor="end" font-size="8.5" fill="#94a3b8">String?</text>
+<rect x="586" y="1353" width="198" height="20" fill="#f8fafc"/>
+<text x="591" y="1367" font-size="9.5" font-weight="500" fill="#334155">body</text>
+<text x="779" y="1367" text-anchor="end" font-size="8.5" fill="#94a3b8">String</text>
+<text x="591" y="1387" font-size="9.5" font-weight="500" fill="#334155">isVerified</text>
+<text x="779" y="1387" text-anchor="end" font-size="8.5" fill="#94a3b8">Boolean</text>
+<rect x="586" y="1393" width="198" height="20" fill="#f8fafc"/>
+<text x="591" y="1407" font-size="9.5" font-weight="500" fill="#334155">helpfulCount</text>
+<text x="779" y="1407" text-anchor="end" font-size="8.5" fill="#94a3b8">Int</text>
+<text x="591" y="1427" font-size="9.5" font-weight="500" fill="#334155">createdAt</text>
+<text x="779" y="1427" text-anchor="end" font-size="8.5" fill="#94a3b8">DateTime</text>
+<rect x="586" y="1433" width="198" height="20" fill="#f8fafc"/>
+<text x="591" y="1447" font-size="9.5" font-weight="500" fill="#334155">updatedAt</text>
+<text x="779" y="1447" text-anchor="end" font-size="8.5" fill="#94a3b8">DateTime</text>
+<rect x="585" y="1499" width="200" height="158" rx="5" fill="#ffffff" stroke="#cbd5e1" stroke-width="1" filter="url(#shadow)"/>
+<rect x="585" y="1499" width="200" height="32" rx="5" fill="#f1f5f9"/>
+<rect x="585" y="1526" width="200" height="5" fill="#f1f5f9"/>
+<line x1="585" y1="1531" x2="785" y2="1531" stroke="#cbd5e1" stroke-width="1"/>
+<text x="595" y="1519" font-size="12" font-weight="700" fill="#0f172a">Wishlist</text>
+<rect x="591" y="1535" width="18" height="12" rx="2" fill="#2563eb"/>
+<text x="600" y="1544" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#ffffff">PK</text>
+<text x="612" y="1545" font-size="9.5" font-weight="500" fill="#334155">id</text>
+<text x="779" y="1545" text-anchor="end" font-size="8.5" fill="#94a3b8">String</text>
+<rect x="586" y="1551" width="198" height="20" fill="#f8fafc"/>
+<rect x="591" y="1555" width="18" height="12" rx="2" fill="#059669"/>
+<text x="600" y="1564" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#ffffff">FK</text>
+<text x="612" y="1565" font-size="9.5" font-weight="500" fill="#334155">userId</text>
+<text x="779" y="1565" text-anchor="end" font-size="8.5" fill="#94a3b8">String</text>
+<rect x="591" y="1575" width="18" height="12" rx="2" fill="#059669"/>
+<text x="600" y="1584" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#ffffff">FK</text>
+<text x="612" y="1585" font-size="9.5" font-weight="500" fill="#334155">user</text>
+<text x="779" y="1585" text-anchor="end" font-size="8.5" fill="#94a3b8">User</text>
+<rect x="586" y="1591" width="198" height="20" fill="#f8fafc"/>
+<rect x="591" y="1595" width="18" height="12" rx="2" fill="#059669"/>
+<text x="600" y="1604" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#ffffff">FK</text>
+<text x="612" y="1605" font-size="9.5" font-weight="500" fill="#334155">productId</text>
+<text x="779" y="1605" text-anchor="end" font-size="8.5" fill="#94a3b8">String</text>
+<rect x="591" y="1615" width="18" height="12" rx="2" fill="#059669"/>
+<text x="600" y="1624" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#ffffff">FK</text>
+<text x="612" y="1625" font-size="9.5" font-weight="500" fill="#334155">product</text>
+<text x="779" y="1625" text-anchor="end" font-size="8.5" fill="#94a3b8">Product</text>
+<rect x="586" y="1631" width="198" height="20" fill="#f8fafc"/>
+<text x="591" y="1645" font-size="9.5" font-weight="500" fill="#334155">createdAt</text>
+<text x="779" y="1645" text-anchor="end" font-size="8.5" fill="#94a3b8">DateTime</text>
+<rect x="315" y="45" width="200" height="338" rx="5" fill="#ffffff" stroke="#cbd5e1" stroke-width="1" filter="url(#shadow)"/>
+<rect x="315" y="45" width="200" height="32" rx="5" fill="#f1f5f9"/>
+<rect x="315" y="72" width="200" height="5" fill="#f1f5f9"/>
+<line x1="315" y1="77" x2="515" y2="77" stroke="#cbd5e1" stroke-width="1"/>
+<text x="325" y="65" font-size="12" font-weight="700" fill="#0f172a">Coupon</text>
+<rect x="321" y="81" width="18" height="12" rx="2" fill="#2563eb"/>
+<text x="330" y="90" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#ffffff">PK</text>
+<text x="342" y="91" font-size="9.5" font-weight="500" fill="#334155">id</text>
+<text x="509" y="91" text-anchor="end" font-size="8.5" fill="#94a3b8">String</text>
+<rect x="316" y="97" width="198" height="20" fill="#f8fafc"/>
+<rect x="321" y="101" width="18" height="12" rx="2" fill="#7c3aed"/>
+<text x="330" y="110" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#ffffff">UQ</text>
+<text x="342" y="111" font-size="9.5" font-weight="500" fill="#334155">code</text>
+<text x="509" y="111" text-anchor="end" font-size="8.5" fill="#94a3b8">String</text>
+<text x="321" y="131" font-size="9.5" font-weight="500" fill="#334155">description</text>
+<text x="509" y="131" text-anchor="end" font-size="8.5" fill="#94a3b8">String?</text>
+<rect x="316" y="137" width="198" height="20" fill="#f8fafc"/>
+<text x="321" y="151" font-size="9.5" font-weight="500" fill="#334155">type</text>
+<text x="509" y="151" text-anchor="end" font-size="8.5" fill="#94a3b8">CouponType</text>
+<text x="321" y="171" font-size="9.5" font-weight="500" fill="#334155">value</text>
+<text x="509" y="171" text-anchor="end" font-size="8.5" fill="#94a3b8">Int</text>
+<rect x="316" y="177" width="198" height="20" fill="#f8fafc"/>
+<text x="321" y="191" font-size="9.5" font-weight="500" fill="#334155">minOrderAmount</text>
+<text x="509" y="191" text-anchor="end" font-size="8.5" fill="#94a3b8">Int</text>
+<text x="321" y="211" font-size="9.5" font-weight="500" fill="#334155">maxUses</text>
+<text x="509" y="211" text-anchor="end" font-size="8.5" fill="#94a3b8">Int?</text>
+<rect x="316" y="217" width="198" height="20" fill="#f8fafc"/>
+<text x="321" y="231" font-size="9.5" font-weight="500" fill="#334155">usedCount</text>
+<text x="509" y="231" text-anchor="end" font-size="8.5" fill="#94a3b8">Int</text>
+<text x="321" y="251" font-size="9.5" font-weight="500" fill="#334155">isActive</text>
+<text x="509" y="251" text-anchor="end" font-size="8.5" fill="#94a3b8">Boolean</text>
+<rect x="316" y="257" width="198" height="20" fill="#f8fafc"/>
+<text x="321" y="271" font-size="9.5" font-weight="500" fill="#334155">expiresAt</text>
+<text x="509" y="271" text-anchor="end" font-size="8.5" fill="#94a3b8">DateTime?</text>
+<rect x="321" y="281" width="18" height="12" rx="2" fill="#059669"/>
+<text x="330" y="290" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#ffffff">FK</text>
+<text x="342" y="291" font-size="9.5" font-weight="500" fill="#334155">categoryId</text>
+<text x="509" y="291" text-anchor="end" font-size="8.5" fill="#94a3b8">String?</text>
+<rect x="316" y="297" width="198" height="20" fill="#f8fafc"/>
+<rect x="321" y="301" width="18" height="12" rx="2" fill="#059669"/>
+<text x="330" y="310" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#ffffff">FK</text>
+<text x="342" y="311" font-size="9.5" font-weight="500" fill="#334155">category</text>
+<text x="509" y="311" text-anchor="end" font-size="8.5" fill="#94a3b8">Category?</text>
+<rect x="321" y="321" width="18" height="12" rx="2" fill="#059669"/>
+<text x="330" y="330" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#ffffff">FK</text>
+<text x="342" y="331" font-size="9.5" font-weight="500" fill="#334155">orders</text>
+<text x="509" y="331" text-anchor="end" font-size="8.5" fill="#94a3b8">Order[]</text>
+<rect x="316" y="337" width="198" height="20" fill="#f8fafc"/>
+<text x="321" y="351" font-size="9.5" font-weight="500" fill="#334155">createdAt</text>
+<text x="509" y="351" text-anchor="end" font-size="8.5" fill="#94a3b8">DateTime</text>
+<text x="321" y="371" font-size="9.5" font-weight="500" fill="#334155">updatedAt</text>
+<text x="509" y="371" text-anchor="end" font-size="8.5" fill="#94a3b8">DateTime</text>
+<rect x="45" y="981" width="200" height="318" rx="5" fill="#ffffff" stroke="#cbd5e1" stroke-width="1" filter="url(#shadow)"/>
+<rect x="45" y="981" width="200" height="32" rx="5" fill="#f1f5f9"/>
+<rect x="45" y="1008" width="200" height="5" fill="#f1f5f9"/>
+<line x1="45" y1="1013" x2="245" y2="1013" stroke="#cbd5e1" stroke-width="1"/>
+<text x="55" y="1001" font-size="12" font-weight="700" fill="#0f172a">SavedAddress</text>
+<rect x="51" y="1017" width="18" height="12" rx="2" fill="#2563eb"/>
+<text x="60" y="1026" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#ffffff">PK</text>
+<text x="72" y="1027" font-size="9.5" font-weight="500" fill="#334155">id</text>
+<text x="239" y="1027" text-anchor="end" font-size="8.5" fill="#94a3b8">String</text>
+<rect x="46" y="1033" width="198" height="20" fill="#f8fafc"/>
+<rect x="51" y="1037" width="18" height="12" rx="2" fill="#059669"/>
+<text x="60" y="1046" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#ffffff">FK</text>
+<text x="72" y="1047" font-size="9.5" font-weight="500" fill="#334155">userId</text>
+<text x="239" y="1047" text-anchor="end" font-size="8.5" fill="#94a3b8">String</text>
+<rect x="51" y="1057" width="18" height="12" rx="2" fill="#059669"/>
+<text x="60" y="1066" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#ffffff">FK</text>
+<text x="72" y="1067" font-size="9.5" font-weight="500" fill="#334155">user</text>
+<text x="239" y="1067" text-anchor="end" font-size="8.5" fill="#94a3b8">User</text>
+<rect x="46" y="1073" width="198" height="20" fill="#f8fafc"/>
+<text x="51" y="1087" font-size="9.5" font-weight="500" fill="#334155">label</text>
+<text x="239" y="1087" text-anchor="end" font-size="8.5" fill="#94a3b8">String</text>
+<text x="51" y="1107" font-size="9.5" font-weight="500" fill="#334155">fullName</text>
+<text x="239" y="1107" text-anchor="end" font-size="8.5" fill="#94a3b8">String</text>
+<rect x="46" y="1113" width="198" height="20" fill="#f8fafc"/>
+<text x="51" y="1127" font-size="9.5" font-weight="500" fill="#334155">phone</text>
+<text x="239" y="1127" text-anchor="end" font-size="8.5" fill="#94a3b8">String</text>
+<text x="51" y="1147" font-size="9.5" font-weight="500" fill="#334155">line1</text>
+<text x="239" y="1147" text-anchor="end" font-size="8.5" fill="#94a3b8">String</text>
+<rect x="46" y="1153" width="198" height="20" fill="#f8fafc"/>
+<text x="51" y="1167" font-size="9.5" font-weight="500" fill="#334155">line2</text>
+<text x="239" y="1167" text-anchor="end" font-size="8.5" fill="#94a3b8">String?</text>
+<text x="51" y="1187" font-size="9.5" font-weight="500" fill="#334155">city</text>
+<text x="239" y="1187" text-anchor="end" font-size="8.5" fill="#94a3b8">String</text>
+<rect x="46" y="1193" width="198" height="20" fill="#f8fafc"/>
+<text x="51" y="1207" font-size="9.5" font-weight="500" fill="#334155">state</text>
+<text x="239" y="1207" text-anchor="end" font-size="8.5" fill="#94a3b8">String</text>
+<text x="51" y="1227" font-size="9.5" font-weight="500" fill="#334155">pincode</text>
+<text x="239" y="1227" text-anchor="end" font-size="8.5" fill="#94a3b8">String</text>
+<rect x="46" y="1233" width="198" height="20" fill="#f8fafc"/>
+<text x="51" y="1247" font-size="9.5" font-weight="500" fill="#334155">isDefault</text>
+<text x="239" y="1247" text-anchor="end" font-size="8.5" fill="#94a3b8">Boolean</text>
+<text x="51" y="1267" font-size="9.5" font-weight="500" fill="#334155">createdAt</text>
+<text x="239" y="1267" text-anchor="end" font-size="8.5" fill="#94a3b8">DateTime</text>
+<rect x="46" y="1273" width="198" height="20" fill="#f8fafc"/>
+<text x="51" y="1287" font-size="9.5" font-weight="500" fill="#334155">updatedAt</text>
+<text x="239" y="1287" text-anchor="end" font-size="8.5" fill="#94a3b8">DateTime</text>
+<rect x="315" y="423" width="200" height="418" rx="5" fill="#ffffff" stroke="#cbd5e1" stroke-width="1" filter="url(#shadow)"/>
+<rect x="315" y="423" width="200" height="32" rx="5" fill="#f1f5f9"/>
+<rect x="315" y="450" width="200" height="5" fill="#f1f5f9"/>
+<line x1="315" y1="455" x2="515" y2="455" stroke="#cbd5e1" stroke-width="1"/>
+<text x="325" y="443" font-size="12" font-weight="700" fill="#0f172a">Order</text>
+<rect x="321" y="459" width="18" height="12" rx="2" fill="#2563eb"/>
+<text x="330" y="468" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#ffffff">PK</text>
+<text x="342" y="469" font-size="9.5" font-weight="500" fill="#334155">id</text>
+<text x="509" y="469" text-anchor="end" font-size="8.5" fill="#94a3b8">String</text>
+<rect x="316" y="475" width="198" height="20" fill="#f8fafc"/>
+<rect x="321" y="479" width="18" height="12" rx="2" fill="#059669"/>
+<text x="330" y="488" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#ffffff">FK</text>
+<text x="342" y="489" font-size="9.5" font-weight="500" fill="#334155">userId</text>
+<text x="509" y="489" text-anchor="end" font-size="8.5" fill="#94a3b8">String</text>
+<rect x="321" y="499" width="18" height="12" rx="2" fill="#059669"/>
+<text x="330" y="508" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#ffffff">FK</text>
+<text x="342" y="509" font-size="9.5" font-weight="500" fill="#334155">user</text>
+<text x="509" y="509" text-anchor="end" font-size="8.5" fill="#94a3b8">User</text>
+<rect x="316" y="515" width="198" height="20" fill="#f8fafc"/>
+<text x="321" y="529" font-size="9.5" font-weight="500" fill="#334155">status</text>
+<text x="509" y="529" text-anchor="end" font-size="8.5" fill="#94a3b8">OrderStatus</text>
+<text x="321" y="549" font-size="9.5" font-weight="500" fill="#334155">paymentMethod</text>
+<text x="509" y="549" text-anchor="end" font-size="8.5" fill="#94a3b8">PaymentMethod</text>
+<rect x="316" y="555" width="198" height="20" fill="#f8fafc"/>
+<text x="321" y="569" font-size="9.5" font-weight="500" fill="#334155">subtotal</text>
+<text x="509" y="569" text-anchor="end" font-size="8.5" fill="#94a3b8">Int</text>
+<text x="321" y="589" font-size="9.5" font-weight="500" fill="#334155">shippingFee</text>
+<text x="509" y="589" text-anchor="end" font-size="8.5" fill="#94a3b8">Int</text>
+<rect x="316" y="595" width="198" height="20" fill="#f8fafc"/>
+<text x="321" y="609" font-size="9.5" font-weight="500" fill="#334155">discountAmount</text>
+<text x="509" y="609" text-anchor="end" font-size="8.5" fill="#94a3b8">Int</text>
+<text x="321" y="629" font-size="9.5" font-weight="500" fill="#334155">total</text>
+<text x="509" y="629" text-anchor="end" font-size="8.5" fill="#94a3b8">Int</text>
+<rect x="316" y="635" width="198" height="20" fill="#f8fafc"/>
+<text x="321" y="649" font-size="9.5" font-weight="500" fill="#334155">address</text>
+<text x="509" y="649" text-anchor="end" font-size="8.5" fill="#94a3b8">Json</text>
+<rect x="321" y="659" width="18" height="12" rx="2" fill="#059669"/>
+<text x="330" y="668" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#ffffff">FK</text>
+<text x="342" y="669" font-size="9.5" font-weight="500" fill="#334155">trackingId</text>
+<text x="509" y="669" text-anchor="end" font-size="8.5" fill="#94a3b8">String?</text>
+<rect x="316" y="675" width="198" height="20" fill="#f8fafc"/>
+<text x="321" y="689" font-size="9.5" font-weight="500" fill="#334155">notes</text>
+<text x="509" y="689" text-anchor="end" font-size="8.5" fill="#94a3b8">String?</text>
+<rect x="321" y="699" width="18" height="12" rx="2" fill="#059669"/>
+<text x="330" y="708" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#ffffff">FK</text>
+<text x="342" y="709" font-size="9.5" font-weight="500" fill="#334155">reviews</text>
+<text x="509" y="709" text-anchor="end" font-size="8.5" fill="#94a3b8">Review[]</text>
+<rect x="316" y="715" width="198" height="20" fill="#f8fafc"/>
+<rect x="321" y="719" width="18" height="12" rx="2" fill="#059669"/>
+<text x="330" y="728" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#ffffff">FK</text>
+<text x="342" y="729" font-size="9.5" font-weight="500" fill="#334155">couponId</text>
+<text x="509" y="729" text-anchor="end" font-size="8.5" fill="#94a3b8">String?</text>
+<rect x="321" y="739" width="18" height="12" rx="2" fill="#059669"/>
+<text x="330" y="748" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#ffffff">FK</text>
+<text x="342" y="749" font-size="9.5" font-weight="500" fill="#334155">coupon</text>
+<text x="509" y="749" text-anchor="end" font-size="8.5" fill="#94a3b8">Coupon?</text>
+<rect x="316" y="755" width="198" height="20" fill="#f8fafc"/>
+<rect x="321" y="759" width="18" height="12" rx="2" fill="#059669"/>
+<text x="330" y="768" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#ffffff">FK</text>
+<text x="342" y="769" font-size="9.5" font-weight="500" fill="#334155">items</text>
+<text x="509" y="769" text-anchor="end" font-size="8.5" fill="#94a3b8">OrderItem[]</text>
+<rect x="321" y="779" width="18" height="12" rx="2" fill="#059669"/>
+<text x="330" y="788" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#ffffff">FK</text>
+<text x="342" y="789" font-size="9.5" font-weight="500" fill="#334155">payments</text>
+<text x="509" y="789" text-anchor="end" font-size="8.5" fill="#94a3b8">Payment[]</text>
+<rect x="316" y="795" width="198" height="20" fill="#f8fafc"/>
+<text x="321" y="809" font-size="9.5" font-weight="500" fill="#334155">createdAt</text>
+<text x="509" y="809" text-anchor="end" font-size="8.5" fill="#94a3b8">DateTime</text>
+<text x="321" y="829" font-size="9.5" font-weight="500" fill="#334155">updatedAt</text>
+<text x="509" y="829" text-anchor="end" font-size="8.5" fill="#94a3b8">DateTime</text>
+<rect x="315" y="881" width="200" height="318" rx="5" fill="#ffffff" stroke="#cbd5e1" stroke-width="1" filter="url(#shadow)"/>
+<rect x="315" y="881" width="200" height="32" rx="5" fill="#f1f5f9"/>
+<rect x="315" y="908" width="200" height="5" fill="#f1f5f9"/>
+<line x1="315" y1="913" x2="515" y2="913" stroke="#cbd5e1" stroke-width="1"/>
+<text x="325" y="901" font-size="12" font-weight="700" fill="#0f172a">OrderItem</text>
+<rect x="321" y="917" width="18" height="12" rx="2" fill="#2563eb"/>
+<text x="330" y="926" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#ffffff">PK</text>
+<text x="342" y="927" font-size="9.5" font-weight="500" fill="#334155">id</text>
+<text x="509" y="927" text-anchor="end" font-size="8.5" fill="#94a3b8">String</text>
+<rect x="316" y="933" width="198" height="20" fill="#f8fafc"/>
+<rect x="321" y="937" width="18" height="12" rx="2" fill="#059669"/>
+<text x="330" y="946" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#ffffff">FK</text>
+<text x="342" y="947" font-size="9.5" font-weight="500" fill="#334155">orderId</text>
+<text x="509" y="947" text-anchor="end" font-size="8.5" fill="#94a3b8">String</text>
+<rect x="321" y="957" width="18" height="12" rx="2" fill="#059669"/>
+<text x="330" y="966" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#ffffff">FK</text>
+<text x="342" y="967" font-size="9.5" font-weight="500" fill="#334155">order</text>
+<text x="509" y="967" text-anchor="end" font-size="8.5" fill="#94a3b8">Order</text>
+<rect x="316" y="973" width="198" height="20" fill="#f8fafc"/>
+<rect x="321" y="977" width="18" height="12" rx="2" fill="#059669"/>
+<text x="330" y="986" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#ffffff">FK</text>
+<text x="342" y="987" font-size="9.5" font-weight="500" fill="#334155">productId</text>
+<text x="509" y="987" text-anchor="end" font-size="8.5" fill="#94a3b8">String</text>
+<rect x="321" y="997" width="18" height="12" rx="2" fill="#059669"/>
+<text x="330" y="1006" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#ffffff">FK</text>
+<text x="342" y="1007" font-size="9.5" font-weight="500" fill="#334155">product</text>
+<text x="509" y="1007" text-anchor="end" font-size="8.5" fill="#94a3b8">Product</text>
+<rect x="316" y="1013" width="198" height="20" fill="#f8fafc"/>
+<rect x="321" y="1017" width="18" height="12" rx="2" fill="#059669"/>
+<text x="330" y="1026" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#ffffff">FK</text>
+<text x="342" y="1027" font-size="9.5" font-weight="500" fill="#334155">variantId</text>
+<text x="509" y="1027" text-anchor="end" font-size="8.5" fill="#94a3b8">String?</text>
+<rect x="321" y="1037" width="18" height="12" rx="2" fill="#059669"/>
+<text x="330" y="1046" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#ffffff">FK</text>
+<text x="342" y="1047" font-size="9.5" font-weight="500" fill="#334155">variant</text>
+<text x="509" y="1047" text-anchor="end" font-size="8.5" fill="#94a3b8">ProductVariant?</text>
+<rect x="316" y="1053" width="198" height="20" fill="#f8fafc"/>
+<text x="321" y="1067" font-size="9.5" font-weight="500" fill="#334155">quantity</text>
+<text x="509" y="1067" text-anchor="end" font-size="8.5" fill="#94a3b8">Int</text>
+<text x="321" y="1087" font-size="9.5" font-weight="500" fill="#334155">unitPrice</text>
+<text x="509" y="1087" text-anchor="end" font-size="8.5" fill="#94a3b8">Int</text>
+<rect x="316" y="1093" width="198" height="20" fill="#f8fafc"/>
+<text x="321" y="1107" font-size="9.5" font-weight="500" fill="#334155">total</text>
+<text x="509" y="1107" text-anchor="end" font-size="8.5" fill="#94a3b8">Int</text>
+<text x="321" y="1127" font-size="9.5" font-weight="500" fill="#334155">customWidthMm</text>
+<text x="509" y="1127" text-anchor="end" font-size="8.5" fill="#94a3b8">Int?</text>
+<rect x="316" y="1133" width="198" height="20" fill="#f8fafc"/>
+<text x="321" y="1147" font-size="9.5" font-weight="500" fill="#334155">customHeightMm</text>
+<text x="509" y="1147" text-anchor="end" font-size="8.5" fill="#94a3b8">Int?</text>
+<text x="321" y="1167" font-size="9.5" font-weight="500" fill="#334155">customText</text>
+<text x="509" y="1167" text-anchor="end" font-size="8.5" fill="#94a3b8">String?</text>
+<rect x="316" y="1173" width="198" height="20" fill="#f8fafc"/>
+<text x="321" y="1187" font-size="9.5" font-weight="500" fill="#334155">customization</text>
+<text x="509" y="1187" text-anchor="end" font-size="8.5" fill="#94a3b8">Json</text>
+<rect x="315" y="1239" width="200" height="298" rx="5" fill="#ffffff" stroke="#cbd5e1" stroke-width="1" filter="url(#shadow)"/>
+<rect x="315" y="1239" width="200" height="32" rx="5" fill="#f1f5f9"/>
+<rect x="315" y="1266" width="200" height="5" fill="#f1f5f9"/>
+<line x1="315" y1="1271" x2="515" y2="1271" stroke="#cbd5e1" stroke-width="1"/>
+<text x="325" y="1259" font-size="12" font-weight="700" fill="#0f172a">Payment</text>
+<rect x="321" y="1275" width="18" height="12" rx="2" fill="#2563eb"/>
+<text x="330" y="1284" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#ffffff">PK</text>
+<text x="342" y="1285" font-size="9.5" font-weight="500" fill="#334155">id</text>
+<text x="509" y="1285" text-anchor="end" font-size="8.5" fill="#94a3b8">String</text>
+<rect x="316" y="1291" width="198" height="20" fill="#f8fafc"/>
+<rect x="321" y="1295" width="18" height="12" rx="2" fill="#059669"/>
+<text x="330" y="1304" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#ffffff">FK</text>
+<text x="342" y="1305" font-size="9.5" font-weight="500" fill="#334155">orderId</text>
+<text x="509" y="1305" text-anchor="end" font-size="8.5" fill="#94a3b8">String</text>
+<rect x="321" y="1315" width="18" height="12" rx="2" fill="#059669"/>
+<text x="330" y="1324" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#ffffff">FK</text>
+<text x="342" y="1325" font-size="9.5" font-weight="500" fill="#334155">order</text>
+<text x="509" y="1325" text-anchor="end" font-size="8.5" fill="#94a3b8">Order</text>
+<rect x="316" y="1331" width="198" height="20" fill="#f8fafc"/>
+<text x="321" y="1345" font-size="9.5" font-weight="500" fill="#334155">provider</text>
+<text x="509" y="1345" text-anchor="end" font-size="8.5" fill="#94a3b8">PaymentProvider</text>
+<text x="321" y="1365" font-size="9.5" font-weight="500" fill="#334155">status</text>
+<text x="509" y="1365" text-anchor="end" font-size="8.5" fill="#94a3b8">PaymentStatus</text>
+<rect x="316" y="1371" width="198" height="20" fill="#f8fafc"/>
+<text x="321" y="1385" font-size="9.5" font-weight="500" fill="#334155">amount</text>
+<text x="509" y="1385" text-anchor="end" font-size="8.5" fill="#94a3b8">Int</text>
+<text x="321" y="1405" font-size="9.5" font-weight="500" fill="#334155">currency</text>
+<text x="509" y="1405" text-anchor="end" font-size="8.5" fill="#94a3b8">String</text>
+<rect x="316" y="1411" width="198" height="20" fill="#f8fafc"/>
+<rect x="321" y="1415" width="18" height="12" rx="2" fill="#059669"/>
+<text x="330" y="1424" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#ffffff">FK</text>
+<rect x="342" y="1415" width="18" height="12" rx="2" fill="#7c3aed"/>
+<text x="351" y="1424" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#ffffff">UQ</text>
+<text x="363" y="1425" font-size="9.5" font-weight="500" fill="#334155">providerOrderId</text>
+<text x="509" y="1425" text-anchor="end" font-size="8.5" fill="#94a3b8">String</text>
+<rect x="321" y="1435" width="18" height="12" rx="2" fill="#059669"/>
+<text x="330" y="1444" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#ffffff">FK</text>
+<text x="342" y="1445" font-size="9.5" font-weight="500" fill="#334155">providerPaymentId</text>
+<text x="509" y="1445" text-anchor="end" font-size="8.5" fill="#94a3b8">String?</text>
+<rect x="316" y="1451" width="198" height="20" fill="#f8fafc"/>
+<text x="321" y="1465" font-size="9.5" font-weight="500" fill="#334155">providerSignature</text>
+<text x="509" y="1465" text-anchor="end" font-size="8.5" fill="#94a3b8">String?</text>
+<text x="321" y="1485" font-size="9.5" font-weight="500" fill="#334155">rawResponse</text>
+<text x="509" y="1485" text-anchor="end" font-size="8.5" fill="#94a3b8">Json?</text>
+<rect x="316" y="1491" width="198" height="20" fill="#f8fafc"/>
+<text x="321" y="1505" font-size="9.5" font-weight="500" fill="#334155">createdAt</text>
+<text x="509" y="1505" text-anchor="end" font-size="8.5" fill="#94a3b8">DateTime</text>
+<text x="321" y="1525" font-size="9.5" font-weight="500" fill="#334155">updatedAt</text>
+<text x="509" y="1525" text-anchor="end" font-size="8.5" fill="#94a3b8">DateTime</text>
+<rect x="45" y="1339" width="200" height="198" rx="5" fill="#ffffff" stroke="#cbd5e1" stroke-width="1" filter="url(#shadow)"/>
+<rect x="45" y="1339" width="200" height="32" rx="5" fill="#f1f5f9"/>
+<rect x="45" y="1366" width="200" height="5" fill="#f1f5f9"/>
+<line x1="45" y1="1371" x2="245" y2="1371" stroke="#cbd5e1" stroke-width="1"/>
+<text x="55" y="1359" font-size="12" font-weight="700" fill="#0f172a">AdminLog</text>
+<rect x="51" y="1375" width="18" height="12" rx="2" fill="#2563eb"/>
+<text x="60" y="1384" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#ffffff">PK</text>
+<text x="72" y="1385" font-size="9.5" font-weight="500" fill="#334155">id</text>
+<text x="239" y="1385" text-anchor="end" font-size="8.5" fill="#94a3b8">String</text>
+<rect x="46" y="1391" width="198" height="20" fill="#f8fafc"/>
+<rect x="51" y="1395" width="18" height="12" rx="2" fill="#059669"/>
+<text x="60" y="1404" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#ffffff">FK</text>
+<text x="72" y="1405" font-size="9.5" font-weight="500" fill="#334155">adminId</text>
+<text x="239" y="1405" text-anchor="end" font-size="8.5" fill="#94a3b8">String</text>
+<rect x="51" y="1415" width="18" height="12" rx="2" fill="#059669"/>
+<text x="60" y="1424" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#ffffff">FK</text>
+<text x="72" y="1425" font-size="9.5" font-weight="500" fill="#334155">admin</text>
+<text x="239" y="1425" text-anchor="end" font-size="8.5" fill="#94a3b8">User</text>
+<rect x="46" y="1431" width="198" height="20" fill="#f8fafc"/>
+<text x="51" y="1445" font-size="9.5" font-weight="500" fill="#334155">action</text>
+<text x="239" y="1445" text-anchor="end" font-size="8.5" fill="#94a3b8">String</text>
+<text x="51" y="1465" font-size="9.5" font-weight="500" fill="#334155">entity</text>
+<text x="239" y="1465" text-anchor="end" font-size="8.5" fill="#94a3b8">String</text>
+<rect x="46" y="1471" width="198" height="20" fill="#f8fafc"/>
+<rect x="51" y="1475" width="18" height="12" rx="2" fill="#059669"/>
+<text x="60" y="1484" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#ffffff">FK</text>
+<text x="72" y="1485" font-size="9.5" font-weight="500" fill="#334155">entityId</text>
+<text x="239" y="1485" text-anchor="end" font-size="8.5" fill="#94a3b8">String?</text>
+<text x="51" y="1505" font-size="9.5" font-weight="500" fill="#334155">meta</text>
+<text x="239" y="1505" text-anchor="end" font-size="8.5" fill="#94a3b8">Json?</text>
+<rect x="46" y="1511" width="198" height="20" fill="#f8fafc"/>
+<text x="51" y="1525" font-size="9.5" font-weight="500" fill="#334155">createdAt</text>
+<text x="239" y="1525" text-anchor="end" font-size="8.5" fill="#94a3b8">DateTime</text>
+<path d="M 245 527.0 L 249 527.0 A 6 6 0 0 0 255 521.0 L 255 471.0 A 6 6 0 0 1 261 465.0 L 315 465.0" fill="none" stroke="#2563eb" stroke-width="1.3" opacity="0.8" marker-end="url(#arrow)"/>
+<path d="M 245 547.0 L 255 547.0 A 6 6 0 0 1 261 553.0 L 261 1177.0 A 6 6 0 0 0 267 1183.0 L 585 1183.0" fill="none" stroke="#059669" stroke-width="1.3" opacity="0.8" marker-end="url(#arrow)"/>
+<path d="M 245 567.0 L 261 567.0 A 6 6 0 0 1 267 573.0 L 267 1535.0 A 6 6 0 0 0 273 1541.0 L 585 1541.0" fill="none" stroke="#7c3aed" stroke-width="1.3" opacity="0.8" marker-end="url(#arrow)"/>
+<path d="M 245 587.0 L 249 587.0 A 6 6 0 0 1 255 593.0 L 255 1017.0 A 6 6 0 0 1 249 1023.0 L 245 1023.0" fill="none" stroke="#d97706" stroke-width="1.3" opacity="0.8" marker-end="url(#arrow)"/>
+<path d="M 245 607.0 L 255 607.0 A 6 6 0 0 1 261 613.0 L 261 1375.0 A 6 6 0 0 1 255 1381.0 L 245 1381.0" fill="none" stroke="#dc2626" stroke-width="1.3" opacity="0.8" marker-end="url(#arrow)"/>
+<path d="M 245 627.0 L 261 627.0 A 6 6 0 0 1 267 633.0 L 267 759.0 A 6 6 0 0 1 261 765.0 L 245 765.0" fill="none" stroke="#0891b2" stroke-width="1.3" opacity="0.8" marker-end="url(#arrow)"/>
+<path d="M 245 805.0 L 267 805.0 A 6 6 0 0 0 273 799.0 L 273 93.0 A 6 6 0 0 0 267 87.0 L 245 87.0" fill="none" stroke="#475569" stroke-width="1.3" opacity="0.8" marker-end="url(#arrow)"/>
+<path d="M 855 267.0 L 851 267.0 A 6 6 0 0 1 845 261.0 L 845 93.0 A 6 6 0 0 0 839 87.0 L 785 87.0" fill="none" stroke="#2563eb" stroke-width="1.3" opacity="0.8" marker-end="url(#arrow)"/>
+<path d="M 855 287.0 L 845 287.0 A 6 6 0 0 1 839 281.0 L 839 93.0 A 6 6 0 0 0 833 87.0 L 515 87.0" fill="none" stroke="#059669" stroke-width="1.3" opacity="0.8" marker-end="url(#arrow)"/>
+<path d="M 785 127.0 L 789 127.0 A 6 6 0 0 0 795 121.0 L 795 93.0 A 6 6 0 0 1 801 87.0 L 855 87.0" fill="none" stroke="#7c3aed" stroke-width="1.3" opacity="0.8" marker-end="url(#arrow)"/>
+<path d="M 785 687.0 L 789 687.0 A 6 6 0 0 1 795 693.0 L 795 879.0 A 6 6 0 0 1 789 885.0 L 785 885.0" fill="none" stroke="#d97706" stroke-width="1.3" opacity="0.8" marker-end="url(#arrow)"/>
+<path d="M 585 707.0 L 581 707.0 A 6 6 0 0 0 575 713.0 L 575 917.0 A 6 6 0 0 1 569 923.0 L 515 923.0" fill="none" stroke="#dc2626" stroke-width="1.3" opacity="0.8" marker-end="url(#arrow)"/>
+<path d="M 785 727.0 L 795 727.0 A 6 6 0 0 1 801 733.0 L 801 1177.0 A 6 6 0 0 1 795 1183.0 L 785 1183.0" fill="none" stroke="#0891b2" stroke-width="1.3" opacity="0.8" marker-end="url(#arrow)"/>
+<path d="M 785 747.0 L 801 747.0 A 6 6 0 0 1 807 753.0 L 807 1535.0 A 6 6 0 0 1 801 1541.0 L 785 1541.0" fill="none" stroke="#475569" stroke-width="1.3" opacity="0.8" marker-end="url(#arrow)"/>
+<path d="M 785 925.0 L 807 925.0 A 6 6 0 0 0 813 919.0 L 813 93.0 A 6 6 0 0 0 807 87.0 L 785 87.0" fill="none" stroke="#2563eb" stroke-width="1.3" opacity="0.8" marker-end="url(#arrow)"/>
+<path d="M 585 1045.0 L 575 1045.0 A 6 6 0 0 1 569 1039.0 L 569 929.0 A 6 6 0 0 0 563 923.0 L 515 923.0" fill="none" stroke="#059669" stroke-width="1.3" opacity="0.8" marker-end="url(#arrow)"/>
+<path d="M 785 1223.0 L 813 1223.0 A 6 6 0 0 0 819 1217.0 L 819 93.0 A 6 6 0 0 0 813 87.0 L 785 87.0" fill="none" stroke="#7c3aed" stroke-width="1.3" opacity="0.8" marker-end="url(#arrow)"/>
+<path d="M 585 1263.0 L 569 1263.0 A 6 6 0 0 1 563 1257.0 L 563 93.0 A 6 6 0 0 0 557 87.0 L 245 87.0" fill="none" stroke="#d97706" stroke-width="1.3" opacity="0.8" marker-end="url(#arrow)"/>
+<path d="M 585 1303.0 L 563 1303.0 A 6 6 0 0 1 557 1297.0 L 557 471.0 A 6 6 0 0 0 551 465.0 L 515 465.0" fill="none" stroke="#dc2626" stroke-width="1.3" opacity="0.8" marker-end="url(#arrow)"/>
+<path d="M 585 1581.0 L 557 1581.0 A 6 6 0 0 1 551 1575.0 L 551 93.0 A 6 6 0 0 0 545 87.0 L 245 87.0" fill="none" stroke="#0891b2" stroke-width="1.3" opacity="0.8" marker-end="url(#arrow)"/>
+<path d="M 785 1621.0 L 819 1621.0 A 6 6 0 0 0 825 1615.0 L 825 93.0 A 6 6 0 0 0 819 87.0 L 785 87.0" fill="none" stroke="#475569" stroke-width="1.3" opacity="0.8" marker-end="url(#arrow)"/>
+<path d="M 515 307.0 L 519 307.0 A 6 6 0 0 0 525 301.0 L 525 93.0 A 6 6 0 0 1 531 87.0 L 855 87.0" fill="none" stroke="#2563eb" stroke-width="1.3" opacity="0.8" marker-end="url(#arrow)"/>
+<path d="M 515 327.0 L 519 327.0 A 6 6 0 0 1 525 333.0 L 525 459.0 A 6 6 0 0 1 519 465.0 L 515 465.0" fill="none" stroke="#059669" stroke-width="1.3" opacity="0.8" marker-end="url(#arrow)"/>
+<path d="M 245 1063.0 L 273 1063.0 A 6 6 0 0 0 279 1057.0 L 279 93.0 A 6 6 0 0 0 273 87.0 L 245 87.0" fill="none" stroke="#7c3aed" stroke-width="1.3" opacity="0.8" marker-end="url(#arrow)"/>
+<path d="M 315 505.0 L 311 505.0 A 6 6 0 0 1 305 499.0 L 305 93.0 A 6 6 0 0 0 299 87.0 L 245 87.0" fill="none" stroke="#d97706" stroke-width="1.3" opacity="0.8" marker-end="url(#arrow)"/>
+<path d="M 515 705.0 L 525 705.0 A 6 6 0 0 1 531 711.0 L 531 1177.0 A 6 6 0 0 0 537 1183.0 L 585 1183.0" fill="none" stroke="#dc2626" stroke-width="1.3" opacity="0.8" marker-end="url(#arrow)"/>
+<path d="M 515 745.0 L 525 745.0 A 6 6 0 0 0 531 739.0 L 531 93.0 A 6 6 0 0 0 525 87.0 L 515 87.0" fill="none" stroke="#0891b2" stroke-width="1.3" opacity="0.8" marker-end="url(#arrow)"/>
+<path d="M 515 765.0 L 531 765.0 A 6 6 0 0 1 537 771.0 L 537 917.0 A 6 6 0 0 1 531 923.0 L 515 923.0" fill="none" stroke="#475569" stroke-width="1.3" opacity="0.8" marker-end="url(#arrow)"/>
+<path d="M 515 785.0 L 537 785.0 A 6 6 0 0 1 543 791.0 L 543 1275.0 A 6 6 0 0 1 537 1281.0 L 515 1281.0" fill="none" stroke="#2563eb" stroke-width="1.3" opacity="0.8" marker-end="url(#arrow)"/>
+<path d="M 515 963.0 L 543 963.0 A 6 6 0 0 0 549 957.0 L 549 471.0 A 6 6 0 0 0 543 465.0 L 515 465.0" fill="none" stroke="#059669" stroke-width="1.3" opacity="0.8" marker-end="url(#arrow)"/>
+<path d="M 515 1003.0 L 531 1003.0 A 6 6 0 0 0 537 997.0 L 537 93.0 A 6 6 0 0 1 543 87.0 L 585 87.0" fill="none" stroke="#7c3aed" stroke-width="1.3" opacity="0.8" marker-end="url(#arrow)"/>
+<path d="M 515 1043.0 L 537 1043.0 A 6 6 0 0 0 543 1037.0 L 543 891.0 A 6 6 0 0 1 549 885.0 L 585 885.0" fill="none" stroke="#d97706" stroke-width="1.3" opacity="0.8" marker-end="url(#arrow)"/>
+<path d="M 515 1321.0 L 549 1321.0 A 6 6 0 0 0 555 1315.0 L 555 471.0 A 6 6 0 0 0 549 465.0 L 515 465.0" fill="none" stroke="#dc2626" stroke-width="1.3" opacity="0.8" marker-end="url(#arrow)"/>
+<path d="M 245 1421.0 L 279 1421.0 A 6 6 0 0 0 285 1415.0 L 285 93.0 A 6 6 0 0 0 279 87.0 L 245 87.0" fill="none" stroke="#0891b2" stroke-width="1.3" opacity="0.8" marker-end="url(#arrow)"/>
+</svg>
