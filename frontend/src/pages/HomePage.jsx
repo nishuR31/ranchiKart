@@ -4,6 +4,9 @@ import api from "../lib/api";
 import ProductCard from "../components/ProductCard";
 import useSEO from "../lib/useSEO";
 import { ProductGridSkeleton, Skeleton } from "../components/Loaders";
+import useAuthStore from "../store/useAuthStore";
+import useShopStore from "../store/useShopStore";
+import Snowfall from "react-snowfall";
 import {
   Smartphone, Tv, Shirt, ShoppingBasket, Sofa, Sparkles,
   BookOpen, Dumbbell, Package, Truck, ShieldCheck, RotateCcw,
@@ -58,6 +61,8 @@ const KIND_LABEL = {
 
 export default function HomePage() {
   useSEO(); // Default title and description
+  const user = useAuthStore((s) => s.user);
+  const showSnowfall = useShopStore((s) => s.showSnowfall);
 
   const [categories, setCategories] = useState([]);      // top-level (parentId == null)
   const [featuredProducts, setFeaturedProducts] = useState([]);
@@ -113,6 +118,7 @@ export default function HomePage() {
 
   return (
     <div className="home-page">
+      {showSnowfall && <Snowfall color="rgba(255, 255, 255, 0.4)" snowflakeCount={100} />}
 
       {/* ── Hero Banner ──────────────────────────────────────────────────── */}
       <section className="hero">
@@ -122,7 +128,7 @@ export default function HomePage() {
           <p>Mobiles, fashion, grocery, home essentials &amp; more — delivered fast across every locality in Ranchi.</p>
           <div className="hero-cta-row">
             <Link to="/search?q=" className="btn btn-accent">Shop Now</Link>
-            <Link to="/auth" className="btn btn-outline">Login / Sign Up</Link>
+            {!user && <Link to="/auth" className="btn btn-outline">Login / Sign Up</Link>}
           </div>
         </div>
         <div className="hero-badges">
@@ -130,6 +136,35 @@ export default function HomePage() {
           <div><ShieldCheck size={20} /> Secure UPI / Card / COD payments</div>
           <div><RotateCcw size={20} /> 7-day easy replacement</div>
         </div>
+      </section>
+
+      {/* ── Offers Carousel ────────────────────────────────────────────── */}
+      <section className="offers-carousel-section">
+        {loading ? (
+          <div className="offers-carousel">
+            <Skeleton style={{ minWidth: "300px", height: "140px", borderRadius: "12px", flexShrink: 0 }} />
+            <Skeleton style={{ minWidth: "300px", height: "140px", borderRadius: "12px", flexShrink: 0 }} />
+            <Skeleton style={{ minWidth: "300px", height: "140px", borderRadius: "12px", flexShrink: 0 }} />
+          </div>
+        ) : (
+          <div className="offers-carousel">
+            <div className="offer-card" style={{ background: "linear-gradient(135deg, #ff9f1c, #ff6b6b)" }}>
+              <h3>Super Saver Week!</h3>
+              <p>Flat 50% off on all Fashion & Apparel</p>
+              <Link to="/search?q=fashion" className="btn btn-sm">Shop Fashion</Link>
+            </div>
+            <div className="offer-card" style={{ background: "linear-gradient(135deg, #2b5fd9, #1e45a8)" }}>
+              <h3>Tech Fest</h3>
+              <p>Get up to ₹5000 off on Laptops & Mobiles</p>
+              <Link to="/search?q=electronics" className="btn btn-sm">Shop Electronics</Link>
+            </div>
+            <div className="offer-card" style={{ background: "linear-gradient(135deg, #388e3c, #1b5e20)" }}>
+              <h3>Fresh Groceries</h3>
+              <p>Same-day delivery + 10% cashback on UPI</p>
+              <Link to="/search?q=grocery" className="btn btn-sm">Shop Groceries</Link>
+            </div>
+          </div>
+        )}
       </section>
 
       {/* ── Category Grid (from API) ──────────────────────────────────── */}

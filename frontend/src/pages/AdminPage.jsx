@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import api, { extractError } from "../lib/api";
 import { formatINR } from "../lib/money";
+import { Skeleton } from "../components/Loaders";
 import useShopStore from "../store/useShopStore";
 import useAuthStore from "../store/useAuthStore";
 
@@ -68,19 +69,33 @@ function DashboardTab() {
     api.get("/admin/dashboard").then(({ data }) => setStats(data)).catch(() => {});
   }, []);
 
-  if (!stats) return <div className="loading-block">Loading stats…</div>;
+  if (!stats) return (
+    <div>
+      <div className="stat-cards">
+        <Skeleton width="100%" height={80} />
+        <Skeleton width="100%" height={80} />
+        <Skeleton width="100%" height={80} />
+        <Skeleton width="100%" height={80} />
+      </div>
+      <div style={{marginTop: 24}}>
+        <Skeleton width={150} height={24} style={{marginBottom: 16}} />
+        <Skeleton width="100%" height={200} />
+      </div>
+    </div>
+  );
 
   return (
     <div>
       <div className="stat-cards">
-        <div className="stat-card"><span>Total Revenue</span><strong>{formatINR(stats.revenue ?? stats.totalRevenue ?? 0)}</strong></div>
-        <div className="stat-card"><span>Orders</span><strong>{stats.orderCount ?? stats.orders ?? 0}</strong></div>
-        <div className="stat-card"><span>Customers</span><strong>{stats.userCount ?? stats.users ?? 0}</strong></div>
-        <div className="stat-card"><span>Products</span><strong>{stats.productCount ?? stats.products ?? 0}</strong></div>
+        <div className="stat-card"><span>Total Revenue</span><strong>{formatINR(stats.stats?.totalRevenue ?? 0)}</strong></div>
+        <div className="stat-card"><span>Orders</span><strong>{stats.stats?.totalOrders ?? 0}</strong></div>
+        <div className="stat-card"><span>Customers</span><strong>{stats.stats?.totalUsers ?? 0}</strong></div>
+        <div className="stat-card"><span>Products</span><strong>{stats.stats?.totalProducts ?? 0}</strong></div>
       </div>
       {stats.recentOrders?.length > 0 && (
         <>
           <h3>Recent Orders</h3>
+          <div className="table-wrapper">
           <table className="admin-table">
             <thead><tr><th>Order #</th><th>Customer</th><th>Total</th><th>Status</th></tr></thead>
             <tbody>
@@ -94,6 +109,7 @@ function DashboardTab() {
               ))}
             </tbody>
           </table>
+        </div>
         </>
       )}
     </div>
@@ -212,7 +228,8 @@ function ProductsTab() {
         </form>
       )}
 
-      <table className="admin-table">
+      <div className="table-wrapper">
+          <table className="admin-table">
         <thead><tr><th>Title</th><th>Category</th><th>Price</th><th>Stock</th><th>Active</th><th>Featured</th><th></th></tr></thead>
         <tbody>
           {products.map((p) => (
@@ -236,6 +253,7 @@ function ProductsTab() {
           ))}
         </tbody>
       </table>
+        </div>
     </div>
   );
 }
@@ -291,7 +309,8 @@ function CategoriesTab() {
           <button className="btn btn-primary btn-sm" type="submit">Add</button>
         </form>
       )}
-      <table className="admin-table">
+      <div className="table-wrapper">
+          <table className="admin-table">
         <thead><tr><th>Name</th><th>Slug</th><th></th></tr></thead>
         <tbody>
           {categories.map((c) => (
@@ -303,6 +322,7 @@ function CategoriesTab() {
           ))}
         </tbody>
       </table>
+        </div>
     </div>
   );
 }
@@ -332,7 +352,8 @@ function OrdersTab() {
   return (
     <div>
       <h3>Orders ({orders.length})</h3>
-      <table className="admin-table">
+      <div className="table-wrapper">
+          <table className="admin-table">
         <thead><tr><th>Order #</th><th>Customer</th><th>Total</th><th>Payment</th><th>Status</th></tr></thead>
         <tbody>
           {orders.map((o) => (
@@ -350,6 +371,7 @@ function OrdersTab() {
           ))}
         </tbody>
       </table>
+        </div>
     </div>
   );
 }
@@ -423,7 +445,8 @@ function CouponsTab() {
           <button className="btn btn-primary btn-sm" type="submit">Add</button>
         </form>
       )}
-      <table className="admin-table">
+      <div className="table-wrapper">
+          <table className="admin-table">
         <thead><tr><th>Code</th><th>Type</th><th>Value</th><th>Min Order</th><th>Active</th><th></th></tr></thead>
         <tbody>
           {coupons.map((c) => (
@@ -443,6 +466,7 @@ function CouponsTab() {
           ))}
         </tbody>
       </table>
+        </div>
     </div>
   );
 }
@@ -482,7 +506,8 @@ function UsersTab() {
   return (
     <div>
       <h3>Users ({users.length})</h3>
-      <table className="admin-table">
+      <div className="table-wrapper">
+          <table className="admin-table">
         <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Banned</th><th>Actions</th></tr></thead>
         <tbody>
           {users.map((u) => (
@@ -506,6 +531,7 @@ function UsersTab() {
           ))}
         </tbody>
       </table>
+        </div>
     </div>
   );
 }

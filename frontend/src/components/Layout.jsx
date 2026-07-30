@@ -14,6 +14,7 @@ import {
   PackageCheck,
   LayoutDashboard,
   ChevronDown,
+  Settings,
 } from "lucide-react";
 import useAuthStore from "../store/useAuthStore";
 import useShopStore from "../store/useShopStore";
@@ -144,7 +145,8 @@ export default function Layout() {
                   <div className="account-name">Hi, {user.name?.split(" ")[0] ?? "User"}</div>
                   <Link to="/profile"><User size={14} /> Profile</Link>
                   <Link to="/orders"><PackageCheck size={14} /> My Orders</Link>
-                  {isAdmin() && <Link to="/admin"><LayoutDashboard size={14} /> Admin Dashboard</Link>}
+                  <Link to="/settings"><Settings size={14} /> Settings</Link>
+                  {isAdmin() && <Link to="/admin"><LayoutDashboard size={14} /> {user.role === "ADMIN" ? "Admin Dashboard" : "Manager Dashboard"}</Link>}
                   <button onClick={() => { logout(); navigate("/"); }}>
                     <LogOut size={14} /> Logout
                   </button>

@@ -9,7 +9,10 @@ const CART_KEY = "rk_cart";
 
 function loadCart() {
   try {
-    return JSON.parse(localStorage.getItem(CART_KEY)) || { items: [], subtotal: 0, count: 0 };
+    let cart = JSON.parse(localStorage.getItem(CART_KEY)) || { items: [], subtotal: 0, count: 0 };
+    // Sanitize cart to remove corrupted items (e.g. from previous bugs)
+    cart.items = (cart.items || []).filter(i => i && typeof i === 'object' && typeof i.id === 'string' && i.name && i.basePrice !== undefined);
+    return recalcCart(cart.items);
   } catch {
     return { items: [], subtotal: 0, count: 0 };
   }
@@ -30,6 +33,7 @@ const useShopStore = create((set, get) => ({
   wishlist: { items: [] },
   toast: null,
   darkMode: localStorage.getItem("rk_dark") === "true",
+  showSnowfall: localStorage.getItem("rk_snowfall") !== "false", // defaults to true
 
   showToast: (message, type = "success") => {
     set({ toast: { message, type, id: Date.now() } });
@@ -43,6 +47,12 @@ const useShopStore = create((set, get) => ({
     const next = !get().darkMode;
     localStorage.setItem("rk_dark", String(next));
     set({ darkMode: next });
+  },
+
+  toggleSnowfall: () => {
+    const next = !get().showSnowfall;
+    localStorage.setItem("rk_snowfall", String(next));
+    set({ showSnowfall: next });
   },
 
   // ─── Cart (client-side, localStorage) ────────────────────────────────────

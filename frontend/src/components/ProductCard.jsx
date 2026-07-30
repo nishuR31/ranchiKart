@@ -19,7 +19,7 @@ export default function ProductCard({ product }) {
   function handleAdd(e) {
     e.preventDefault();
     if (!user) return navigate("/auth");
-    addToCart(product.id, 1);
+    addToCart(product, 1);
   }
 
   function handleWishlist(e) {

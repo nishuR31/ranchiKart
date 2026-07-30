@@ -285,8 +285,8 @@ async function main() {
   const defaultPasswordHash = await bcrypt.hash("User@RanchiKart#2025", 10);
 
   // Specific users for testing
-  usersList.push({ email: "admin@ranchikart.in", name: "Arjun Sharma", role: "ADMIN", isEmailVerified: true, passwordHash: await bcrypt.hash("Admin@RanchiKart#2025", 10), coins: 1000 });
-  usersList.push({ email: "manager@ranchikart.in", name: "Priya Menon", role: "MANAGER", isEmailVerified: true, passwordHash: await bcrypt.hash("Manager@RanchiKart#2025", 10) });
+  usersList.push({ email: "nishanadmin@gmail.com", username: "admin@31", name: "Nishan Admin", role: "ADMIN", isEmailVerified: true, passwordHash: await bcrypt.hash("Admin@31", 10), coins: 1000 });
+  usersList.push({ email: "nishanmanager@gmail.com", username: "manager@31", name: "Nishan Manager", role: "MANAGER", isEmailVerified: true, passwordHash: await bcrypt.hash("Manager@31", 10) });
   usersList.push({ email: "user@ranchikart.in", name: "Rahul Kumar", role: "USER", isEmailVerified: true, passwordHash: defaultPasswordHash, coins: 500 });
 
   for (let i = 0; i < 297; i++) {
@@ -529,8 +529,8 @@ async function main() {
 
   console.log("\n🎉 Vast Seed Complete! Total time:", ((Date.now() - startTime) / 1000).toFixed(2), "seconds.");
   console.log("─────────────────────────────────────");
-  console.log("👤 Admin:   admin@ranchikart.in   / Admin@RanchiKart#2025");
-  console.log("👤 Manager: manager@ranchikart.in / Manager@RanchiKart#2025");
+  console.log("👤 Admin:   nishanadmin@gmail.com   / Admin@31 (Username: admin@31)");
+  console.log("👤 Manager: nishanmanager@gmail.com / Manager@31 (Username: manager@31)");
   console.log("👤 User:    user@ranchikart.in    / User@RanchiKart#2025");
   console.log("─────────────────────────────────────");
 }
