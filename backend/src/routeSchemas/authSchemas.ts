@@ -27,7 +27,7 @@ const _changePasswordZod = z.object({
 });
 
 const _requestMagicLinkZod = z.object({
-  email: z.string().email(),
+  emailOrUsername: z.string(),
 });
 
 const _verifyTotpZod = z.object({
@@ -35,7 +35,7 @@ const _verifyTotpZod = z.object({
 });
 
 const _generatePasskeyAuthenticationZod = z.object({
-  email: z.string().email(),
+  emailOrUsername: z.string(),
 });
 
 const _verifyMagicLinkZod = z.object({ 

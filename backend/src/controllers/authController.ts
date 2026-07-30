@@ -287,8 +287,8 @@ export const disableTotp = asyncHandler(async (req: FastifyRequest, res: Fastify
 export const generatePasskeyRegistration = asyncHandler(
   async (req: FastifyRequest, res: FastifyReply) => {
     try {
-
-      const options = await authService.generatePasskeyRegistrationOptions(req.user!.id);
+      const origin = req.headers.origin || env.WEB_ORIGIN;
+      const options = await authService.generatePasskeyRegistrationOptions(req.user!.id, origin);
       return sendSuccess(
         res,
         "Passkey registration options generated",
@@ -304,7 +304,8 @@ export const generatePasskeyRegistration = asyncHandler(
 export const verifyPasskeyRegistration = asyncHandler(
   async (req: FastifyRequest, res: FastifyReply) => {
     try {
-      await authService.verifyPasskeyRegistrationResponse(req.user!.id, req.body);
+      const origin = req.headers.origin || env.WEB_ORIGIN;
+      await authService.verifyPasskeyRegistrationResponse(req.user!.id, req.body, origin);
       return sendSuccess(res, "Passkey registered successfully", code("ok") as number, null);
     } catch (err: any) {
       return handleError(err, res);
@@ -316,7 +317,8 @@ export const generatePasskeyAuthentication = asyncHandler(
   async (req: FastifyRequest, res: FastifyReply) => {
     const { emailOrUsername } = z.object({ emailOrUsername: z.string() }).parse(req.body);
     try {
-      const { options, userId } = await authService.generatePasskeyAuthenticationOptions(emailOrUsername);
+      const origin = req.headers.origin || env.WEB_ORIGIN;
+      const { options, userId } = await authService.generatePasskeyAuthenticationOptions(emailOrUsername, origin);
       res.cookie("passkey_auth_user", userId, {
         httpOnly: true,
         secure: env.NODE_ENV === "production" ? true : false,
@@ -342,7 +344,8 @@ export const verifyPasskeyAuthentication = asyncHandler(
     if (!userId) return unauthorizedError(res, "Passkey authentication session expired.");
 
     try {
-      const result = await authService.verifyPasskeyAuthenticationResponse(userId, req.body);
+      const origin = req.headers.origin || env.WEB_ORIGIN;
+      const result = await authService.verifyPasskeyAuthenticationResponse(userId, req.body, origin);
       res.clearCookie("passkey_auth_user", { path: "/" });
       res.cookie("accessToken", result.tokens!.accessToken!, cookieOption("access"));
       res.cookie("refreshToken", result.tokens!.refreshToken!, cookieOption("refresh"));

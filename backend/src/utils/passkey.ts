@@ -106,9 +106,8 @@ import type {
 
 import env from "../config/env.js";
 
-const rpName = env.BUSINESS_NAME || "RanchiKart";
-const rpID = new URL(env.WEB_ORIGIN).hostname;
-const origin = env.WEB_ORIGIN;
+// Origin is passed dynamically to support both localhost and production
+// without strict mismatch errors.
 
 export async function createPasskeyRegistrationOptions(
   user: {
@@ -126,7 +125,11 @@ export async function createPasskeyRegistrationOptions(
     credentialID: string;
     transports: string[];
   }[],
+  origin: string,
 ) {
+  const rpName = env.BUSINESS_NAME || "RanchiKart";
+  const rpID = new URL(origin).hostname;
+
   return generateRegistrationOptions({
     rpName,
     rpID,
@@ -148,7 +151,10 @@ export async function createPasskeyRegistrationOptions(
 export async function verifyPasskeyRegistration(
   response: RegistrationResponseJSON,
   expectedChallenge: string,
+  origin: string,
 ): Promise<VerifiedRegistrationResponse> {
+  const rpID = new URL(origin).hostname;
+
   return verifyRegistrationResponse({
     response,
     expectedChallenge,
@@ -162,7 +168,10 @@ export async function createPasskeyAuthenticationOptions(
     credentialID: string;
     transports: string[];
   }[],
+  origin: string,
 ) {
+  const rpID = new URL(origin).hostname;
+
   return generateAuthenticationOptions({
     rpID,
     allowCredentials: userPasskeys.map((passkey) => ({
@@ -182,7 +191,10 @@ export async function verifyPasskeyAuthentication(
     counter: number;
     transports?: AuthenticatorTransportFuture[];
   },
+  origin: string,
 ): Promise<VerifiedAuthenticationResponse> {
+  const rpID = new URL(origin).hostname;
+
   return verifyAuthenticationResponse({
     response,
     expectedChallenge,

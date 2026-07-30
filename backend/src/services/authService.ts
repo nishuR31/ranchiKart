@@ -357,13 +357,14 @@ export default class AuthService {
 
   // === Passkeys (WebAuthn) ===
 
-  async generatePasskeyRegistrationOptions(userId: string) {
+  async generatePasskeyRegistrationOptions(userId: string, origin: string) {
     const user = await userRepo.findById(userId);
     const passkeys = await prisma.passkeyCredential.findMany({ where: { userId } });
 
     const options = await createPasskeyRegistrationOptions(
       { id: user.id, email: user.email, name: user.name || "User" },
-      passkeys
+      passkeys,
+      origin
     );
 
     // Save challenge temporarily (in production, use Redis or similar with expiry)
@@ -378,12 +379,12 @@ export default class AuthService {
     return options;
   }
 
-  async verifyPasskeyRegistrationResponse(userId: string, response: any) {
+  async verifyPasskeyRegistrationResponse(userId: string, response: any, origin: string) {
     const redis = (await import("../config/redis.js")).default;
     const expectedChallenge = await redis?.get(`passkey_reg_challenge:${userId}`);
     if (!expectedChallenge) throw new ValidationError("Passkey challenge expired or not found.");
 
-    const verification = await verifyPasskeyRegistration(response, expectedChallenge);
+    const verification = await verifyPasskeyRegistration(response, expectedChallenge, origin);
     if (!verification.verified || !verification.registrationInfo) {
       throw new ValidationError("Passkey registration failed.");
     }
@@ -404,14 +405,14 @@ export default class AuthService {
     return true;
   }
 
-  async generatePasskeyAuthenticationOptions(emailOrUsername: string) {
+  async generatePasskeyAuthenticationOptions(emailOrUsername: string, origin: string) {
     const user = await userRepo.findByEmailOrUsername(emailOrUsername.toLowerCase());
     if (!user) throw new NotFoundError("User not found.");
 
     const passkeys = await prisma.passkeyCredential.findMany({ where: { userId: user.id } });
     if (!passkeys.length) throw new NotFoundError("No passkeys registered for this user.");
 
-    const options = await createPasskeyAuthenticationOptions(passkeys);
+    const options = await createPasskeyAuthenticationOptions(passkeys, origin);
 
     const redis = (await import("../config/redis.js")).default;
     await redis?.setex(`passkey_auth_challenge:${user.id}`, 300, options.challenge);
@@ -419,7 +420,7 @@ export default class AuthService {
     return { options, userId: user.id };
   }
 
-  async verifyPasskeyAuthenticationResponse(userId: string, response: any) {
+  async verifyPasskeyAuthenticationResponse(userId: string, response: any, origin: string) {
     const redis = (await import("../config/redis.js")).default;
     const expectedChallenge = await redis?.get(`passkey_auth_challenge:${userId}`);
     if (!expectedChallenge) throw new ValidationError("Passkey challenge expired or not found.");
@@ -434,7 +435,7 @@ export default class AuthService {
       credentialPublicKey: new Uint8Array(passkey.credentialPublicKey),
       counter: Number(passkey.counter),
       transports: passkey.transports as AuthenticatorTransport[],
-    });
+    }, origin);
 
     if (!verification.verified || !verification.authenticationInfo) {
       throw new ValidationError("Passkey verification failed.");
