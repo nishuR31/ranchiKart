@@ -32,8 +32,20 @@ const useShopStore = create((set, get) => ({
   cart: loadCart(),
   wishlist: { items: [] },
   toast: null,
-  darkMode: localStorage.getItem("rk_dark") === "true",
-  showSnowfall: localStorage.getItem("rk_snowfall") !== "false", // defaults to true
+  darkMode: (() => {
+    try {
+      return localStorage.getItem("rk_dark") === "true";
+    } catch {
+      return false;
+    }
+  })(),
+  showSnowfall: (() => {
+    try {
+      return localStorage.getItem("rk_snowfall") !== "false";
+    } catch {
+      return true;
+    }
+  })(), // defaults to true
 
   showToast: (message, type = "success") => {
     set({ toast: { message, type, id: Date.now() } });

@@ -84,6 +84,22 @@ const useAuthStore = create(
     }),
     {
       name: "ranchikart-auth",
+
+      version: 1,
+
+      migrate: (persistedState) =>
+        persistedState ?? {
+          token: null,
+          refreshToken: null,
+          user: null,
+        },
+
+      onRehydrateStorage: () => (_, error) => {
+        if (error) {
+          localStorage.removeItem("ranchikart-auth");
+        }
+      },
+
       partialize: (state) => ({
         token: state.token,
         refreshToken: state.refreshToken,
