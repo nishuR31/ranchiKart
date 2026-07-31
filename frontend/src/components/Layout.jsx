@@ -49,6 +49,7 @@ export default function Layout() {
   const { cart, fetchCart, wishlist, fetchWishlist, darkMode, toggleDarkMode } = useShopStore();
   const [query, setQuery] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
+  const [accountMenuOpen, setAccountMenuOpen] = useState(false);
   const [topCategories, setTopCategories] = useState([]);
   const navigate = useNavigate();
 
