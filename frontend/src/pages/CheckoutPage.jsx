@@ -20,6 +20,8 @@ const PAYMENT_METHODS = [
   { value: "NET_BANKING", label: "Net Banking" },
 ];
 
+const INDIAN_PHONE_RE = /^[6-9]\d{9}$/;
+
 export default function CheckoutPage() {
   useSEO({
     title: "Checkout",
@@ -38,10 +40,11 @@ export default function CheckoutPage() {
     fullName: "",
     phone: "",
     line1: "",
-    city: "Ranchi",
+    city: "Lalpur",
     state: "Jharkhand",
     pincode: "834001",
   });
+  const [phoneError, setPhoneError] = useState("");
   const [couponCode, setCouponCode] = useState("");
   const [couponResult, setCouponResult] = useState(null);
   const [paymentMethod, setPaymentMethod] = useState("COD");
@@ -52,11 +55,9 @@ export default function CheckoutPage() {
   }, []);
 
   // ── Addresses ──────────────────────────────────────────────────────────────
-  // Correct endpoint: GET /users/me/addresses
   async function loadAddresses() {
     try {
       const { data } = await api.get("/users/me/addresses");
-      // data = { addresses: [...] } or the array directly
       const list = Array.isArray(data) ? data : data.addresses ?? [];
       setAddresses(list);
       const def = list.find((a) => a.isDefault) || list[0];
@@ -66,13 +67,33 @@ export default function CheckoutPage() {
     }
   }
 
-  // Correct endpoint: POST /users/me/addresses
+  function validatePhone(phone) {
+    if (!phone.trim()) {
+      return "Phone number is required.";
+    }
+    if (!INDIAN_PHONE_RE.test(phone.replace(/\s/g, ""))) {
+      return "Please enter a valid 10-digit Indian mobile number (e.g. 9876543210).";
+    }
+    return "";
+  }
+
+  function handlePhoneChange(e) {
+    const val = e.target.value.replace(/[^\d]/g, "").slice(0, 10);
+    setForm((f) => ({ ...f, phone: val }));
+    if (phoneError) setPhoneError(validatePhone(val));
+  }
+
   async function saveAddress(e) {
     e.preventDefault();
+    const err = validatePhone(form.phone);
+    if (err) {
+      setPhoneError(err);
+      return;
+    }
+    setPhoneError("");
     try {
       const { data } = await api.post("/users/me/addresses", form);
       await loadAddresses();
-      // data = { address: {...} }
       const saved = data.address ?? data;
       setSelectedAddress(saved.id);
       setShowForm(false);
@@ -83,8 +104,6 @@ export default function CheckoutPage() {
   }
 
   // ── Coupon ─────────────────────────────────────────────────────────────────
-  // Correct endpoint: POST /coupons/apply  (not /coupons/validate)
-  // Required body: { code, orderAmount }
   async function applyCoupon() {
     if (!couponCode.trim()) return;
     try {
@@ -92,7 +111,6 @@ export default function CheckoutPage() {
         code: couponCode.trim().toUpperCase(),
         orderAmount: cart.subtotal,
       });
-      // data = { discount, finalAmount, code, ... }
       setCouponResult({ ...data, code: couponCode.trim().toUpperCase() });
       showToast(`Coupon applied — you save ${formatINR(data.discount)}!`);
     } catch (err) {
@@ -102,9 +120,6 @@ export default function CheckoutPage() {
   }
 
   // ── Place Order ────────────────────────────────────────────────────────────
-  // Correct endpoint: POST /orders
-  // Required: { paymentMethod, address (inline object), items: [{productId, quantity}] }
-  // NOT addressId — backend needs the full address inline
   async function placeOrder() {
     if (!selectedAddress) return showToast("Please select or add a delivery address", "error");
     if (cart.items.length === 0) return showToast("Your cart is empty", "error");
@@ -114,13 +129,11 @@ export default function CheckoutPage() {
 
     setPlacing(true);
     try {
-      // Build items array from client-side cart
       const items = cart.items.map((item) => ({
         productId: item.id,
         quantity: item.quantity,
       }));
 
-      // Inline address object (no addressId)
       const addressPayload = {
         fullName: address.fullName,
         phone: address.phone,
@@ -138,7 +151,6 @@ export default function CheckoutPage() {
         ...(couponResult?.code ? { couponCode: couponResult.code } : {}),
       });
 
-      // data = { order: {...}, razorpayOrder?: {...} }
       const order = data.order ?? data;
 
       if (paymentMethod === "COD") {
@@ -149,9 +161,7 @@ export default function CheckoutPage() {
       }
 
       // ── Razorpay online payment flow ─────────────────────────────────────
-      // Step 1: Create Razorpay order via POST /payments/razorpay/orders
       const rzpRes = await api.post("/payments/razorpay/orders", { orderId: order.id });
-      // API unwraps envelope to: { payment: {...}, gateway: { keyId, orderId, amount, currency, mock } }
       const gateway = rzpRes.data?.gateway ?? rzpRes.data;
       const razorpayOrderId = gateway?.orderId ?? rzpRes.data?.payment?.providerOrderId ?? gateway?.id;
       const keyId = gateway?.keyId || import.meta.env.VITE_RAZORPAY_KEY_ID;
@@ -162,7 +172,6 @@ export default function CheckoutPage() {
       const scriptOk = await loadRazorpayScript();
 
       if (isMock || !scriptOk || !keyId || !razorpayOrderId) {
-        // Mock/test path — auto-verify
         await api.post("/payments/razorpay/verify", {
           orderId: order.id,
           razorpay_order_id: razorpayOrderId ?? "mock_order",
@@ -175,7 +184,6 @@ export default function CheckoutPage() {
         return;
       }
 
-      // Step 2: Open Razorpay checkout
       const rzp = new window.Razorpay({
         key: keyId,
         amount: amount,
@@ -184,7 +192,6 @@ export default function CheckoutPage() {
         description: `Order ${order.orderNumber || order.id}`,
         order_id: razorpayOrderId,
         handler: async function (response) {
-          // Step 3: Verify via POST /payments/razorpay/verify
           await api.post("/payments/razorpay/verify", {
             orderId: order.id,
             razorpay_order_id: response.razorpay_order_id,
@@ -230,7 +237,9 @@ export default function CheckoutPage() {
                   onChange={() => setSelectedAddress(a.id)}
                 />
                 <div>
-                  <strong>{a.fullName}</strong> ({a.label}) — {a.phone}
+                  <strong>{a.fullName}</strong>
+                  <span className="address-card-label"> ({a.label})</span>
+                  <span className="address-card-phone"> — {a.phone}</span>
                   <p>{a.line1}{a.line2 ? `, ${a.line2}` : ""}, {a.city} - {a.pincode}</p>
                 </div>
               </label>
@@ -242,21 +251,91 @@ export default function CheckoutPage() {
             )}
             {showForm && (
               <form className="address-form" onSubmit={saveAddress}>
-                <input required placeholder="Full Name" value={form.fullName}
-                  onChange={(e) => setForm((f) => ({ ...f, fullName: e.target.value }))} />
-                <input required placeholder="Phone Number" value={form.phone}
-                  onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))} />
-                <input required placeholder="House No., Street, Landmark" value={form.line1}
-                  onChange={(e) => setForm((f) => ({ ...f, line1: e.target.value }))} />
-                <select value={form.city}
-                  onChange={(e) => setForm((f) => ({ ...f, city: e.target.value }))}>
-                  {RANCHI_LOCALITIES.map((l) => <option key={l} value={l}>{l}</option>)}
-                </select>
-                <input required placeholder="Pincode" value={form.pincode}
-                  onChange={(e) => setForm((f) => ({ ...f, pincode: e.target.value }))} />
+
+                <div className="form-group">
+                  <label htmlFor="addr-fullname">Full Name <span className="field-required">*</span></label>
+                  <input
+                    id="addr-fullname"
+                    required
+                    placeholder="e.g. Ramesh Kumar"
+                    value={form.fullName}
+                    onChange={(e) => setForm((f) => ({ ...f, fullName: e.target.value }))}
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="addr-phone">
+                    Phone Number <span className="field-required">*</span>
+                    <span className="field-hint"> (10-digit Indian mobile)</span>
+                  </label>
+                  <input
+                    id="addr-phone"
+                    required
+                    placeholder="e.g. 9876543210"
+                    value={form.phone}
+                    inputMode="numeric"
+                    maxLength={10}
+                    onChange={handlePhoneChange}
+                    onBlur={() => setPhoneError(validatePhone(form.phone))}
+                    className={phoneError ? "input-error" : ""}
+                  />
+                  {phoneError && <span className="field-error">{phoneError}</span>}
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="addr-line1">House / Flat No., Street, Landmark <span className="field-required">*</span></label>
+                  <input
+                    id="addr-line1"
+                    required
+                    placeholder="e.g. 12B, Main Road, near City Mall"
+                    value={form.line1}
+                    onChange={(e) => setForm((f) => ({ ...f, line1: e.target.value }))}
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="addr-city">Area / Locality <span className="field-required">*</span></label>
+                  <select
+                    id="addr-city"
+                    value={form.city}
+                    onChange={(e) => setForm((f) => ({ ...f, city: e.target.value }))}
+                  >
+                    {RANCHI_LOCALITIES.map((l) => <option key={l} value={l}>{l}</option>)}
+                  </select>
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="addr-pincode">Pincode <span className="field-required">*</span></label>
+                  <input
+                    id="addr-pincode"
+                    required
+                    placeholder="e.g. 834001"
+                    value={form.pincode}
+                    inputMode="numeric"
+                    maxLength={6}
+                    onChange={(e) => setForm((f) => ({ ...f, pincode: e.target.value.replace(/\D/g, "").slice(0, 6) }))}
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="addr-label">Address Type</label>
+                  <div className="addr-type-row">
+                    {["Home", "Work", "Other"].map((t) => (
+                      <button
+                        key={t}
+                        type="button"
+                        className={`addr-type-btn${form.label === t ? " active" : ""}`}
+                        onClick={() => setForm((f) => ({ ...f, label: t }))}
+                      >
+                        {t}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
                 <div className="form-actions">
                   <button type="submit" className="btn btn-primary btn-sm">Save Address</button>
-                  <button type="button" className="btn btn-outline btn-sm" onClick={() => setShowForm(false)}>Cancel</button>
+                  <button type="button" className="btn btn-outline btn-sm" onClick={() => { setShowForm(false); setPhoneError(""); }}>Cancel</button>
                 </div>
               </form>
             )}

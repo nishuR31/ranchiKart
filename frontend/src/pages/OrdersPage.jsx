@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { PackageSearch } from "lucide-react";
 import api from "../lib/api";
 import { formatINR } from "../lib/money";
 import useSEO from "../lib/useSEO";
@@ -15,6 +16,21 @@ const STATUS_LABEL = {
   REFUNDED: "Refunded",
 };
 
+function formatOrderDate(dateStr) {
+  return new Date(dateStr).toLocaleDateString("en-IN", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+}
+
+function buildProductPreview(items = []) {
+  if (!items.length) return "No items";
+  const first = items[0]?.product?.name || items[0]?.name || "Item";
+  const rest = items.length - 1;
+  return rest > 0 ? `${first} +${rest} more` : first;
+}
+
 export default function OrdersPage() {
   useSEO({ title: "My Orders", noindex: true });
 
@@ -24,7 +40,6 @@ export default function OrdersPage() {
   useEffect(() => {
     api.get("/orders")
       .then(({ data }) => {
-        // data = { orders: [...], total, page } after envelope unwrap
         setOrders(Array.isArray(data) ? data : data.orders ?? []);
         setLoading(false);
       })
@@ -35,6 +50,7 @@ export default function OrdersPage() {
   if (orders.length === 0) {
     return (
       <div className="empty-block">
+        <PackageSearch size={48} />
         <p>You haven't placed any orders yet.</p>
         <Link to="/" className="btn btn-primary">Start Shopping</Link>
       </div>
@@ -47,13 +63,26 @@ export default function OrdersPage() {
       <div className="orders-list">
         {orders.map((o) => (
           <Link to={`/orders/${o.id}`} key={o.id} className="order-row">
-            <div>
-              <strong>{o.orderNumber}</strong>
-              <p>{new Date(o.createdAt).toLocaleDateString("en-IN", { year: "numeric", month: "short", day: "numeric" })}</p>
+            <div className="order-row-main">
+              <div className="order-row-number">
+                {o.orderNumber ? (
+                  <strong>#{o.orderNumber}</strong>
+                ) : (
+                  <strong className="muted">Order</strong>
+                )}
+                <span className="order-row-date">{formatOrderDate(o.createdAt)}</span>
+              </div>
+              <div className="order-row-preview">
+                {buildProductPreview(o.items)}
+              </div>
             </div>
-            <div>{o.items.length} item(s)</div>
-            <div className={`status-pill status-${o.status.toLowerCase()}`}>{STATUS_LABEL[o.status] || o.status}</div>
-            <div className="order-total">{formatINR(o.total)}</div>
+            <div className="order-row-meta">
+              <span className="order-row-count">{o.items?.length ?? 0} item(s)</span>
+              <div className={`status-pill status-${o.status.toLowerCase()}`}>
+                {STATUS_LABEL[o.status] || o.status}
+              </div>
+              <div className="order-total">{formatINR(o.total)}</div>
+            </div>
           </Link>
         ))}
       </div>

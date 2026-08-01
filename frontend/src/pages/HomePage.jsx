@@ -64,10 +64,9 @@ export default function HomePage() {
   const user = useAuthStore((s) => s.user);
   const showSnowfall = useShopStore((s) => s.showSnowfall);
 
-  const [categories, setCategories] = useState([]);      // top-level (parentId == null)
+  const [categories, setCategories] = useState([]);
   const [featuredProducts, setFeaturedProducts] = useState([]);
   const [trendingProducts, setTrendingProducts] = useState([]);
-  // category-wise product sections: { [kind]: Product[] }
   const [kindSections, setKindSections] = useState({});
   const [loading, setLoading] = useState(true);
 
@@ -75,26 +74,24 @@ export default function HomePage() {
     async function load() {
       setLoading(true);
       try {
-        const [catRes, featRes] = await Promise.all([
+        // ── All initial fetches in ONE parallel batch ─────────────────────
+        const [catRes, featRes, trendRes] = await Promise.all([
           api.get("/categories"),
           api.get("/products/featured"),
+          api.get("/products", { params: { sort: "rating", limit: 8 } }),
         ]);
 
         const allCats = catRes.data.categories ?? catRes.data ?? [];
-
-        // Fetch all top-level categories
         const topCats = allCats.filter((c) => !c.parentId);
         setCategories(topCats);
 
         const featured = featRes.data.products ?? featRes.data ?? [];
         setFeaturedProducts(featured.slice(0, 8));
 
-        // Load trending
-        const trendRes = await api.get("/products", { params: { sort: "rating", limit: 8 } });
         setTrendingProducts(trendRes.data.products ?? trendRes.data ?? []);
 
-        // Load a few products for top 4 category kinds
-        const topKinds = [...new Set(topCats.map((c) => c.kind))].slice(0, 4);
+        // ── Load category-kind sections in parallel (top 3 kinds only) ────
+        const topKinds = [...new Set(topCats.map((c) => c.kind))].slice(0, 3);
         const kindResults = await Promise.all(
           topKinds.map((kind) =>
             api.get("/products", { params: { kind, limit: 6, sort: "newest" } })
@@ -150,12 +147,12 @@ export default function HomePage() {
           <div className="offers-carousel">
             <div className="offer-card" style={{ background: "linear-gradient(135deg, #ff9f1c, #ff6b6b)" }}>
               <h3>Super Saver Week!</h3>
-              <p>Flat 50% off on all Fashion & Apparel</p>
+              <p>Flat 50% off on all Fashion &amp; Apparel</p>
               <Link to="/search?q=fashion" className="btn btn-sm">Shop Fashion</Link>
             </div>
             <div className="offer-card" style={{ background: "linear-gradient(135deg, #2b5fd9, #1e45a8)" }}>
               <h3>Tech Fest</h3>
-              <p>Get up to ₹5000 off on Laptops & Mobiles</p>
+              <p>Get up to ₹5000 off on Laptops &amp; Mobiles</p>
               <Link to="/search?q=electronics" className="btn btn-sm">Shop Electronics</Link>
             </div>
             <div className="offer-card" style={{ background: "linear-gradient(135deg, #388e3c, #1b5e20)" }}>
@@ -180,15 +177,14 @@ export default function HomePage() {
                 return (
                   <Link key={cat.id} to={`/category/${cat.slug}`} className="category-tile">
                     {cat.imageUrl
-                      ? <img src={cat.imageUrl} alt={cat.name} className="cat-img" />
+                      ? <img src={cat.imageUrl} alt={cat.name} className="cat-img" loading="lazy" />
                       : <Icon size={28} />
                     }
                     <span>{cat.name}</span>
                   </Link>
                 );
               })
-            : /* Skeleton placeholders while loading */
-              Array.from({ length: 8 }).map((_, i) => (
+            : Array.from({ length: 8 }).map((_, i) => (
                 <div key={i} className="category-tile" style={{ border: 'none', background: 'transparent' }}>
                   <Skeleton width={48} height={48} style={{ borderRadius: '50%' }} />
                   <Skeleton width={70} height={14} style={{ marginTop: 8 }} />
@@ -280,7 +276,7 @@ export default function HomePage() {
       {/* ── About & Privacy (Compliance) ──────────────────────────────── */}
       <section className="about-compliance-section">
         <div className="about-compliance-content">
-          <h2>About RanchiKart & Your Privacy</h2>
+          <h2>About RanchiKart &amp; Your Privacy</h2>
           <p>
             RanchiKart is a local e-commerce platform connecting residents of Ranchi to rapid delivery of groceries, fashion, and everyday essentials.
           </p>
