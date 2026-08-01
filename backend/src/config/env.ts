@@ -49,8 +49,12 @@ const envSchema = z.object({
     .string()
     .default(`${process.env.BUSINESS_NAME || "RanchiKart"} <${process.env.SMTP_USER || process.env.GMAIL_USER || ""}>`),
 
-  // Email Sending Provider Preference ("auto" | "gmail" | "smtp")
-  EMAIL_TRANSPORT: z.enum(["auto", "gmail", "smtp"]).default("auto"),
+  // Email Sending Provider Preference ("auto" | "resend" | "gmail" | "smtp")
+  EMAIL_TRANSPORT: z.enum(["auto", "resend", "gmail", "smtp"]).default("auto"),
+
+  // Resend API (HTTPS REST API for email delivery)
+  RESEND_API_KEY: z.string().optional().or(z.literal("")),
+  RESEND_FROM: z.string().default("onboarding@resend.dev"),
 
   // Gmail API (HTTPS REST API for platforms like Render where outbound SMTP is blocked)
   GMAIL_CLIENT_ID: z.string().optional().or(z.literal("")),

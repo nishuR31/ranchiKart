@@ -1,5 +1,9 @@
 import env from "./env.js";
 import {
+  sendViaResend,
+  resendConfigured,
+} from "../providers/resendProvider.js";
+import {
   sendViaGmailApi,
   oauth2Client,
   gmailApiConfigured,
@@ -12,9 +16,10 @@ import {
   type MailAttachment,
 } from "../providers/nodemailerProvider.js";
 
-export type EmailTransportType = "gmail" | "smtp" | "auto";
+export type EmailTransportType = "resend" | "gmail" | "smtp" | "auto";
 export type { MailAttachment };
 
+export { sendViaResend, resendConfigured };
 export { sendViaGmailApi, oauth2Client, gmailApiConfigured };
 export { sendViaSmtp, nodemailerTransporter, smtpConfigured };
 
@@ -33,7 +38,26 @@ export async function send(
 
   const selectedTransport = transport || env.EMAIL_TRANSPORT || "auto";
 
-  // Choice 1: Force Gmail REST API Transport
+  // Choice 1: Force Resend REST API Transport
+  if (selectedTransport === "resend") {
+    try {
+      await sendViaResend(to, subject, html, attachments);
+      console.log(`[Email sent via Resend API] To: ${to} | Subject: ${subject}`);
+      return;
+    } catch (err) {
+      const errMsg = err instanceof Error ? err.message : String(err);
+      console.warn(`[Resend API send error] To: ${to} | ${errMsg}`);
+      if (smtpConfigured && nodemailerTransporter) {
+        console.log(`[Email] Falling back to SMTP...`);
+        await sendViaSmtp(to, subject, html, attachments);
+        console.log(`[Email sent via SMTP (fallback)] To: ${to} | Subject: ${subject}`);
+        return;
+      }
+      throw err;
+    }
+  }
+
+  // Choice 2: Force Gmail REST API Transport
   if (selectedTransport === "gmail") {
     try {
       await sendViaGmailApi(to, subject, html, attachments);
@@ -52,7 +76,7 @@ export async function send(
     }
   }
 
-  // Choice 2: Force Standard Nodemailer SMTP Transport
+  // Choice 3: Force Standard Nodemailer SMTP Transport
   if (selectedTransport === "smtp") {
     try {
       await sendViaSmtp(to, subject, html, attachments);
@@ -64,7 +88,19 @@ export async function send(
     }
   }
 
-  // Choice 3: Auto Mode — Try Gmail REST API first (if available and operational), then fallback to SMTP
+  // Choice 4: Auto Mode — Try Resend FIRST (if configured), then Gmail API, then fallback to SMTP
+  if (resendConfigured) {
+    try {
+      await sendViaResend(to, subject, html, attachments);
+      console.log(`[Email sent via Resend API (auto)] To: ${to} | Subject: ${subject}`);
+      return;
+    } catch (err) {
+      const errMsg = err instanceof Error ? err.message : String(err);
+      console.warn(`[Resend API auto send error] To: ${to} | ${errMsg}`);
+      console.log(`[Email] Falling back to next available provider...`);
+    }
+  }
+
   if (gmailApiConfigured && tokenFetchFailedUntil <= Date.now()) {
     try {
       await sendViaGmailApi(to, subject, html, attachments);
