@@ -19,7 +19,7 @@ const orderService = new OrderService();
 
 const addressSchema = z.object({
   fullName: z.string().min(2),
-  phone: z.string().regex(/^(?:(?:\+|0{0,2})91(\s*[\-]\s*)?|[0]?)?[6789]\d{9}$/, "Invalid phone number format"),
+  phone: z.string().regex(/^\s*(?:(?:\+|0{0,2})91[\s\-]*|[0]?)?[56789](?:[\s\-]*\d){9}\s*$/, "Invalid phone number format"),
   line1: z.string().min(4),
   line2: z.string().optional(),
   city: z.string().min(2),

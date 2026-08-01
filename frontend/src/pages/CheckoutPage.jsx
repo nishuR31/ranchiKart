@@ -151,16 +151,21 @@ export default function CheckoutPage() {
       // ── Razorpay online payment flow ─────────────────────────────────────
       // Step 1: Create Razorpay order via POST /payments/razorpay/orders
       const rzpRes = await api.post("/payments/razorpay/orders", { orderId: order.id });
-      const rzpOrder = rzpRes.data?.razorpayOrder ?? rzpRes.data;
+      // API unwraps envelope to: { payment: {...}, gateway: { keyId, orderId, amount, currency, mock } }
+      const gateway = rzpRes.data?.gateway ?? rzpRes.data;
+      const razorpayOrderId = gateway?.orderId ?? rzpRes.data?.payment?.providerOrderId ?? gateway?.id;
+      const keyId = gateway?.keyId || import.meta.env.VITE_RAZORPAY_KEY_ID;
+      const amount = gateway?.amount ?? order.total;
+      const currency = gateway?.currency ?? "INR";
+      const isMock = Boolean(gateway?.mock || razorpayOrderId?.startsWith("mock_"));
 
       const scriptOk = await loadRazorpayScript();
-      const rzpKey = import.meta.env.VITE_RAZORPAY_KEY_ID;
 
-      if (!scriptOk || !rzpKey || !rzpOrder?.id) {
+      if (isMock || !scriptOk || !keyId || !razorpayOrderId) {
         // Mock/test path — auto-verify
         await api.post("/payments/razorpay/verify", {
           orderId: order.id,
-          razorpay_order_id: rzpOrder?.id ?? "mock_order",
+          razorpay_order_id: razorpayOrderId ?? "mock_order",
           razorpay_payment_id: "pay_mock_" + Date.now(),
           razorpay_signature: "mock",
         });
@@ -172,12 +177,12 @@ export default function CheckoutPage() {
 
       // Step 2: Open Razorpay checkout
       const rzp = new window.Razorpay({
-        key: rzpKey,
-        amount: rzpOrder.amount,
-        currency: rzpOrder.currency ?? "INR",
+        key: keyId,
+        amount: amount,
+        currency: currency,
         name: "RanchiKart",
-        description: `Order ${order.orderNumber}`,
-        order_id: rzpOrder.id,
+        description: `Order ${order.orderNumber || order.id}`,
+        order_id: razorpayOrderId,
         handler: async function (response) {
           // Step 3: Verify via POST /payments/razorpay/verify
           await api.post("/payments/razorpay/verify", {

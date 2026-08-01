@@ -50,7 +50,7 @@ export const register = asyncHandler(async (req: FastifyRequest, res: FastifyRep
       phone: z
         .string()
         .trim()
-        .regex(/^(?:(?:\+|0{0,2})91(\s*[\-]\s*)?|[0]?)?[6789]\d{9}$/, {
+        .regex(/^\s*(?:(?:\+|0{0,2})91[\s\-]*|[0]?)?[56789](?:[\s\-]*\d){9}\s*$/, {
           message: "Enter a valid Indian mobile number",
         })
         .optional(),
