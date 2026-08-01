@@ -13,6 +13,16 @@ import { code } from "status-map";
 import { BadRequestError, ForbiddenError, NotFoundError } from "../utils/errors.js";
 
 const couponService = new CouponService();
+const createCouponBodySchema = z
+  .object({
+    code: z.string().min(3).max(30).toUpperCase(),
+    description: z.string().optional(),
+    type: z.enum(["PERCENT", "FIXED"]).default("PERCENT"),
+    value: z.number().int().positive(),
+    minOrderAmount: z.number().int().nonnegative().default(0),
+    maxUses: z.number().int().positive().optional(),
+    expiresAt: z.string().datetime().optional(),
+  });
 
 function handleError(err: any, res: FastifyReply) {
   if (err instanceof BadRequestError) return badRequestError(res, err.message);
@@ -48,17 +58,7 @@ export const getAllCoupons = asyncHandler(async (req: FastifyRequest, res: Fasti
 });
 
 export const createCoupon = asyncHandler(async (req: FastifyRequest, res: FastifyReply) => {
-  const body = z
-    .object({
-      code: z.string().min(3).max(30).toUpperCase(),
-      description: z.string().optional(),
-      type: z.enum(["PERCENT", "FIXED"]).default("PERCENT"),
-      value: z.number().int().positive(),
-      minOrderAmount: z.number().int().nonnegative().default(0),
-      maxUses: z.number().int().positive().optional(),
-      expiresAt: z.string().datetime().optional(),
-    })
-    .parse(req.body);
+  const body = createCouponBodySchema.parse(req.body);
 
   try {
     const coupon = await couponService.createCoupon(req.user!.role, body);

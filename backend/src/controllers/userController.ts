@@ -4,13 +4,16 @@ import UserService from "../services/userService.js";
 import asyncHandler from "../utils/asyncHandler.js";
 import { sendSuccess, notFoundError, internalServerError } from "../utils/response.js";
 import { code } from "status-map";
-import { NotFoundError } from "../utils/errors.js";
+import { ConflictError, NotFoundError, ValidationError } from "../utils/errors.js";
 import { safeUser } from "../utils/safeUser.js";
 
 const userService = new UserService();
 
 function handleError(err: any, res: FastifyReply) {
   if (err instanceof NotFoundError) return notFoundError(res, err.message);
+  if (err instanceof ConflictError || err instanceof ValidationError) {
+    return res.status(err.statusCode).send({ success: false, message: err.message });
+  }
   return internalServerError(res, err?.message ?? "Unexpected error");
 }
 
@@ -23,6 +26,13 @@ export const updateProfile = asyncHandler(async (req: FastifyRequest, res: Fasti
   const raw = z
     .object({
       name: z.string().min(2).max(80).optional(),
+      username: z
+        .string()
+        .trim()
+        .min(3)
+        .max(30)
+        .regex(/^[a-zA-Z0-9_]+$/, "Username can use letters, numbers and underscores only")
+        .optional(),
       phone: z.string().regex(/^\s*(?:(?:\+|0{0,2})91[\s\-]*|[0]?)?[56789](?:[\s\-]*\d){9}\s*$/, "Invalid phone number format").optional(),
       // Accepted from plain-JSON callers that already have a hosted URL
       avatarUrl: z.string().url().optional(),
@@ -34,12 +44,17 @@ export const updateProfile = asyncHandler(async (req: FastifyRequest, res: Fasti
   // Prefer an explicit avatarUrl; fall back to the middleware-injected imageUrl
   const body = {
     name: raw.name,
+    username: raw.username?.toLowerCase(),
     phone: raw.phone,
     avatarUrl: raw.avatarUrl ?? raw.imageUrl,
   };
 
-  const user = await userService.updateProfile(req.user!.id, body);
-  return sendSuccess(res, "Profile updated", code("ok") as number, { user: safeUser(user) });
+  try {
+    const user = await userService.updateProfile(req.user!.id, body);
+    return sendSuccess(res, "Profile updated", code("ok") as number, { user: safeUser(user) });
+  } catch (err: any) {
+    return handleError(err, res);
+  }
 });
 
 export const getAddresses = asyncHandler(async (req: FastifyRequest, res: FastifyReply) => {

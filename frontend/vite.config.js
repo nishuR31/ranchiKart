@@ -1,5 +1,6 @@
 import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react";
+import tailwindcss from "@tailwindcss/vite";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Proxy strategy:
@@ -27,7 +28,7 @@ export default defineConfig(({ mode }) => {
     isDev && env.VITE_USE_REMOTE !== "true" ? localBackend : remoteBackend;
 
   return {
-    plugins: [react()],
+    plugins: [tailwindcss(), react()],
     server: {
       port: 5173,
       proxy: {
@@ -48,7 +49,7 @@ export default defineConfig(({ mode }) => {
                     success: false,
                     message:
                       isDev && proxyTarget === localBackend
-                        ? "Local backend not running. Start it with `bun run dev` in /backend, or add VITE_USE_REMOTE=true to .env.local"
+                        ? "We could not connect to the server. Please try again in a moment."
                         : "Backend unreachable",
                   })
                 );

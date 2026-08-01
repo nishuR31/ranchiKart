@@ -38,7 +38,18 @@ export default function ProductPage() {
     try {
       const { data } = await api.get(`/products/${slug}`);
       // data = { product: {...}, related: [...] }
-      setProduct(data.product ?? data);
+      const nextProduct = data.product ?? data;
+      try {
+        const reviewRes = await api.get(`/products/${slug}/reviews`, { params: { limit: 5 } });
+        const reviewData = reviewRes.data;
+        setProduct({
+          ...nextProduct,
+          reviews: reviewData.reviews ?? nextProduct.reviews ?? [],
+          reviewCount: reviewData.total ?? nextProduct.reviewCount,
+        });
+      } catch {
+        setProduct(nextProduct);
+      }
       setRelated(data.related ?? data.relatedProducts ?? []);
       setActiveImg(0);
       setQty(1);
@@ -74,7 +85,7 @@ export default function ProductPage() {
 
   async function handleWishlist() {
     if (!user) return navigate("/auth");
-    await toggleWishlist(product.id);
+    await toggleWishlist(product);
   }
 
   async function submitReview(e) {
@@ -84,13 +95,37 @@ export default function ProductPage() {
     try {
       // Correct endpoint: POST /products/:slug/reviews
       // Required fields: rating (1-5), body (min 10 chars)
-      await api.post(`/products/${slug}/reviews`, {
+      const { data } = await api.post(`/products/${slug}/reviews`, {
         rating: reviewForm.rating,
         body: reviewForm.body,
       });
+      const createdReview = data.review ?? data;
       showToast("Review submitted!");
       setReviewForm({ rating: 5, body: "" });
-      await load();
+      setProduct((prev) => {
+        if (!prev) return prev;
+        const existingReviews = prev.reviews ?? [];
+        const nextReviews = [
+          {
+            ...createdReview,
+            user: createdReview.user ?? {
+              id: user.id,
+              name: user.name || user.username || "You",
+              avatarUrl: user.avatarUrl,
+            },
+          },
+          ...existingReviews.filter((r) => r.id !== createdReview.id),
+        ].slice(0, 5);
+        const nextCount = Math.max(prev.reviewCount ?? 0, existingReviews.length) + 1;
+        const nextRating =
+          Math.round((((prev.rating ?? reviewForm.rating) * (nextCount - 1)) + reviewForm.rating) / nextCount * 10) / 10;
+        return {
+          ...prev,
+          reviews: nextReviews,
+          reviewCount: nextCount,
+          rating: Number.isFinite(nextRating) ? nextRating : reviewForm.rating,
+        };
+      });
     } catch (err) {
       showToast(extractError(err, "Could not submit review"), "error");
     } finally {

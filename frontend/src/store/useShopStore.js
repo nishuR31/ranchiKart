@@ -6,6 +6,9 @@ import api, { extractError } from "../lib/api";
 // Wishlist lives at /wishlist (backend-persisted).
 
 const CART_KEY = "rk_cart";
+const THEME_KEY = "rk_theme_v3";
+const SEASONAL_EFFECTS = new Set(["snow", "sparkles", "none"]);
+const SEASONAL_MIGRATION_KEY = "rk_seasonal_migrated_v4";
 
 function loadCart() {
   try {
@@ -34,18 +37,33 @@ const useShopStore = create((set, get) => ({
   toast: null,
   darkMode: (() => {
     try {
-      return localStorage.getItem("rk_dark") === "true";
+      return localStorage.getItem(THEME_KEY) !== "light";
     } catch {
-      return false;
+      return true;
+    }
+  })(),
+  seasonalEffect: (() => {
+    try {
+      if (localStorage.getItem(SEASONAL_MIGRATION_KEY) !== "true") {
+        localStorage.setItem(SEASONAL_MIGRATION_KEY, "true");
+        localStorage.setItem("rk_snowfall", "false");
+        localStorage.setItem("rk_seasonal_effect", "none");
+        return "none";
+      }
+      const saved = localStorage.getItem("rk_seasonal_effect") || "snow";
+      return SEASONAL_EFFECTS.has(saved) ? saved : "snow";
+    } catch {
+      return "none";
     }
   })(),
   showSnowfall: (() => {
     try {
+      if (localStorage.getItem(SEASONAL_MIGRATION_KEY) !== "true") return false;
       return localStorage.getItem("rk_snowfall") !== "false";
     } catch {
-      return true;
+      return false;
     }
-  })(), // defaults to true
+  })(),
 
   showToast: (message, type = "success") => {
     set({ toast: { message, type, id: Date.now() } });
@@ -57,14 +75,22 @@ const useShopStore = create((set, get) => ({
 
   toggleDarkMode: () => {
     const next = !get().darkMode;
-    localStorage.setItem("rk_dark", String(next));
+    localStorage.setItem(THEME_KEY, next ? "dark" : "light");
     set({ darkMode: next });
   },
 
   toggleSnowfall: () => {
     const next = !get().showSnowfall;
     localStorage.setItem("rk_snowfall", String(next));
-    set({ showSnowfall: next });
+    const nextEffect = next && get().seasonalEffect === "none" ? "snow" : get().seasonalEffect;
+    localStorage.setItem("rk_seasonal_effect", nextEffect);
+    set({ showSnowfall: next, seasonalEffect: nextEffect });
+  },
+
+  setSeasonalEffect: (effect) => {
+    const nextEffect = SEASONAL_EFFECTS.has(effect) ? effect : "snow";
+    localStorage.setItem("rk_seasonal_effect", nextEffect);
+    set({ seasonalEffect: nextEffect, showSnowfall: nextEffect !== "none" });
   },
 
   // ─── Cart (client-side, localStorage) ────────────────────────────────────
@@ -125,14 +151,36 @@ const useShopStore = create((set, get) => ({
     }
   },
 
-  toggleWishlist: async (productId) => {
+  toggleWishlist: async (productOrId) => {
+    const productId = typeof productOrId === "object" ? productOrId.id : productOrId;
+    const product = typeof productOrId === "object" ? productOrId : null;
+    const current = get().wishlist.items || [];
+    const existing = current.find((i) => (i.productId ?? i.product?.id ?? i.id) === productId);
+
+    set({
+      wishlist: {
+        ...get().wishlist,
+        items: existing
+          ? current.filter((i) => (i.productId ?? i.product?.id ?? i.id) !== productId)
+          : [...current, { id: `optimistic-${productId}`, productId, product }],
+      },
+    });
+
     try {
       const { data } = await api.post("/wishlist/toggle", { productId });
-      // data = { inWishlist: bool, productId }
-      await get().fetchWishlist();
+      const items = get().wishlist.items || [];
+      set({
+        wishlist: {
+          ...get().wishlist,
+          items: data.inWishlist
+            ? items.map((i) => (i.productId === productId && i.id.startsWith?.("optimistic-") ? { ...i, id: data.id ?? i.id } : i))
+            : items.filter((i) => (i.productId ?? i.product?.id ?? i.id) !== productId),
+        },
+      });
       get().showToast(data.inWishlist ? "Added to wishlist" : "Removed from wishlist");
       return data.inWishlist;
     } catch (err) {
+      set({ wishlist: { ...get().wishlist, items: current } });
       get().showToast(extractError(err, "Could not update wishlist"), "error");
       throw err;
     }

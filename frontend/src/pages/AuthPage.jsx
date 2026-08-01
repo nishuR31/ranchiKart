@@ -82,6 +82,13 @@ export default function AuthPage() {
       const hashParams = new URLSearchParams(location.hash.substring(1));
       token = hashParams.get("token");
       refreshToken = hashParams.get("refreshToken");
+      if (hashParams.get("oauth") === "success") {
+        fetchUser().then(() => {
+          showToast("Logged in with Google!");
+          navigate(location.state?.from || "/", { replace: true });
+        }).catch(() => showToast("Google login failed", "error"));
+        return;
+      }
     }
 
     if (token) {
@@ -171,7 +178,7 @@ export default function AuthPage() {
       // 1. Get options from server
       const { data: options } = await api.post("/auth/passkey/login", { emailOrUsername: form.emailOrUsername });
       // 2. Call browser WebAuthn API
-      const assertion = await startAuthentication(options);
+      const assertion = await startAuthentication({ optionsJSON: options });
       // 3. Verify assertion with server
       const { data: result } = await api.post("/auth/passkey/login/verify", assertion);
       // 4. Save session manually (since we bypassed useAuthStore.login)
@@ -218,11 +225,11 @@ export default function AuthPage() {
             </button>
             {mode === "login" && (
               <>
-                <button className="btn-google" style={{ background: "var(--surface)", color: "var(--text)", border: "1px solid var(--border)" }} type="button" onClick={handlePasskeyLogin}>
+                <button className="btn-google" type="button" onClick={handlePasskeyLogin}>
                   <Fingerprint size={20} />
                   Sign in with Passkey
                 </button>
-                <button className="btn-google" style={{ background: "var(--surface)", color: "var(--text)", border: "1px solid var(--border)" }} type="button" onClick={() => setMode("magic")}>
+                <button className="btn-google" type="button" onClick={() => setMode("magic")}>
                   <Mail size={20} strokeWidth={1.5} />
                   Sign in with Magic Link
                 </button>

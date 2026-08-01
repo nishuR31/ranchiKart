@@ -31,6 +31,13 @@ function buildProductPreview(items = []) {
   return rest > 0 ? `${first} +${rest} more` : first;
 }
 
+function orderImages(items = []) {
+  return items
+    .map((item) => item.product?.imageUrl || item.imageUrl)
+    .filter(Boolean)
+    .slice(0, 3);
+}
+
 export default function OrdersPage() {
   useSEO({ title: "My Orders", noindex: true });
 
@@ -63,6 +70,11 @@ export default function OrdersPage() {
       <div className="orders-list">
         {orders.map((o) => (
           <Link to={`/orders/${o.id}`} key={o.id} className="order-row">
+            <div className="order-row-images">
+              {orderImages(o.items).map((src, index) => (
+                <img key={`${src}-${index}`} src={src} alt="" loading="lazy" />
+              ))}
+            </div>
             <div className="order-row-main">
               <div className="order-row-number">
                 {o.orderNumber ? (

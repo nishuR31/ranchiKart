@@ -18,6 +18,7 @@ const randDate = (start: Date, end: Date) => new Date(start.getTime() + Math.ran
 const adjectives = ["Premium", "Essential", "Deluxe", "Classic", "Modern", "Vintage", "Sleek", "Rugged", "Elegant", "Basic", "Pro", "Ultra", "Max", "Compact", "Heavy-Duty", "Smart", "Eco-Friendly", "Luxury", "Handcrafted", "Minimalist"];
 const colors = ["Black", "White", "Silver", "Gold", "Blue", "Red", "Green", "Yellow", "Grey", "Navy", "Pink", "Purple", "Multicolor"];
 const materials = ["Cotton", "Leather", "Steel", "Aluminum", "Plastic", "Wood", "Glass", "Ceramic", "Silicone", "Nylon", "Carbon Fiber", "Bamboo"];
+const localBrands = ["RanchiKart Basics", "Jharkhand Select", "Main Road Mart", "Kanke Supply Co.", "Morabadi Goods"];
 
 const kindToNames: Record<string, string[]> = {
   EATABLE: ["Snack Pack", "Organic Coffee", "Green Tea", "Chocolate Box", "Protein Bars", "Dry Fruits", "Spices Set", "Honey", "Cookies", "Oats"],
@@ -40,6 +41,41 @@ const kindToNames: Record<string, string[]> = {
   STAMP: ["Self-Inking Stamp", "Rubber Stamp", "Date Stamp", "Pocket Stamp", "Seal Stamp", "Number Stamp", "Wax Seal", "Custom Stamp"],
   BOARD: ["Whiteboard", "Notice Board", "Chalkboard", "LED Sign Board", "Name Board", "Canvas Board", "Menu Board", "Direction Board"],
   OTHER: ["Gift Card", "Mystery Box", "Assorted Pack", "Cleaning Kit", "Tool Kit", "Storage Box", "Party Supplies", "Gift Wrap"]
+};
+
+const kindToPriceRange: Record<string, [number, number]> = {
+  EATABLE: [59, 899],
+  STATIONERY: [39, 799],
+  ELECTRONIC: [299, 8999],
+  CLOTHING: [249, 2499],
+  SHOE: [399, 3999],
+  BAG: [299, 4999],
+  ACCESSORY: [79, 1999],
+  JEWELLERY: [199, 9999],
+  BEAUTY: [89, 2499],
+  HEALTH: [149, 4999],
+  SPORT: [149, 6999],
+  HOME: [149, 6999],
+  KITCHEN: [89, 4999],
+  GARDEN: [49, 1999],
+  PET: [99, 2999],
+  BABY: [99, 2499],
+  TOY: [99, 2999],
+  STAMP: [149, 1499],
+  BOARD: [299, 9999],
+  OTHER: [99, 1999],
+};
+
+const kindToBrands: Record<string, string[]> = {
+  ELECTRONIC: ["RanchiKart Tech", "VoltEdge", "BluePeak", "Kanke Supply Co."],
+  BEAUTY: ["GlowLocal", "RanchiKart Care", "Morabadi Naturals", "Cica & Care"],
+  EATABLE: ["Jharkhand Select", "Fresh Ranchi", "Daily Bazaar", "Main Road Mart"],
+  CLOTHING: ["Urban Ranchi", "RanchiKart Basics", "ThreadHouse", "BluePeak"],
+  SHOE: ["StreetStep", "BluePeak", "RanchiKart Basics", "TrailMate"],
+  BAG: ["CarryCraft", "Urban Ranchi", "Main Road Mart", "TrailMate"],
+  JEWELLERY: ["Golden Leaf", "Morabadi Craft", "Jharkhand Select", "RanchiKart Luxe"],
+  STAMP: ["StampWorks Ranchi", "OfficeMate", "Kanke Supply Co.", "RanchiKart Print"],
+  BOARD: ["SignCraft Ranchi", "OfficeMate", "RanchiKart Print", "Main Road Mart"],
 };
 
 const indianFirstNames = ["Aarav", "Vihaan", "Aditya", "Arjun", "Sai", "Reyansh", "Ayaan", "Krishna", "Ishaan", "Shaurya", "Ananya", "Diya", "Saanvi", "Priya", "Neha", "Riya", "Aadhya", "Kavya", "Sneha", "Pooja", "Rahul", "Rohit", "Vikram", "Suresh", "Ramesh", "Kiran", "Amit", "Sumit"];
@@ -94,6 +130,12 @@ const kindToSubcategories: Record<string, string[]> = {
 };
 
 const generateSlug = (name: string) => name.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+const realisticPrice = (kind: string) => {
+  const [min, max] = kindToPriceRange[kind] || kindToPriceRange.OTHER;
+  const rupees = rand(min, max);
+  const rounded = Math.max(39, Math.round(rupees / 10) * 10 - 1);
+  return rounded * 100;
+};
 
 async function main() {
   console.log("🚀 Starting vast database seed...");
@@ -128,14 +170,18 @@ async function main() {
     BEAUTY: "cosmetics,skincare",
     EATABLE: "food,grocery",
     BAG: "bag,backpack",
-    FOOTWEAR: "shoes,sneakers",
-    BOOK: "book,stationery",
+    SHOE: "shoes,sneakers",
+    STATIONERY: "book,stationery",
     TOY: "toy,game",
     BOARD: "boardgame,chess",
     BABY: "babytoys,crib",
     GARDEN: "plant,garden",
     HEALTH: "vitamin,health",
     SPORT: "sport,fitness",
+    KITCHEN: "kitchen,cookware",
+    JEWELLERY: "jewelry,accessory",
+    PET: "pet,supplies",
+    STAMP: "stamp,office",
     OTHER: "product,box"
   };
 
@@ -194,10 +240,12 @@ async function main() {
       const adjective = pick(adjectives);
       const baseName = pick(names);
       const material = pick(materials);
-      const name = `${adjective} ${baseName}`;
-      const slug = generateSlug(name);
-      // More reasonable prices: 50 to 3000 INR
-      const basePrice = rand(50, 3000) * 100;
+      const color = pick(colors);
+      const brand = pick(kindToBrands[kind] || localBrands);
+      const name = `${adjective} ${color} ${baseName}`;
+      const slug = generateSlug(`${name}-${kind.toLowerCase()}-${i + 1}`);
+      const basePrice = realisticPrice(kind);
+      const mrp = Math.ceil(basePrice * rand(112, 145) / 10000) * 100;
       const category = pick(subCategories) || categoryObjs.find(c => c.kind === kind);
 
       const safeKey = safeKeywords[kind] || "product";
@@ -228,7 +276,8 @@ async function main() {
         specifications: {
           "Material": material,
           "Weight": `${rand(100, 2000)}g`,
-          "Brand": "RanchiKart Basics"
+          "Brand": brand,
+          "MRP": `₹${Math.max(basePrice, mrp) / 100}`
         },
         rating: +(Math.random() * (5 - 3.5) + 3.5).toFixed(1),
         reviewCount: rand(0, 500),
@@ -261,7 +310,7 @@ async function main() {
           productId: p.id,
           name: `${p.name} - ${color} / ${size}`,
           sku: `SKU-${p.slug.toUpperCase().substring(0, 8)}-${color.substring(0, 3).toUpperCase()}-${size.charAt(0)}-${rand(100, 999)}`,
-          priceDelta: rand(0, 50) * 1000,
+          priceDelta: Math.round((p.basePrice * rand(0, 12)) / 10000) * 100,
           attributes: { color, size },
           stock: rand(0, 100)
         });
@@ -280,29 +329,31 @@ async function main() {
 
 
   // ── 3. GENERATE USERS AND SAVED ADDRESSES ─────────────────────────
-  console.log("👥 Generating 300 Users and Addresses...");
+  const includeDemoUsers = process.env.SEED_DEMO_USERS === "true";
+  console.log(includeDemoUsers ? "👥 Generating 300 Users and Addresses..." : "👥 Preparing whitelisted user accounts and addresses...");
   const usersList: any[] = [];
   const defaultPasswordHash = await bcrypt.hash("User@RanchiKart#2025", 10);
 
-  // Specific users for testing
-  usersList.push({ email: "nishanadmin@gmail.com", username: "admin@31", name: "Nishan Admin", role: "ADMIN", isEmailVerified: true, passwordHash: await bcrypt.hash("Admin@31", 10), coins: 1000 });
-  usersList.push({ email: "nishanmanager@gmail.com", username: "manager@31", name: "Nishan Manager", role: "MANAGER", isEmailVerified: true, passwordHash: await bcrypt.hash("Manager@31", 10) });
-  usersList.push({ email: "user@ranchikart.in", name: "Rahul Kumar", role: "USER", isEmailVerified: true, passwordHash: defaultPasswordHash, coins: 500 });
+  usersList.push({ email: "nishantubuntu@gmail.com", username: "nishant320", name: "Nishant Admin", role: "ADMIN", isEmailVerified: true, passwordHash: await bcrypt.hash("Admin@Password", 10), coins: 1000 });
+  usersList.push({ email: "nishanicfai@gmail.com", username: "nishanicfai", name: "Nishan Icfai", role: "USER", isEmailVerified: true, passwordHash: defaultPasswordHash, coins: 500 });
+  usersList.push({ email: "adityakumarj277@gmail.com", username: "adityakumarj277", name: "Aditya Kumar", role: "USER", isEmailVerified: true, passwordHash: defaultPasswordHash, coins: 500 });
 
-  for (let i = 0; i < 297; i++) {
-    const first = pick(indianFirstNames);
-    const last = pick(indianLastNames);
-    usersList.push({
-      email: `${first.toLowerCase()}.${last.toLowerCase()}${rand(1, 999)}@example.com`,
-      name: `${first} ${last}`,
-      role: "USER",
-      gender: pick(["Male", "Female", "Other"]),
-      phone: `+919${rand(100000000, 999999999)}`,
-      isEmailVerified: Math.random() > 0.2,
-      coins: rand(0, 2000),
-      passwordHash: defaultPasswordHash,
-      createdAt: randDate(new Date(2024, 0, 1), new Date())
-    });
+  if (includeDemoUsers) {
+    for (let i = 0; i < 297; i++) {
+      const first = pick(indianFirstNames);
+      const last = pick(indianLastNames);
+      usersList.push({
+        email: `${first.toLowerCase()}.${last.toLowerCase()}${rand(1, 999)}@example.com`,
+        name: `${first} ${last}`,
+        role: "USER",
+        gender: pick(["Male", "Female", "Other"]),
+        phone: `+919${rand(100000000, 999999999)}`,
+        isEmailVerified: Math.random() > 0.2,
+        coins: rand(0, 2000),
+        passwordHash: defaultPasswordHash,
+        createdAt: randDate(new Date(2024, 0, 1), new Date())
+      });
+    }
   }
 
   await prisma.user.createMany({ data: usersList, skipDuplicates: true });
@@ -529,9 +580,9 @@ async function main() {
 
   console.log("\n🎉 Vast Seed Complete! Total time:", ((Date.now() - startTime) / 1000).toFixed(2), "seconds.");
   console.log("─────────────────────────────────────");
-  console.log("👤 Admin:   nishanadmin@gmail.com   / Admin@31 (Username: admin@31)");
-  console.log("👤 Manager: nishanmanager@gmail.com / Manager@31 (Username: manager@31)");
-  console.log("👤 User:    user@ranchikart.in    / User@RanchiKart#2025");
+  console.log("👤 Admin:   nishantubuntu@gmail.com / Admin@Password (Username: nishant320)");
+  console.log("👤 Kept:    nishanicfai@gmail.com, adityakumarj277@gmail.com");
+  console.log("ℹ️  Set SEED_DEMO_USERS=true only when fake demo users are needed.");
   console.log("─────────────────────────────────────");
 }
 

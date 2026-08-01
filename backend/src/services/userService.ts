@@ -1,12 +1,13 @@
 import { prisma } from "../config/prisma.js";
 import UserRepository from "../repositories/userRepository.js";
-import { NotFoundError } from "../utils/errors.js";
+import { ConflictError, NotFoundError } from "../utils/errors.js";
 import { safeUser } from "../utils/safeUser.js";
 
 const userRepo = new UserRepository();
 
 type UpdateProfileData = {
   name?: string;
+  username?: string;
   phone?: string;
   avatarUrl?: string;
 };
@@ -30,6 +31,7 @@ export default class UserService {
       select: {
         id: true,
         email: true,
+        username: true,
         name: true,
         role: true,
         avatarUrl: true,
@@ -43,6 +45,12 @@ export default class UserService {
   }
 
   async updateProfile(userId: string, data: UpdateProfileData) {
+    if (data.username) {
+      const existing = await prisma.user.findUnique({ where: { username: data.username } });
+      if (existing && existing.id !== userId) {
+        throw new ConflictError("That username is already taken.");
+      }
+    }
     const updated = await userRepo.updateProfile(userId, data);
     return safeUser(updated);
   }

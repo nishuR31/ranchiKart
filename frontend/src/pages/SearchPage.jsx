@@ -19,13 +19,18 @@ export default function SearchPage() {
   useEffect(() => {
     async function load() {
       setLoading(true);
-      // Use the dedicated /search endpoint when there's a query
-      const endpoint = q ? "/search" : "/products";
-      const params = q ? { q, limit: 24 } : { limit: 24 };
-      const { data } = await api.get(endpoint, { params });
-      // /search returns { results: [...] } or { products: [...] }
-      setProducts(data.results ?? data.products ?? data ?? []);
-      setLoading(false);
+      try {
+        // Use the dedicated /search endpoint when there's a query
+        const endpoint = q ? "/search" : "/products";
+        const params = q ? { q, limit: 24 } : { limit: 24 };
+        const { data } = await api.get(endpoint, { params });
+        // /search returns { results: [...] } or { products: [...] }
+        setProducts(data.results ?? data.products ?? data ?? []);
+      } catch {
+        setProducts([]);
+      } finally {
+        setLoading(false);
+      }
     }
     load();
   }, [q]);

@@ -2,6 +2,7 @@ import { prisma } from "../config/prisma.js";
 import ReviewRepository from "../repositories/reviewRepository.js";
 import ProductRepository from "../repositories/productRepository.js";
 import { ConflictError, ForbiddenError, NotFoundError } from "../utils/errors.js";
+import { invalidate } from "../config/cache.js";
 
 const reviewRepo = new ReviewRepository();
 const productRepo = new ProductRepository();
@@ -54,6 +55,7 @@ export default class ReviewService {
       Math.round((agg._avg.rating ?? 0) * 10) / 10,
       agg._count.rating,
     );
+    await invalidate(`catalog:product:${slug}`);
 
     return review;
   }
@@ -79,5 +81,6 @@ export default class ReviewService {
       Math.round((agg._avg.rating ?? 4.3) * 10) / 10,
       agg._count.rating,
     );
+    await invalidate("catalog:product:*");
   }
 }

@@ -3,6 +3,7 @@ import { prisma } from "../config/prisma.js";
 import env from "../config/env.js";
 import {
   getRazorpayClient,
+  getRazorpayKeys,
   razorpayConfigured,
   verifyRazorpaySignature,
 } from "../config/razorpay.js";
@@ -21,12 +22,14 @@ export default class PaymentService {
     if (order.status !== "PENDING_PAYMENT")
       throw new BadRequestError("Order is not pending payment");
 
+    const keys = getRazorpayKeys();
     const existing = order.payments.find((p: any) => p.status === "CREATED");
     if (existing) {
       return {
         payment: existing,
         gateway: {
-          keyId: env.RAZORPAY_KEY_ID ?? "",
+          keyId: keys?.key_id ?? "",
+          mode: keys?.mode ?? "mock",
           orderId: existing.providerOrderId,
           amount: existing.amount,
           currency: existing.currency,
@@ -53,7 +56,7 @@ export default class PaymentService {
         amount: order.total,
         currency: "INR",
         receipt,
-        notes: { orderId: order.id },
+        notes: { orderId: order.id, keyMode: keys?.mode ?? "unknown" },
       })
       : {
         id: `mock_${order.id}`,
@@ -72,14 +75,19 @@ export default class PaymentService {
         amount: order.total,
         currency: "INR",
         providerOrderId: gatewayOrder.id,
-        rawResponse: gatewayOrder as Prisma.InputJsonObject,
+        rawResponse: {
+          ...(gatewayOrder as Prisma.InputJsonObject),
+          ranchikartKeyMode: keys?.mode ?? "mock",
+          ranchikartKeyId: keys?.key_id ?? null,
+        },
       },
     });
 
     return {
       payment,
       gateway: {
-        keyId: env.RAZORPAY_KEY_ID ?? "",
+        keyId: keys?.key_id ?? "",
+        mode: keys?.mode ?? "mock",
         orderId: payment.providerOrderId,
         amount: payment.amount,
         currency: payment.currency,

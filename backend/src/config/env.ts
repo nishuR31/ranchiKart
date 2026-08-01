@@ -54,7 +54,7 @@ const envSchema = z.object({
 
   // Resend API (HTTPS REST API for email delivery)
   RESEND_API_KEY: z.string().optional().or(z.literal("")),
-  RESEND_FROM: z.string().default("onboarding@resend.dev"),
+  RESEND_FROM: z.string().optional().or(z.literal("")),
 
   // Gmail API (HTTPS REST API for platforms like Render where outbound SMTP is blocked)
   GMAIL_CLIENT_ID: z.string().optional().or(z.literal("")),

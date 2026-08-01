@@ -14,12 +14,60 @@ import {
 import { NotFoundError, BadRequestError, ConflictError } from "../utils/errors.js";
 
 const adminService = new AdminService();
+const DEFAULT_PRODUCT_IMAGE = "/assets/source.png";
+const DEFAULT_CATEGORY_IMAGE = "/assets/source.png";
+
+const optionalUrl = z.preprocess(
+  (value) => (typeof value === "string" && value.trim() === "" ? undefined : value),
+  z.string().url().optional(),
+);
+
+const couponBodySchema = z
+  .object({
+    code: z.string().min(3).max(30).toUpperCase(),
+    description: z.string().optional(),
+    type: z.enum(["PERCENT", "FIXED"]).default("PERCENT"),
+    value: z.number().int().positive(),
+    minOrderAmount: z.number().int().nonnegative().default(0),
+    maxUses: z.number().int().positive().optional(),
+    expiresAt: z
+      .string()
+      .optional()
+      .transform((v) => {
+        if (!v) return undefined;
+        const d = new Date(v);
+        if (isNaN(d.getTime())) throw new Error("Invalid expiry date");
+        return d.toISOString();
+    }),
+    categoryId: z.string().optional(),
+  });
+
+const couponUpdateSchema = z
+  .object({
+    description: z.string().optional(),
+    type: z.enum(["PERCENT", "FIXED"]).optional(),
+    value: z.number().int().positive().optional(),
+    minOrderAmount: z.number().int().nonnegative().optional(),
+    maxUses: z.number().int().positive().nullable().optional(),
+    isActive: z.boolean().optional(),
+    expiresAt: z
+      .string()
+      .nullable()
+      .optional()
+      .transform((v) => {
+        if (v === null) return null;
+        if (!v) return undefined;
+        const d = new Date(v);
+        if (isNaN(d.getTime())) throw new Error("Invalid expiry date");
+        return d.toISOString();
+      }),
+  });
 
 function handleError(err: any, res: FastifyReply) {
   if (err instanceof NotFoundError) return notFoundError(res, err.message);
   if (err instanceof BadRequestError) return badRequestError(res, err.message);
   if (err instanceof ConflictError) return conflictError(res, err.message);
-  return internalServerError(res, err?.message ?? "Unexpected error");
+  return internalServerError(res, "Something went wrong. Please try again.");
 }
 
 export const getDashboardStats = asyncHandler(async (_req: FastifyRequest, res: FastifyReply) => {
@@ -86,9 +134,9 @@ export const createProduct = asyncHandler(async (req: FastifyRequest, res: Fasti
       categoryId: z.string(),
       slug: z.string().min(2),
       name: z.string().min(2),
-      description: z.string().min(10),
+      description: z.string().trim().optional(),
       kind: z.nativeEnum(ProductKind),
-      imageUrl: z.string().url(),
+      imageUrl: optionalUrl,
       basePrice: z.number().int().positive(),
       stock: z.number().int().nonnegative().default(100),
       isFeatured: z.boolean().default(false),
@@ -101,6 +149,13 @@ export const createProduct = asyncHandler(async (req: FastifyRequest, res: Fasti
       minHeightMm: z.number().int().positive().optional(),
       maxHeightMm: z.number().int().positive().optional(),
     })
+    .transform((data) => ({
+      ...data,
+      description: data.description && data.description.length >= 10
+        ? data.description
+        : `${data.name} available on RanchiKart.`,
+      imageUrl: data.imageUrl ?? DEFAULT_PRODUCT_IMAGE,
+    }))
     .parse(req.body);
 
   try {
@@ -140,7 +195,7 @@ export const updateProduct = asyncHandler(async (req: FastifyRequest, res: Fasti
       basePrice: z.number().int().positive().optional(),
       stock: z.number().int().nonnegative().optional(),
       dispatchDays: z.number().int().positive().optional(),
-      imageUrl: z.string().url().optional(),
+      imageUrl: optionalUrl,
       tags: z.array(z.string()).optional(),
       highlights: z.array(z.string()).optional(),
       specifications: z.record(z.string()).optional(),
@@ -150,6 +205,16 @@ export const updateProduct = asyncHandler(async (req: FastifyRequest, res: Fasti
   try {
     const product = await adminService.updateProduct(req.user!.id, id, body);
     return sendSuccess(res, "Product updated", code("ok") as number, { product });
+  } catch (err: any) {
+    return handleError(err, res);
+  }
+});
+
+export const deleteProduct = asyncHandler(async (req: FastifyRequest, res: FastifyReply) => {
+  const { id } = z.object({ id: z.string() }).parse(req.params);
+  try {
+    await adminService.deleteProduct(req.user!.id, id);
+    return sendSuccess(res, "Product deleted", code("ok") as number, null);
   } catch (err: any) {
     return handleError(err, res);
   }
@@ -212,26 +277,7 @@ export const getCoupons = asyncHandler(async (req: FastifyRequest, res: FastifyR
 });
 
 export const createCoupon = asyncHandler(async (req: FastifyRequest, res: FastifyReply) => {
-  const body = z
-    .object({
-      code: z.string().min(3).max(30).toUpperCase(),
-      description: z.string().optional(),
-      type: z.enum(["PERCENT", "FIXED"]).default("PERCENT"),
-      value: z.number().int().positive(),
-      minOrderAmount: z.number().int().nonnegative().default(0),
-      maxUses: z.number().int().positive().optional(),
-      expiresAt: z
-        .string()
-        .optional()
-        .transform((v) => {
-          if (!v) return undefined;
-          const d = new Date(v);
-          if (isNaN(d.getTime())) throw new Error("Invalid expiry date");
-          return d.toISOString();
-        }),
-      categoryId: z.string().optional(),
-    })
-    .parse(req.body);
+  const body = couponBodySchema.parse(req.body);
 
   try {
     const coupon = await adminService.createCoupon(req.user!.id, body);
@@ -243,26 +289,7 @@ export const createCoupon = asyncHandler(async (req: FastifyRequest, res: Fastif
 
 export const updateCoupon = asyncHandler(async (req: FastifyRequest, res: FastifyReply) => {
   const { id } = z.object({ id: z.string() }).parse(req.params);
-  const body = z
-    .object({
-      description: z.string().optional(),
-      value: z.number().int().positive().optional(),
-      minOrderAmount: z.number().int().nonnegative().optional(),
-      maxUses: z.number().int().positive().nullable().optional(),
-      isActive: z.boolean().optional(),
-      expiresAt: z
-        .string()
-        .nullable()
-        .optional()
-        .transform((v) => {
-          if (v === null) return null;
-          if (!v) return undefined;
-          const d = new Date(v);
-          if (isNaN(d.getTime())) throw new Error("Invalid expiry date");
-          return d.toISOString();
-        }),
-    })
-    .parse(req.body);
+  const body = couponUpdateSchema.parse(req.body);
 
   try {
     const coupon = await adminService.updateCoupon(id, body);
@@ -306,11 +333,18 @@ export const createCategory = asyncHandler(async (req: FastifyRequest, res: Fast
     .object({
       slug: z.string().min(2).max(50),
       name: z.string().min(2).max(50),
-      description: z.string().min(10).max(500),
+      description: z.string().trim().max(500).optional(),
       kind: z.nativeEnum(ProductKind),
-      imageUrl: z.string().url(),
+      imageUrl: optionalUrl,
       parentId: z.string().optional(),
     })
+    .transform((data) => ({
+      ...data,
+      description: data.description && data.description.length >= 10
+        ? data.description
+        : `${data.name} products on RanchiKart.`,
+      imageUrl: data.imageUrl ?? DEFAULT_CATEGORY_IMAGE,
+    }))
     .parse(req.body);
 
   try {
@@ -328,7 +362,7 @@ export const updateCategory = asyncHandler(async (req: FastifyRequest, res: Fast
       name: z.string().min(2).max(50).optional(),
       description: z.string().min(10).max(500).optional(),
       kind: z.nativeEnum(ProductKind).optional(),
-      imageUrl: z.string().url().optional(),
+      imageUrl: optionalUrl,
       parentId: z.string().nullable().optional(),
     })
     .parse(req.body);
@@ -361,6 +395,16 @@ export const restoreUserAccount = asyncHandler(async (req: FastifyRequest, res: 
       code("ok") as number,
       { user },
     );
+  } catch (err: any) {
+    return handleError(err, res);
+  }
+});
+
+export const forceDeleteUser = asyncHandler(async (req: FastifyRequest, res: FastifyReply) => {
+  const { id } = z.object({ id: z.string() }).parse(req.params);
+  try {
+    const result = await adminService.forceDeleteUser(req.user!.id, id);
+    return sendSuccess(res, "User permanently deleted", code("ok") as number, result);
   } catch (err: any) {
     return handleError(err, res);
   }

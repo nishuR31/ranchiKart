@@ -23,9 +23,11 @@ export default function WishlistPage() {
     <div className="category-page">
       <h1>My Wishlist</h1>
       <div className="product-grid">
-        {wishlist.items.map((i) => (
-          <ProductCard key={i.id} product={i.product} />
-        ))}
+        {wishlist.items
+          .filter((i) => i.product)
+          .map((i) => (
+            <ProductCard key={i.id} product={i.product} />
+          ))}
       </div>
     </div>
   );

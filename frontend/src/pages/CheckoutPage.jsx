@@ -111,8 +111,9 @@ export default function CheckoutPage() {
         code: couponCode.trim().toUpperCase(),
         orderAmount: cart.subtotal,
       });
-      setCouponResult({ ...data, code: couponCode.trim().toUpperCase() });
-      showToast(`Coupon applied — you save ${formatINR(data.discount)}!`);
+      const discount = data.discountAmount ?? data.discount ?? 0;
+      setCouponResult({ ...data, discount, code: couponCode.trim().toUpperCase() });
+      showToast(`Coupon applied — you save ${formatINR(discount)}!`);
     } catch (err) {
       setCouponResult(null);
       showToast(extractError(err, "Invalid coupon"), "error");
@@ -164,7 +165,10 @@ export default function CheckoutPage() {
       const rzpRes = await api.post("/payments/razorpay/orders", { orderId: order.id });
       const gateway = rzpRes.data?.gateway ?? rzpRes.data;
       const razorpayOrderId = gateway?.orderId ?? rzpRes.data?.payment?.providerOrderId ?? gateway?.id;
-      const keyId = gateway?.keyId || import.meta.env.VITE_RAZORPAY_KEY_ID;
+      const keyId =
+        gateway?.keyId ||
+        import.meta.env.VITE_RAZORPAY_KEY_ID_TEST ||
+        import.meta.env.VITE_RAZORPAY_KEY_ID;
       const amount = gateway?.amount ?? order.total;
       const currency = gateway?.currency ?? "INR";
       const isMock = Boolean(gateway?.mock || razorpayOrderId?.startsWith("mock_"));
@@ -202,7 +206,7 @@ export default function CheckoutPage() {
           showToast("Payment successful!");
           navigate(`/orders/${order.id}`);
         },
-        theme: { color: "#e85d2c" },
+        theme: { color: "#2563eb" },
       });
       rzp.open();
     } catch (err) {

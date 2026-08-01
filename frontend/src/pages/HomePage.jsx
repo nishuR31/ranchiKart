@@ -8,12 +8,33 @@ import useAuthStore from "../store/useAuthStore";
 import useShopStore from "../store/useShopStore";
 import Snowfall from "react-snowfall";
 
-// Filter out test/dummy categories (names containing 7+ consecutive digits)
-const isRealCategory = (cat) => !/\d{7,}/.test(cat.name ?? "");
+// Filter out test/dummy categories before they reach customer-facing grids.
+const isRealCategory = (cat) => {
+  const name = (cat.name ?? "").trim();
+  if (!name || /\d{7,}/.test(name)) return false;
+  if (name.length > 28) return false;
+  if (/^(test|demo|dummy|sample|invoice|payment|order)\b/i.test(name)) return false;
+  if (/^[a-z]{10,}$/i.test(name) && !/[aeiou]/i.test(name)) return false;
+  return true;
+};
 import {
-  Smartphone, Tv, Shirt, ShoppingBasket, Sofa, Sparkles,
-  BookOpen, Dumbbell, Package, Truck, ShieldCheck, RotateCcw,
-  Baby, PawPrint, Gem, Footprints, Leaf,
+  Smartphone,
+  Tv,
+  Shirt,
+  ShoppingBasket,
+  Sofa,
+  Sparkles,
+  BookOpen,
+  Dumbbell,
+  Package,
+  Truck,
+  ShieldCheck,
+  RotateCcw,
+  Baby,
+  PawPrint,
+  Gem,
+  Footprints,
+  Leaf,
 } from "lucide-react";
 
 // Map ProductKind → Lucide icon component
@@ -62,10 +83,50 @@ const KIND_LABEL = {
   OTHER: "More",
 };
 
+const FALLBACK_CATEGORIES = [
+  {
+    id: "fallback-electronics",
+    slug: "electronics",
+    name: "Electronics & Gadgets",
+    kind: "ELECTRONIC",
+  },
+  { id: "fallback-fashion", slug: "fashion", name: "Fashion & Apparel", kind: "CLOTHING" },
+  { id: "fallback-grocery", slug: "grocery", name: "Grocery & Foods", kind: "EATABLE" },
+  { id: "fallback-home", slug: "home-decor", name: "Home Decor", kind: "HOME" },
+  { id: "fallback-beauty", slug: "beauty", name: "Beauty & Personal Care", kind: "BEAUTY" },
+  {
+    id: "fallback-books",
+    slug: "books-stationery",
+    name: "Books & Stationery",
+    kind: "STATIONERY",
+  },
+  { id: "fallback-sports", slug: "sports-fitness", name: "Sports & Fitness", kind: "SPORT" },
+  { id: "fallback-bags", slug: "bags-luggage", name: "Bags & Luggage", kind: "BAG" },
+  { id: "fallback-footwear", slug: "footwear", name: "Footwear", kind: "SHOE" },
+  { id: "fallback-garden", slug: "garden", name: "Garden & Outdoors", kind: "GARDEN" },
+];
+
+function normalizeCategories(apiCategories = []) {
+  const real = apiCategories.filter((c) => !c.parentId && isRealCategory(c));
+  return FALLBACK_CATEGORIES.map((fallback) => {
+    const bySlug = real.find((c) => c.slug === fallback.slug);
+    const byKind = real.find((c) => c.kind === fallback.kind);
+    const byName = real.find((c) => c.name?.toLowerCase() === fallback.name.toLowerCase());
+    const match = bySlug || byKind || byName;
+    return {
+      ...fallback,
+      id: match?.id ?? fallback.id,
+      slug: match?.slug ?? fallback.slug,
+      imageUrl: match?.imageUrl,
+    };
+  });
+}
+
 export default function HomePage() {
   useSEO(); // Default title and description
   const user = useAuthStore((s) => s.user);
   const showSnowfall = useShopStore((s) => s.showSnowfall);
+  const seasonalEffect = useShopStore((s) => s.seasonalEffect);
 
   const [categories, setCategories] = useState([]);
   const [featuredProducts, setFeaturedProducts] = useState([]);
@@ -86,7 +147,7 @@ export default function HomePage() {
 
         const allCats = catRes.data.categories ?? catRes.data ?? [];
         // Filter out test/dummy categories before displaying
-        const topCats = allCats.filter((c) => !c.parentId && isRealCategory(c));
+        const topCats = normalizeCategories(allCats);
         setCategories(topCats);
 
         const featured = featRes.data.products ?? featRes.data ?? [];
@@ -98,10 +159,11 @@ export default function HomePage() {
         const topKinds = [...new Set(topCats.map((c) => c.kind))].slice(0, 3);
         const kindResults = await Promise.all(
           topKinds.map((kind) =>
-            api.get("/products", { params: { kind, limit: 6, sort: "newest" } })
+            api
+              .get("/products", { params: { kind, limit: 6, sort: "newest" } })
               .then((r) => ({ kind, products: r.data.products ?? r.data ?? [] }))
-              .catch(() => ({ kind, products: [] }))
-          )
+              .catch(() => ({ kind, products: [] })),
+          ),
         );
         const sections = {};
         kindResults.forEach(({ kind, products }) => {
@@ -110,6 +172,10 @@ export default function HomePage() {
         setKindSections(sections);
       } catch (e) {
         console.error("HomePage load error", e);
+        setCategories(FALLBACK_CATEGORIES);
+        setFeaturedProducts([]);
+        setTrendingProducts([]);
+        setKindSections({});
       } finally {
         setLoading(false);
       }
@@ -119,53 +185,54 @@ export default function HomePage() {
 
   return (
     <div className="home-page">
-      {showSnowfall && <Snowfall color="rgba(255, 255, 255, 0.4)" snowflakeCount={100} style={{ position: 'fixed', width: '100vw', height: '100vh', zIndex: 10, pointerEvents: 'none' }} />}
+      {showSnowfall && seasonalEffect === "snow" && (
+        <Snowfall
+          color="rgba(255, 255, 255, 0.45)"
+          snowflakeCount={80}
+          style={{
+            position: "fixed",
+            width: "100vw",
+            height: "100vh",
+            zIndex: 10,
+            pointerEvents: "none",
+          }}
+        />
+      )}
+      {showSnowfall && seasonalEffect === "sparkles" && (
+        <div className={`seasonal-overlay seasonal-${seasonalEffect}`} aria-hidden="true" />
+      )}
 
       {/* ── Hero Banner ──────────────────────────────────────────────────── */}
       <section className="hero">
         <div className="hero-text">
           <span className="hero-tag">Big Billion Style Deals</span>
           <h1>Up to 70% off — Ranchi's Own Online Store</h1>
-          <p>Mobiles, fashion, grocery, home essentials &amp; more — delivered fast across every locality in Ranchi.</p>
+          <p>
+            Mobiles, fashion, grocery, home essentials &amp; more — delivered fast across every
+            locality in Ranchi.
+          </p>
           <div className="hero-cta-row">
-            <Link to="/search?q=" className="btn btn-accent">Shop Now</Link>
-            {!user && <Link to="/auth" className="btn btn-outline">Login / Sign Up</Link>}
+            <Link to="/search?q=" className="btn btn-accent">
+              Shop Now
+            </Link>
+            {!user && (
+              <Link to="/auth" className="btn btn-outline">
+                Login / Sign Up
+              </Link>
+            )}
           </div>
         </div>
         <div className="hero-badges">
-          <div><Truck size={20} /> Same-day delivery in central Ranchi</div>
-          <div><ShieldCheck size={20} /> Secure UPI / Card / COD payments</div>
-          <div><RotateCcw size={20} /> 7-day easy replacement</div>
+          <div>
+            <Truck size={20} /> Same-day delivery in central Ranchi
+          </div>
+          <div>
+            <ShieldCheck size={20} /> Secure UPI / Card / COD payments
+          </div>
+          <div>
+            <RotateCcw size={20} /> 7-day easy replacement
+          </div>
         </div>
-      </section>
-
-      {/* ── Offers Carousel ────────────────────────────────────────────── */}
-      <section className="offers-carousel-section">
-        {loading ? (
-          <div className="offers-carousel">
-            <Skeleton style={{ minWidth: "300px", height: "140px", borderRadius: "12px", flexShrink: 0 }} />
-            <Skeleton style={{ minWidth: "300px", height: "140px", borderRadius: "12px", flexShrink: 0 }} />
-            <Skeleton style={{ minWidth: "300px", height: "140px", borderRadius: "12px", flexShrink: 0 }} />
-          </div>
-        ) : (
-          <div className="offers-carousel">
-            <div className="offer-card" style={{ background: "linear-gradient(135deg, #ff9f1c, #ff6b6b)" }}>
-              <h3>Super Saver Week!</h3>
-              <p>Flat 50% off on all Fashion &amp; Apparel</p>
-              <Link to="/search?q=fashion" className="btn btn-sm">Shop Fashion</Link>
-            </div>
-            <div className="offer-card" style={{ background: "linear-gradient(135deg, #2b5fd9, #1e45a8)" }}>
-              <h3>Tech Fest</h3>
-              <p>Get up to ₹5000 off on Laptops &amp; Mobiles</p>
-              <Link to="/search?q=electronics" className="btn btn-sm">Shop Electronics</Link>
-            </div>
-            <div className="offer-card" style={{ background: "linear-gradient(135deg, #388e3c, #1b5e20)" }}>
-              <h3>Fresh Groceries</h3>
-              <p>Same-day delivery + 10% cashback on UPI</p>
-              <Link to="/search?q=grocery" className="btn btn-sm">Shop Groceries</Link>
-            </div>
-          </div>
-        )}
       </section>
 
       {/* ── Category Grid (from API) ──────────────────────────────────── */}
@@ -180,21 +247,25 @@ export default function HomePage() {
                 const Icon = KIND_ICONS[cat.kind] ?? Package;
                 return (
                   <Link key={cat.id} to={`/category/${cat.slug}`} className="category-tile">
-                    {cat.imageUrl
-                      ? <img src={cat.imageUrl} alt={cat.name} className="cat-img" loading="lazy" />
-                      : <Icon size={28} />
-                    }
+                    {cat.imageUrl ? (
+                      <img src={cat.imageUrl} alt={cat.name} className="cat-img" loading="lazy" />
+                    ) : (
+                      <Icon size={28} />
+                    )}
                     <span>{cat.name}</span>
                   </Link>
                 );
               })
             : Array.from({ length: 8 }).map((_, i) => (
-                <div key={i} className="category-tile" style={{ border: 'none', background: 'transparent' }}>
-                  <Skeleton width={48} height={48} style={{ borderRadius: '50%' }} />
+                <div
+                  key={i}
+                  className="category-tile"
+                  style={{ border: "none", background: "transparent" }}
+                >
+                  <Skeleton width={48} height={48} style={{ borderRadius: "50%" }} />
                   <Skeleton width={70} height={14} style={{ marginTop: 8 }} />
                 </div>
-              ))
-          }
+              ))}
         </div>
       </section>
 
@@ -218,7 +289,9 @@ export default function HomePage() {
                 <Link to="/search?q=">View all</Link>
               </div>
               <div className="product-grid">
-                {featuredProducts.map((p) => <ProductCard key={p.id} product={p} />)}
+                {featuredProducts.map((p) => (
+                  <ProductCard key={p.id} product={p} />
+                ))}
               </div>
             </section>
           )}
@@ -231,7 +304,9 @@ export default function HomePage() {
                 <Link to="/search?q=&sort=rating">View all</Link>
               </div>
               <div className="product-grid">
-                {trendingProducts.map((p) => <ProductCard key={p.id} product={p} />)}
+                {trendingProducts.map((p) => (
+                  <ProductCard key={p.id} product={p} />
+                ))}
               </div>
             </section>
           )}
@@ -244,7 +319,9 @@ export default function HomePage() {
                 <Link to={`/search?q=&kind=${kind}`}>View all</Link>
               </div>
               <div className="product-grid">
-                {products.map((p) => <ProductCard key={p.id} product={p} />)}
+                {products.map((p) => (
+                  <ProductCard key={p.id} product={p} />
+                ))}
               </div>
             </section>
           ))}
@@ -274,22 +351,6 @@ export default function HomePage() {
             <h3>Local Ranchi Products</h3>
             <p>Support local sellers and get authentic products from Jharkhand.</p>
           </div>
-        </div>
-      </section>
-
-      {/* ── About & Privacy (Compliance) ──────────────────────────────── */}
-      <section className="about-compliance-section">
-        <div className="about-compliance-content">
-          <h2>About RanchiKart &amp; Your Privacy</h2>
-          <p>
-            RanchiKart is a local e-commerce platform connecting residents of Ranchi to rapid delivery of groceries, fashion, and everyday essentials.
-          </p>
-          <p>
-            We offer Google Login for quick, secure access. We only request your name and email address to create your account, personalize your shopping experience, and send important order updates. We do not sell your data.
-          </p>
-          <p>
-            For more information, please read our <Link to="/privacy" style={{color: 'var(--brand)', textDecoration: 'underline'}}>Privacy Policy</Link> and <Link to="/terms" style={{color: 'var(--brand)', textDecoration: 'underline'}}>Terms of Service</Link>.
-          </p>
         </div>
       </section>
     </div>

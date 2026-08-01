@@ -1,5 +1,5 @@
-import { useEffect, useState, useRef } from "react";
-import { Trash2, AlertTriangle } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Trash2, AlertTriangle, ShieldCheck, KeyRound, UserRound, Copy, Fingerprint } from "lucide-react";
 import api, { extractError } from "../lib/api";
 import useAuthStore from "../store/useAuthStore";
 import useShopStore from "../store/useShopStore";
@@ -12,16 +12,14 @@ export default function ProfilePage() {
   const { user, fetchUser } = useAuthStore();
   const showToast = useShopStore((s) => s.showToast);
   const [addresses, setAddresses] = useState([]);
-  
-  const nameRef = useRef(null);
-  const phoneRef = useRef(null);
-  const currentPasswordRef = useRef(null);
-  const newPasswordRef = useRef(null);
   const [isEditing, setIsEditing] = useState(false);
   const [isChangingPassword, setIsChangingPassword] = useState(false);
+  const [profileForm, setProfileForm] = useState({ name: "", username: "", phone: "" });
+  const [passwordForm, setPasswordForm] = useState({ currentPassword: "", newPassword: "" });
+  const [registeringPasskey, setRegisteringPasskey] = useState(false);
   
   // TOTP
-  const [totpQr, setTotpQr] = useState(null);
+  const [totpSetup, setTotpSetup] = useState(null);
   const [totpCode, setTotpCode] = useState("");
   const [disableTotpCode, setDisableTotpCode] = useState("");
   const [isDisablingTotp, setIsDisablingTotp] = useState(false);
@@ -33,6 +31,14 @@ export default function ProfilePage() {
       setAddresses(list);
     }).catch(() => {});
   }, []);
+
+  useEffect(() => {
+    setProfileForm({
+      name: user?.name || "",
+      username: user?.username || "",
+      phone: user?.phone || "",
+    });
+  }, [user]);
 
   async function deleteAddress(id) {
     try {
@@ -46,22 +52,26 @@ export default function ProfilePage() {
   }
 
   async function handleRegisterPasskey() {
+    setRegisteringPasskey(true);
     try {
       // Step 1: GET options (backend uses GET, not POST)
       const { data: options } = await api.get("/auth/passkey/register");
-      const attestation = await startRegistration(options);
+      const attestation = await startRegistration({ optionsJSON: options });
       // Step 2: POST attestation to verify
       await api.post("/auth/passkey/register/verify", attestation);
+      await fetchUser();
       showToast("Passkey registered successfully!", "success");
     } catch (err) {
       showToast(extractError(err, "Could not register passkey"), "error");
+    } finally {
+      setRegisteringPasskey(false);
     }
   }
 
   async function handleEnableTotpStart() {
     try {
       const { data } = await api.post("/auth/totp/enable");
-      setTotpQr(data.qrCode);
+      setTotpSetup(data);
     } catch (err) {
       showToast(extractError(err, "Failed to start TOTP setup"), "error");
     }
@@ -71,12 +81,52 @@ export default function ProfilePage() {
     e.preventDefault();
     try {
       await api.post("/auth/totp/verify", { token: totpCode });
-      setTotpQr(null);
+      setTotpSetup(null);
       setTotpCode("");
       await fetchUser();
       showToast("Two-Factor Authentication enabled!", "success");
     } catch (err) {
       showToast(extractError(err, "Invalid verification code"), "error");
+    }
+  }
+
+  async function handleProfileSave(e) {
+    e.preventDefault();
+    try {
+      await api.put("/users/me/profile", {
+        name: profileForm.name.trim(),
+        username: profileForm.username.trim() || undefined,
+        phone: profileForm.phone.trim() || undefined,
+      });
+      await fetchUser();
+      showToast("Profile updated");
+      setIsEditing(false);
+    } catch (err) {
+      showToast(extractError(err, "Could not update profile"), "error");
+    }
+  }
+
+  async function handlePasswordSave(e) {
+    e.preventDefault();
+    try {
+      await api.put("/users/me/password", {
+        currentPassword: passwordForm.currentPassword || undefined,
+        newPassword: passwordForm.newPassword,
+      });
+      showToast("Password updated successfully");
+      setPasswordForm({ currentPassword: "", newPassword: "" });
+      setIsChangingPassword(false);
+    } catch (err) {
+      showToast(extractError(err, "Could not update password"), "error");
+    }
+  }
+
+  async function copyTotpCode() {
+    try {
+      await navigator.clipboard.writeText(totpSetup?.manualCode || totpSetup?.secret || "");
+      showToast("Setup code copied");
+    } catch {
+      showToast("Could not copy setup code", "error");
     }
   }
 
@@ -95,46 +145,50 @@ export default function ProfilePage() {
 
   return (
     <div className="profile-page">
-      <h1>My Profile</h1>
-      <div className="profile-card">
+      <div className="profile-hero">
+        <div className="profile-avatar">{(user?.name || user?.email || "U").charAt(0).toUpperCase()}</div>
+        <div>
+          <h1>My Profile</h1>
+          <p>{user?.email}</p>
+        </div>
+      </div>
+
+      <div className="profile-card profile-section-card">
+        <div className="profile-section-heading">
+          <UserRound size={20} />
+          <div>
+            <h2>Account Details</h2>
+            <p>Manage your public name, username and contact number.</p>
+          </div>
+        </div>
         {!isEditing ? (
-          <>
-            <div><strong>Name:</strong> {user?.name}</div>
-            <div><strong>Email:</strong> {user?.email}</div>
-            <div><strong>Phone:</strong> {user?.phone || "—"}</div>
-            <div><strong>Role:</strong> {user?.role}</div>
-            <div style={{ marginTop: 10 }}>
-              <button className="btn btn-outline btn-sm" onClick={() => setIsEditing(true)}>Edit Profile</button>
-            </div>
-          </>
+          <div className="profile-details-grid">
+            <div><span>Name</span><strong>{user?.name || "Not set"}</strong></div>
+            <div><span>Username</span><strong>{user?.username ? `@${user.username}` : "Not set"}</strong></div>
+            <div><span>Email</span><strong>{user?.email}</strong></div>
+            <div><span>Phone</span><strong>{user?.phone || "Not set"}</strong></div>
+            <div><span>Role</span><strong>{user?.role}</strong></div>
+            <button className="btn btn-outline btn-sm" onClick={() => setIsEditing(true)}>Edit Profile</button>
+          </div>
         ) : (
-          <form onSubmit={async (e) => {
-            e.preventDefault();
-            try {
-              await api.put("/users/me/profile", {
-                name: nameRef.current.value,
-                phone: phoneRef.current.value
-              });
-              await fetchUser();
-              showToast("Profile updated");
-              setIsEditing(false);
-            } catch (err) {
-              showToast(extractError(err, "Could not update profile"), "error");
-            }
-          }}>
+          <form className="profile-form-grid" onSubmit={handleProfileSave}>
             <div className="form-group">
               <label>Name</label>
-              <input type="text" defaultValue={user?.name} ref={nameRef} required />
+              <input type="text" value={profileForm.name} onChange={(e) => setProfileForm((f) => ({ ...f, name: e.target.value }))} required />
+            </div>
+            <div className="form-group">
+              <label>Username</label>
+              <input type="text" value={profileForm.username} onChange={(e) => setProfileForm((f) => ({ ...f, username: e.target.value }))} placeholder="nishan_admin" />
             </div>
             <div className="form-group">
               <label>Phone</label>
-              <input type="text" defaultValue={user?.phone || ""} ref={phoneRef} />
+              <input type="tel" value={profileForm.phone} onChange={(e) => setProfileForm((f) => ({ ...f, phone: e.target.value }))} placeholder="+91 98765 43210" />
             </div>
             <div className="form-group">
-              <label>Email (read-only)</label>
+              <label>Email</label>
               <input type="email" value={user?.email || ""} disabled />
             </div>
-            <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
+            <div className="profile-form-actions">
               <button type="submit" className="btn btn-primary btn-sm">Save</button>
               <button type="button" className="btn btn-outline btn-sm" onClick={() => setIsEditing(false)}>Cancel</button>
             </div>
@@ -142,49 +196,51 @@ export default function ProfilePage() {
         )}
       </div>
 
-      <h2>Security</h2>
-      <div className="profile-card">
-        {!isChangingPassword ? (
-          <button className="btn btn-outline btn-sm" onClick={() => setIsChangingPassword(true)}>Change Password</button>
-        ) : (
-          <form onSubmit={async (e) => {
-            e.preventDefault();
-            try {
-              await api.put("/users/me/password", {
-                currentPassword: currentPasswordRef.current.value || undefined,
-                newPassword: newPasswordRef.current.value
-              });
-              showToast("Password updated successfully");
-              setIsChangingPassword(false);
-            } catch (err) {
-              showToast(extractError(err, "Could not update password"), "error");
-            }
-          }}>
+      <div className="profile-card profile-section-card">
+        <div className="profile-section-heading">
+          <ShieldCheck size={20} />
+          <div>
+            <h2>Security</h2>
+            <p>Password, two-factor authentication and passkeys.</p>
+          </div>
+        </div>
+
+        <div className="security-panel">
+          <div>
+            <h3>Password</h3>
+            <p>Use a strong password if this account signs in with email.</p>
+          </div>
+          {!isChangingPassword ? (
+            <button className="btn btn-outline btn-sm" onClick={() => setIsChangingPassword(true)}>Change Password</button>
+          ) : (
+            <form className="security-inline-form" onSubmit={handlePasswordSave}>
             <div className="form-group">
               <label>Current Password (leave blank if you don't have one)</label>
-              <input type="password" ref={currentPasswordRef} />
+              <input type="password" value={passwordForm.currentPassword} onChange={(e) => setPasswordForm((f) => ({ ...f, currentPassword: e.target.value }))} autoComplete="current-password" />
             </div>
             <div className="form-group">
               <label>New Password</label>
-              <input type="password" ref={newPasswordRef} required minLength={8} />
+              <input type="password" value={passwordForm.newPassword} onChange={(e) => setPasswordForm((f) => ({ ...f, newPassword: e.target.value }))} required minLength={8} autoComplete="new-password" />
             </div>
-            <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
+            <div className="profile-form-actions">
               <button type="submit" className="btn btn-primary btn-sm">Update Password</button>
-              <button type="button" className="btn btn-outline btn-sm" onClick={() => setIsChangingPassword(false)}>Cancel</button>
+              <button type="button" className="btn btn-outline btn-sm" onClick={() => { setIsChangingPassword(false); setPasswordForm({ currentPassword: "", newPassword: "" }); }}>Cancel</button>
             </div>
           </form>
-        )}
-        
-        <hr style={{ margin: "20px 0", borderColor: "var(--border)" }} />
-        
-        <h4>Two-Factor Authentication (2FA)</h4>
+          )}
+        </div>
+
+        <div className="security-panel">
+          <div>
+            <h3>Two-Factor Authentication</h3>
+            <p>{user?.isTotpEnabled ? "Authenticator app protection is enabled." : "Add an authenticator app code to protect sign-ins."}</p>
+          </div>
         {user?.isTotpEnabled ? (
           <div>
-            <p className="muted" style={{ marginBottom: 10 }}>2FA is currently enabled for your account.</p>
             {!isDisablingTotp ? (
               <button className="btn btn-outline btn-sm" onClick={() => setIsDisablingTotp(true)}>Disable 2FA</button>
             ) : (
-              <form onSubmit={handleDisableTotp} style={{ marginTop: 10, display: "flex", gap: 10, alignItems: "center" }}>
+              <form onSubmit={handleDisableTotp} className="security-code-form">
                 <input
                   type="text"
                   placeholder="6-digit code"
@@ -192,7 +248,6 @@ export default function ProfilePage() {
                   value={disableTotpCode}
                   onChange={e => setDisableTotpCode(e.target.value)}
                   required
-                  style={{ width: "120px" }}
                 />
                 <button type="submit" className="btn btn-primary btn-sm">Confirm Disable</button>
                 <button type="button" className="btn btn-outline btn-sm" onClick={() => setIsDisablingTotp(false)}>Cancel</button>
@@ -201,15 +256,17 @@ export default function ProfilePage() {
           </div>
         ) : (
           <div>
-            <p className="muted" style={{ marginBottom: 10 }}>Protect your account with an Authenticator App.</p>
-            {!totpQr ? (
+            {!totpSetup ? (
               <button className="btn btn-outline btn-sm" onClick={handleEnableTotpStart}>Enable 2FA</button>
             ) : (
-              <div style={{ padding: "15px", background: "var(--surface)", borderRadius: "8px", border: "1px solid var(--border)" }}>
-                <p>1. Scan this QR code with your Authenticator App (Google Authenticator, Authy, etc).</p>
-                <img src={totpQr} alt="TOTP QR Code" style={{ background: "white", padding: 10, borderRadius: 8, margin: "10px 0" }} />
-                <p>2. Enter the 6-digit code generated by the app to verify.</p>
-                <form onSubmit={handleEnableTotpVerify} style={{ display: "flex", gap: 10, marginTop: 10 }}>
+              <div className="totp-setup-box">
+                <img src={totpSetup.qrCode} alt="TOTP QR Code" />
+                <div className="totp-manual-code">
+                  <span>Manual setup code</span>
+                  <code>{totpSetup.manualCode || totpSetup.secret}</code>
+                  <button type="button" className="icon-btn" onClick={copyTotpCode} title="Copy setup code"><Copy size={15} /></button>
+                </div>
+                <form onSubmit={handleEnableTotpVerify} className="security-code-form">
                   <input
                     type="text"
                     placeholder="6-digit code"
@@ -217,27 +274,37 @@ export default function ProfilePage() {
                     value={totpCode}
                     onChange={e => setTotpCode(e.target.value)}
                     required
-                    style={{ width: "120px", textAlign: "center", letterSpacing: "2px" }}
                   />
                   <button type="submit" className="btn btn-primary btn-sm">Verify & Enable</button>
-                  <button type="button" className="btn btn-outline btn-sm" onClick={() => setTotpQr(null)}>Cancel</button>
+                  <button type="button" className="btn btn-outline btn-sm" onClick={() => setTotpSetup(null)}>Cancel</button>
                 </form>
               </div>
             )}
           </div>
         )}
+        </div>
 
-        <hr style={{ margin: "20px 0", borderColor: "var(--border)" }} />
-        
-        <h4>Passkeys</h4>
-        <p className="muted" style={{ marginBottom: 10 }}>Sign in securely without a password using FaceID, TouchID, or Windows Hello.</p>
-        <button className="btn btn-outline btn-sm" onClick={handleRegisterPasskey}>Register a Passkey</button>
+        <div className="security-panel">
+          <div>
+            <h3>Passkeys</h3>
+            <p>{user?.passkeyCount > 0 ? `${user.passkeyCount} passkey registered.` : "Sign in with your device lock, Face ID, Touch ID or Windows Hello."}</p>
+          </div>
+          <button className="btn btn-outline btn-sm" onClick={handleRegisterPasskey} disabled={registeringPasskey || user?.passkeyCount > 0}>
+            <Fingerprint size={15} /> {registeringPasskey ? "Opening prompt..." : user?.passkeyCount > 0 ? "Passkey Registered" : "Register a Passkey"}
+          </button>
+        </div>
       </div>
 
-      <h2>Danger Zone</h2>
+      <div className="profile-section-heading standalone">
+        <KeyRound size={20} />
+        <div>
+          <h2>Danger Zone</h2>
+          <p>Account deactivation and deletion settings.</p>
+        </div>
+      </div>
       <DeleteAccountSection showToast={showToast} />
 
-      <h2>Saved Addresses</h2>
+      <h2 className="profile-subtitle">Saved Addresses</h2>
       {addresses.length === 0 ? (
         <p className="muted">No saved addresses yet. Add one during checkout.</p>
       ) : (
