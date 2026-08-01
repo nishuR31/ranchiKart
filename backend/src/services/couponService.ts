@@ -42,7 +42,7 @@ export default class CouponService {
 
     let discountAmount = 0;
     if (coupon.type === "PERCENT") {
-      discountAmount = Math.round((data.orderAmount * coupon.value) / 100);
+      discountAmount = Math.min(data.orderAmount, Math.round((data.orderAmount * coupon.value) / 100));
     } else {
       discountAmount = Math.min(coupon.value, data.orderAmount);
     }
@@ -68,6 +68,9 @@ export default class CouponService {
 
   async createCoupon(userRole: string, data: CreateCouponData) {
     if (userRole !== "ADMIN") throw new ForbiddenError("Admin access required");
+    if (data.type === "PERCENT" && data.value > 100) {
+      throw new BadRequestError("Percent coupons cannot be more than 100%.");
+    }
     return couponRepo.create({
       ...data,
       code: data.code.toUpperCase(),

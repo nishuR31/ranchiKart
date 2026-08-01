@@ -8,6 +8,7 @@ import {
   Trash2,
   Plus,
   Users,
+  Star,
 } from "lucide-react";
 import api, { extractError } from "../lib/api";
 import { formatINR, formatCompactINR } from "../lib/money";
@@ -23,6 +24,18 @@ const PRODUCT_KINDS = [
   "JEWELLERY", "BEAUTY", "HEALTH", "SPORT", "HOME", "KITCHEN", "GARDEN", "PET",
   "BABY", "TOY", "STAMP", "BOARD", "OTHER"
 ];
+
+function slugify(value) {
+  return value
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+function asList(payload, key) {
+  return payload?.[key] ?? payload ?? [];
+}
 
 export default function AdminPage() {
   const [tab, setTab] = useState("dashboard");
@@ -135,11 +148,11 @@ function ProductsTab() {
     setLoading(true);
     try {
       const [prodRes, catRes] = await Promise.all([
-        api.get("/admin/products"),
+        api.get("/admin/products", { params: { limit: 50 } }),
         api.get("/categories"),        // public endpoint for categories list
       ]);
       // prodRes.data = { products: [...], total, page, limit }
-      setProducts(prodRes.data.products ?? prodRes.data ?? []);
+      setProducts(asList(prodRes.data, "products"));
       const cats = catRes.data.categories ?? catRes.data ?? [];
       setCategories(cats);
       if (!form.categoryId && cats[0]) {
@@ -155,11 +168,11 @@ function ProductsTab() {
   async function createProduct(e) {
     e.preventDefault();
     try {
-      await api.post("/admin/products", {
+      const { data } = await api.post("/admin/products", {
         name: form.name,
-        slug: form.slug,
+        slug: form.slug || slugify(form.name),
         description: form.description,
-        basePrice: Number(form.basePrice),
+        basePrice: Math.round(Number(form.basePrice) * 100),
         stock: Number(form.stock),
         categoryId: form.categoryId,
         kind: form.kind,
@@ -170,7 +183,7 @@ function ProductsTab() {
       showToast("Product created");
       setShowForm(false);
       setForm((f) => ({ ...f, name: "", slug: "", description: "", basePrice: "", imageUrl: "" }));
-      load();
+      if (data.product) setProducts((prev) => [data.product, ...prev]);
     } catch (err) {
       showToast(extractError(err, "Could not create product"), "error");
     }
@@ -178,9 +191,9 @@ function ProductsTab() {
 
   async function toggleProduct(id) {
     try {
-      await api.patch(`/admin/products/${id}/toggle`);
+      const { data } = await api.patch(`/admin/products/${id}/toggle`);
       showToast("Product status toggled");
-      load();
+      if (data.product) setProducts((prev) => prev.map((p) => p.id === id ? { ...p, ...data.product } : p));
     } catch (err) {
       showToast(extractError(err, "Could not toggle product"), "error");
     }
@@ -188,11 +201,21 @@ function ProductsTab() {
 
   async function toggleFeatured(id) {
     try {
-      await api.patch(`/admin/products/${id}/featured`);
+      const { data } = await api.patch(`/admin/products/${id}/featured`);
       showToast("Featured status toggled");
-      load();
+      if (data.product) setProducts((prev) => prev.map((p) => p.id === id ? { ...p, ...data.product } : p));
     } catch (err) {
       showToast(extractError(err, "Could not update featured"), "error");
+    }
+  }
+
+  async function deleteProduct(id) {
+    try {
+      await api.delete(`/admin/products/${id}`);
+      showToast("Product deleted");
+      setProducts((prev) => prev.filter((p) => p.id !== id));
+    } catch (err) {
+      showToast(extractError(err, "Could not delete product"), "error");
     }
   }
 
@@ -209,8 +232,8 @@ function ProductsTab() {
 
       {showForm && (
         <form className="admin-form" onSubmit={createProduct}>
-          <input required placeholder="Name" value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} />
-          <input required placeholder="Slug (unique, e.g. my-product)" value={form.slug} onChange={(e) => setForm((f) => ({ ...f, slug: e.target.value }))} />
+          <input required placeholder="Name" value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value, slug: f.slug ? f.slug : slugify(e.target.value) }))} />
+          <input placeholder="Slug (auto-generated if blank)" value={form.slug} onChange={(e) => setForm((f) => ({ ...f, slug: slugify(e.target.value) }))} />
           <textarea placeholder="Description" value={form.description} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} />
           <input required type="number" min="0" placeholder="Base Price (₹)" value={form.basePrice} onChange={(e) => setForm((f) => ({ ...f, basePrice: e.target.value }))} />
           <input type="number" min="0" placeholder="Stock" value={form.stock} onChange={(e) => setForm((f) => ({ ...f, stock: e.target.value }))} />
@@ -221,7 +244,7 @@ function ProductsTab() {
           <select value={form.kind} onChange={(e) => setForm((f) => ({ ...f, kind: e.target.value }))}>
             {PRODUCT_KINDS.map((k) => <option key={k} value={k}>{k}</option>)}
           </select>
-          <input placeholder="Image URL" value={form.imageUrl} onChange={(e) => setForm((f) => ({ ...f, imageUrl: e.target.value }))} />
+          <input placeholder="Image URL (optional)" value={form.imageUrl} onChange={(e) => setForm((f) => ({ ...f, imageUrl: e.target.value }))} />
           <label className="checkbox-row">
             <input type="checkbox" checked={form.isFeatured} onChange={(e) => setForm((f) => ({ ...f, isFeatured: e.target.checked }))} />
             Featured
@@ -248,10 +271,20 @@ function ProductsTab() {
               </td>
               <td>
                 <button className="btn btn-outline btn-sm" onClick={() => toggleFeatured(p.id)}>
-                  {p.isFeatured ? "⭐" : "☆"}
+                  <Star
+                    size={16}
+                    className={`featured-star ${p.isFeatured ? "active" : ""}`}
+                    fill={p.isFeatured ? "currentColor" : "none"}
+                  />
                 </button>
               </td>
-              <td></td>
+              <td>
+                {useAuthStore.getState().user?.role === "ADMIN" && (
+                  <button className="icon-btn danger-icon-btn" onClick={() => deleteProduct(p.id)} title="Delete product">
+                    <Trash2 size={16} />
+                  </button>
+                )}
+              </td>
             </tr>
           ))}
         </tbody>
@@ -285,10 +318,13 @@ function CategoriesTab() {
   async function createCategory(e) {
     e.preventDefault();
     try {
-      await api.post("/admin/categories", form);
+      const { data } = await api.post("/admin/categories", {
+        ...form,
+        slug: form.slug || slugify(form.name),
+      });
       showToast("Category created");
       setForm({ name: "", slug: "", description: "", imageUrl: "", kind: "OTHER" });
-      load();
+      if (data.category) setCategories((prev) => [data.category, ...prev]);
     } catch (err) {
       showToast(extractError(err, "Could not create category"), "error");
     }
@@ -298,9 +334,14 @@ function CategoriesTab() {
     try {
       await api.delete(`/admin/categories/${id}`);
       showToast("Category deleted");
-      load();
+      await load();
     } catch (err) {
-      showToast(extractError(err, "Could not delete category (may still have products)"), "error");
+      if (err?.response?.status === 404) {
+        setCategories((prev) => prev.filter((c) => c.id !== id));
+        showToast("Category was already deleted");
+        return;
+      }
+      showToast(extractError(err, "Could not delete category"), "error");
     }
   }
 
@@ -309,10 +350,10 @@ function CategoriesTab() {
       <h3>Categories</h3>
       {useAuthStore.getState().user?.role === "ADMIN" && (
         <form className="admin-form inline" onSubmit={createCategory}>
-          <input required placeholder="Name" value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} />
-          <input required placeholder="Slug" value={form.slug} onChange={(e) => setForm((f) => ({ ...f, slug: e.target.value }))} />
-          <input placeholder="Description" value={form.description} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} />
-          <input placeholder="Image URL" value={form.imageUrl} onChange={(e) => setForm((f) => ({ ...f, imageUrl: e.target.value }))} />
+          <input required placeholder="Name" value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value, slug: f.slug ? f.slug : slugify(e.target.value) }))} />
+          <input placeholder="Slug (auto)" value={form.slug} onChange={(e) => setForm((f) => ({ ...f, slug: slugify(e.target.value) }))} />
+          <input placeholder="Description (optional)" value={form.description} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} />
+          <input placeholder="Image URL (optional)" value={form.imageUrl} onChange={(e) => setForm((f) => ({ ...f, imageUrl: e.target.value }))} />
           <select value={form.kind} onChange={(e) => setForm((f) => ({ ...f, kind: e.target.value }))}>
             {PRODUCT_KINDS.map((k) => <option key={k} value={k}>{k}</option>)}
           </select>
@@ -349,8 +390,8 @@ function OrdersTab() {
   async function load() {
     setLoading(true);
     try {
-      const { data } = await api.get("/admin/orders");
-      setOrders(data.orders ?? data ?? []);
+      const { data } = await api.get("/admin/orders", { params: { limit: 50 } });
+      setOrders(asList(data, "orders"));
     } finally {
       setLoading(false);
     }
@@ -359,9 +400,9 @@ function OrdersTab() {
 
   async function updateStatus(id, status) {
     try {
-      await api.put(`/admin/orders/${id}/status`, { status });
+      const { data } = await api.put(`/admin/orders/${id}/status`, { status });
       showToast("Order status updated");
-      load();
+      if (data.order) setOrders((prev) => prev.map((o) => o.id === id ? { ...o, ...data.order } : o));
     } catch (err) {
       showToast(extractError(err, "Could not update status"), "error");
     }
@@ -408,8 +449,8 @@ function CouponsTab() {
   async function load() {
     setLoading(true);
     try {
-      const { data } = await api.get("/admin/coupons");
-      setCoupons(data.coupons ?? data ?? []);
+      const { data } = await api.get("/admin/coupons", { params: { limit: 50 } });
+      setCoupons(asList(data, "coupons"));
     } finally {
       setLoading(false);
     }
@@ -418,15 +459,20 @@ function CouponsTab() {
 
   async function createCoupon(e) {
     e.preventDefault();
+    if (form.type === "PERCENT" && Number(form.value) > 100) {
+      showToast("Percent coupons cannot be more than 100%.", "error");
+      setForm((f) => ({ ...f, value: 100 }));
+      return;
+    }
     try {
-      await api.post("/admin/coupons", {
+      const { data } = await api.post("/admin/coupons", {
         ...form,
         value: Number(form.value),
         minOrderAmount: Number(form.minOrderAmount),
       });
       showToast("Coupon created");
       setForm({ code: "", type: "PERCENT", value: 10, minOrderAmount: 0 });
-      load();
+      if (data.coupon) setCoupons((prev) => [data.coupon, ...prev]);
     } catch (err) {
       showToast(extractError(err, "Could not create coupon"), "error");
     }
@@ -435,8 +481,8 @@ function CouponsTab() {
   // Use PUT /admin/coupons/:id  with isActive field (not `active`)
   async function toggleActive(c) {
     try {
-      await api.put(`/admin/coupons/${c.id}`, { isActive: !c.isActive });
-      load();
+      const { data } = await api.put(`/admin/coupons/${c.id}`, { isActive: !c.isActive });
+      if (data.coupon) setCoupons((prev) => prev.map((item) => item.id === c.id ? { ...item, ...data.coupon } : item));
     } catch (err) {
       showToast(extractError(err, "Could not toggle coupon"), "error");
     }
@@ -446,7 +492,7 @@ function CouponsTab() {
     try {
       await api.delete(`/admin/coupons/${id}`);
       showToast("Coupon deleted");
-      load();
+      setCoupons((prev) => prev.filter((c) => c.id !== id));
     } catch (err) {
       showToast(extractError(err, "Could not delete coupon"), "error");
     }
@@ -459,12 +505,13 @@ function CouponsTab() {
         <form className="admin-form inline" onSubmit={createCoupon}>
           <input required placeholder="Code (e.g. RANCHI10)" value={form.code}
             onChange={(e) => setForm((f) => ({ ...f, code: e.target.value.toUpperCase() }))} />
-          <select value={form.type} onChange={(e) => setForm((f) => ({ ...f, type: e.target.value }))}>
+          <select value={form.type} onChange={(e) => setForm((f) => ({ ...f, type: e.target.value, value: e.target.value === "PERCENT" ? Math.min(100, Number(f.value || 1)) : f.value }))}>
             <option value="PERCENT">Percent (%)</option>
             <option value="FIXED">Fixed (₹)</option>
           </select>
-          <input required type="number" min="1" placeholder="Value" value={form.value}
-            onChange={(e) => setForm((f) => ({ ...f, value: e.target.value }))} />
+          <input required type="number" min="1" max={form.type === "PERCENT" ? 100 : undefined} placeholder={form.type === "PERCENT" ? "Percent (max 100)" : "Fixed amount"}
+            value={form.value}
+            onChange={(e) => setForm((f) => ({ ...f, value: f.type === "PERCENT" ? Math.min(100, Number(e.target.value || 0)) : e.target.value }))} />
           <input type="number" min="0" placeholder="Min Order Amount" value={form.minOrderAmount}
             onChange={(e) => setForm((f) => ({ ...f, minOrderAmount: e.target.value }))} />
           <button className="btn btn-primary btn-sm" type="submit">Add</button>
@@ -503,13 +550,14 @@ function CouponsTab() {
 function UsersTab() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [pendingDeleteId, setPendingDeleteId] = useState(null);
   const showToast = useShopStore((s) => s.showToast);
 
   async function load() {
     setLoading(true);
     try {
-      const { data } = await api.get("/admin/users");
-      setUsers(data.users ?? data ?? []);
+      const { data } = await api.get("/admin/users", { params: { limit: 100 } });
+      setUsers(asList(data, "users"));
     } finally {
       setLoading(false);
     }
@@ -518,9 +566,9 @@ function UsersTab() {
 
   async function banUser(id, isBanned) {
     try {
-      await api.patch(`/admin/users/${id}/ban`, { isBanned });
+      const { data } = await api.patch(`/admin/users/${id}/ban`, { isBanned });
       showToast(isBanned ? "User banned" : "User unbanned");
-      load();
+      if (data.user) setUsers((prev) => prev.map((u) => u.id === id ? { ...u, ...data.user } : u));
     } catch (err) {
       showToast(extractError(err, "Could not update user"), "error");
     }
@@ -528,11 +576,30 @@ function UsersTab() {
 
   async function changeRole(id, role) {
     try {
-      await api.patch(`/admin/users/${id}/role`, { role });
+      const { data } = await api.patch(`/admin/users/${id}/role`, { role });
       showToast("Role updated");
-      load();
+      if (data.user) setUsers((prev) => prev.map((u) => u.id === id ? { ...u, ...data.user } : u));
     } catch (err) {
       showToast(extractError(err, "Could not change role"), "error");
+    }
+  }
+
+  async function forceDeleteUser(id) {
+    if (pendingDeleteId !== id) {
+      setPendingDeleteId(id);
+      showToast("Click delete again to permanently remove this user.", "info");
+      window.setTimeout(() => {
+        setPendingDeleteId((current) => (current === id ? null : current));
+      }, 5000);
+      return;
+    }
+    try {
+      await api.delete(`/admin/users/${id}/force`);
+      setUsers((prev) => prev.filter((u) => u.id !== id));
+      setPendingDeleteId(null);
+      showToast("User permanently deleted");
+    } catch (err) {
+      showToast(extractError(err, "Could not delete user"), "error");
     }
   }
 
@@ -556,9 +623,12 @@ function UsersTab() {
                     </select>
                   </td>
                   <td>{u.isBanned ? "Yes" : "No"}</td>
-                  <td>
+                  <td className="admin-action-cell">
                     <button className="btn btn-outline btn-sm" onClick={() => banUser(u.id, !u.isBanned)}>
                       {u.isBanned ? "Unban" : "Ban"}
+                    </button>
+                    <button className={`icon-btn danger-icon-btn ${pendingDeleteId === u.id ? "armed" : ""}`} onClick={() => forceDeleteUser(u.id)} title={pendingDeleteId === u.id ? "Click again to confirm" : "Force delete user"}>
+                      <Trash2 size={16} />
                     </button>
                   </td>
                 </tr>

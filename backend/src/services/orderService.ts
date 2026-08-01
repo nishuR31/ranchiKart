@@ -157,7 +157,7 @@ export default class OrderService {
         }
         discountAmount =
           coupon.type === "PERCENT"
-            ? Math.round((subtotal * coupon.value) / 100)
+            ? Math.min(subtotal, Math.round((subtotal * coupon.value) / 100))
             : Math.min(coupon.value, subtotal);
         couponId = coupon.id;
       }

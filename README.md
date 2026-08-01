@@ -50,6 +50,16 @@ RanchiKart is a hyper‑local ecommerce platform purpose‑built for Ranchi. It 
 
 The platform follows an **MVCS (Model → Validation → Controller → Service)** architecture on the backend, with Zod schemas enforcing strict request validation and auto‑generating Swagger documentation. The frontend is a React SPA with Zustand‑powered state management, dark mode persistence, and an Axios interceptor layer handling JWT refresh transparently.
 
+## Current Maintenance Notes
+
+- Frontend styling is powered by Tailwind CSS v4 through `frontend/src/tailwind.css`.
+- The active admin bootstrap account is `nishantubuntu@gmail.com` with username `nishant320`.
+- Use `bun run --cwd backend admin:bootstrap` to restore that admin account.
+- Use `bun run --cwd backend users:prune` only when you intentionally want to hard-delete every account except `nishantubuntu@gmail.com`, `nishanicfai@gmail.com`, and `adityakumarj277@gmail.com`; this also removes dependent orders, payments, reviews, addresses, wishlists, and passkeys for deleted accounts.
+- Seed data creates only those whitelisted users by default. Set `SEED_DEMO_USERS=true` when you want the large fake user/order dataset for development demos.
+- Test execution is guarded against accidental remote database deletion. Provide a dedicated `TEST_DATABASE_URL` for backend tests.
+- Razorpay supports separate live and test env pairs: `RAZORPAY_KEY_ID` / `RAZORPAY_KEY_SECRET` and `RAZORPAY_KEY_ID_TEST` / `RAZORPAY_KEY_SECRET_TEST`.
+
 ---
 
 ## Architecture
@@ -77,7 +87,7 @@ frontend/src/
 ├── components/      # Reusable UI — ProductCard, StarRating, Navbar, Footer, etc.
 ├── store/           # Zustand stores — auth (JWT + user), shop (cart, wishlist, toast)
 ├── lib/             # API client (Axios + interceptors), currency formatting
-└── styles.css       # Full design system — dark mode, responsive layouts, animations
+└── tailwind.css     # Tailwind v4 design system — themes, responsive layouts, animations
 ```
 
 ---
@@ -161,6 +171,7 @@ RanchiKart supports **five** authentication methods — all producing the same J
 
 - Access tokens are short‑lived (15 min); refresh tokens rotate on each use (7 day TTL)
 - Refresh tokens are stored as HTTP‑only secure cookies — the frontend Axios interceptor auto‑refreshes on 401
+- Banned and deleted accounts are rejected on login, refresh, OAuth, magic link, passkey, and every protected API request
 - Role‑based access control: `USER`, `MANAGER`, `ADMIN`, `SELLER`
 - Redis‑backed rate limiting protects all endpoints
 

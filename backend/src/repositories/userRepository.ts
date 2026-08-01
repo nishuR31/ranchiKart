@@ -16,10 +16,11 @@ export default class UserRepository extends BaseRepository<User> {
   }
 
   async findByEmailOrUsername(emailOrUsername: string): Promise<User | null> {
-    if (isEmail(emailOrUsername)) {
-      return this.findByEmail(emailOrUsername);
+    const { value, type } = isEmail(emailOrUsername);
+    if (type === "email") {
+      return this.findByEmail(value.toLowerCase());
     }
-    return this.findByUsername(emailOrUsername);
+    return this.findByUsername(value.toLowerCase());
   }
 
   async updatePassword(userId: string, passwordHash: string): Promise<User> {
@@ -28,7 +29,7 @@ export default class UserRepository extends BaseRepository<User> {
 
   async updateProfile(
     userId: string,
-    data: Partial<Pick<User, "name" | "phone" | "avatarUrl">>,
+    data: Partial<Pick<User, "name" | "phone" | "avatarUrl" | "username">>,
   ): Promise<User> {
     return this.update(userId, data);
   }

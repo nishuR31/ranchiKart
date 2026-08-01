@@ -25,7 +25,7 @@ export default function ProductCard({ product }) {
   function handleWishlist(e) {
     e.preventDefault();
     if (!user) return navigate("/auth");
-    toggleWishlist(product.id);
+    toggleWishlist(product);
   }
 
   return (

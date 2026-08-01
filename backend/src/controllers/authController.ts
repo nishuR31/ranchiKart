@@ -162,7 +162,7 @@ export const me = asyncHandler(async (req: FastifyRequest, res: FastifyReply) =>
 export const changePassword = asyncHandler(async (req: FastifyRequest, res: FastifyReply) => {
   const body = z
     .object({
-      currentPassword: z.string().min(8).max(120),
+      currentPassword: z.string().min(8).max(120).optional(),
       newPassword: z.string().min(8).max(120),
     })
     .parse(req.body);
@@ -205,7 +205,12 @@ export const googleCallback = asyncHandler(async (req: FastifyRequest, res: Fast
     return res.redirect(`${domain}/auth?error=Missing Google OAuth callback parameters`);
 
   const cookieState = req.cookies?.oauth_state;
-  if (!cookieState || cookieState !== state) return res.redirect(`${domain}/auth?error=Invalid OAuth state`);
+  if (!cookieState || cookieState !== state) {
+    if (req.cookies?.accessToken) {
+      return res.redirect(`${domain}/auth#oauth=success`);
+    }
+    return res.redirect(`${domain}/auth?error=Google sign-in session expired. Please try again.`);
+  }
   res.clearCookie("oauth_state", { path: "/" });
 
   try {

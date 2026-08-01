@@ -11,14 +11,17 @@
     "start": "bun run src/index.ts",
     "run": "bun run dist/index.js",
     "build": "rm -rf dist/ && bunx tsc -p tsconfig.json",
-    "test": "bun test --timeout=30000 --max-concurrency=1",
+    "test": "bun scripts/guardTestDatabase.ts && bun test --timeout=30000 --max-concurrency=1",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest run --coverage",
     "db:gen": "bunx prisma generate",
     "db:push": "bunx prisma db push",
     "db": "bun run db:gen && bun run db:push",
     "db:migrate": "PRISMA_SCHEMA_ENGINE_LOG_LEVEL=trace RUST_LOG=trace prisma migrate dev --name init",
-    "seed": "bun prisma/seed.ts"
+    "seed": "bun prisma/seed.ts",
+    "admin:bootstrap": "bun scripts/addAdmins.ts",
+    "users:prune": "bun scripts/pruneAccounts.ts",
+    "catalog:cleanup": "bun scripts/cleanupCatalog.ts"
   },
   "dependencies": {
     "@fastify/compress": "^9.0.0",

@@ -22,9 +22,38 @@ import Toast from "./Toast";
 import api from "../lib/api";
 import pkg from "../../package.json";
 
-// ── Filter out test/dummy categories (names containing 7+ consecutive digits) ──
+const FALLBACK_NAV_CATS = [
+  { slug: "electronics", name: "Electronics" },
+  { slug: "fashion", name: "Fashion & Apparel" },
+  { slug: "grocery", name: "Grocery & Foods", kind: "EATABLE" },
+  { slug: "home-decor", name: "Home Decor", kind: "HOME" },
+  { slug: "beauty", name: "Beauty & Personal Care", kind: "BEAUTY" },
+  { slug: "books-stationery", name: "Books & Stationery", kind: "STATIONERY" },
+  { slug: "sports-fitness", name: "Sports & Fitness", kind: "SPORT" },
+  { slug: "bags-luggage", name: "Bags & Luggage", kind: "BAG" },
+];
+
 function isRealCategory(cat) {
-  return !/\d{7,}/.test(cat.name ?? "");
+  const name = (cat.name ?? "").trim();
+  if (!name || /\d{7,}/.test(name)) return false;
+  if (name.length > 28) return false;
+  if (/^(test|demo|dummy|sample|invoice|payment|order)\b/i.test(name)) return false;
+  if (/^[a-z]{10,}$/i.test(name) && !/[aeiou]/i.test(name)) return false;
+  return true;
+}
+
+function normalizeNavCategories(apiCategories = []) {
+  const real = apiCategories.filter((c) => !c.parentId && isRealCategory(c));
+  return FALLBACK_NAV_CATS.map((fallback) => {
+    const match =
+      real.find((c) => c.slug === fallback.slug) ||
+      real.find((c) => fallback.kind && c.kind === fallback.kind) ||
+      real.find((c) => c.name?.toLowerCase() === fallback.name.toLowerCase());
+    return {
+      ...fallback,
+      slug: match?.slug ?? fallback.slug,
+    };
+  });
 }
 
 export default function Layout() {
@@ -54,12 +83,9 @@ export default function Layout() {
     api.get("/categories")
       .then(({ data }) => {
         const all = data.categories ?? data ?? [];
-        const top = all
-          .filter((c) => !c.parentId && isRealCategory(c))
-          .slice(0, 12);
-        setTopCategories(top);
+        setTopCategories(normalizeNavCategories(all));
       })
-      .catch(() => {});
+      .catch(() => setTopCategories(FALLBACK_NAV_CATS));
   }, []);
 
   // Close dropdown when clicking outside on mobile
@@ -97,16 +123,7 @@ export default function Layout() {
 
   const NAV_CATS = topCategories.length > 0
     ? topCategories
-    : [
-        { slug: "electronics", name: "Electronics" },
-        { slug: "fashion", name: "Fashion & Apparel" },
-        { slug: "grocery", name: "Grocery & Gourmet Foods" },
-        { slug: "home-kitchen", name: "Home Decor" },
-        { slug: "beauty", name: "Beauty & Personal Care" },
-        { slug: "books-stationery", name: "Books & Stationery" },
-        { slug: "sports-fitness", name: "Sports & Fitness" },
-        { slug: "mobiles", name: "Electronics & Gadgets" },
-      ];
+    : FALLBACK_NAV_CATS;
 
   return (
     <div className="app-shell">

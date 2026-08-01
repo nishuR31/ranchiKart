@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   Moon, Sun, Snowflake, Settings, Bell, Globe, ShieldCheck,
-  Info, LogOut, User, Trash2, ChevronRight,
+  Info, LogOut, User, Trash2, ChevronRight, Sparkles, LayoutGrid,
 } from "lucide-react";
 import useSEO from "../lib/useSEO";
 import useShopStore from "../store/useShopStore";
@@ -52,7 +52,16 @@ export default function SettingsPage() {
   });
 
   const navigate = useNavigate();
-  const { darkMode, toggleDarkMode, showSnowfall, toggleSnowfall, clearCart, showToast } = useShopStore();
+  const {
+    darkMode,
+    toggleDarkMode,
+    showSnowfall,
+    toggleSnowfall,
+    seasonalEffect,
+    setSeasonalEffect,
+    clearCart,
+    showToast,
+  } = useShopStore();
   const { user, logout } = useAuthStore();
 
   const [orderNotifs, setOrderNotifs] = useState(
@@ -63,6 +72,12 @@ export default function SettingsPage() {
   );
   const [language, setLanguage] = useState(
     () => localStorage.getItem("rk_language") || "en-IN"
+  );
+  const [compactCards, setCompactCards] = useState(
+    () => localStorage.getItem("rk_compact_cards") === "true"
+  );
+  const [priceDisplay, setPriceDisplay] = useState(
+    () => localStorage.getItem("rk_price_display") || "full"
   );
   const [appVersion, setAppVersion] = useState(null);
 
@@ -93,6 +108,29 @@ export default function SettingsPage() {
     localStorage.setItem("rk_language", val);
     showToast("Language preference saved");
   }
+
+  function handleSeasonalEffectChange(e) {
+    setSeasonalEffect(e.target.value);
+    showToast("Seasonal effect updated");
+  }
+
+  function toggleCompactCards() {
+    const next = !compactCards;
+    setCompactCards(next);
+    localStorage.setItem("rk_compact_cards", String(next));
+    document.documentElement.classList.toggle("compact-products", next);
+    showToast(next ? "Compact product cards enabled" : "Comfort product cards enabled");
+  }
+
+  function handlePriceDisplayChange(e) {
+    setPriceDisplay(e.target.value);
+    localStorage.setItem("rk_price_display", e.target.value);
+    showToast("Price display preference saved");
+  }
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("compact-products", compactCards);
+  }, [compactCards]);
 
   function handleClearData() {
     clearCart();
@@ -130,6 +168,37 @@ export default function SettingsPage() {
           iconColor={showSnowfall ? "#60a5fa" : undefined}
         >
           <SettingToggle checked={showSnowfall} onChange={toggleSnowfall} />
+        </SettingRow>
+        <SettingRow
+          icon={seasonalEffect === "sparkles" ? Sparkles : Snowflake}
+          title="Seasonal Effect"
+          description="Choose the animation style used across the storefront."
+          iconColor="var(--accent)"
+        >
+          <select className="settings-select" value={seasonalEffect} onChange={handleSeasonalEffectChange}>
+            <option value="snow">Winter Snow</option>
+            <option value="sparkles">Festive Sparkles</option>
+            <option value="none">Off</option>
+          </select>
+        </SettingRow>
+        <SettingRow
+          icon={LayoutGrid}
+          title="Compact Product Cards"
+          description="Show tighter product grids for faster browsing."
+          iconColor="var(--brand)"
+        >
+          <SettingToggle checked={compactCards} onChange={toggleCompactCards} />
+        </SettingRow>
+        <SettingRow
+          icon={Info}
+          title="Price Display"
+          description="Choose how prices are shown in shopping views."
+          iconColor="var(--brand)"
+        >
+          <select className="settings-select" value={priceDisplay} onChange={handlePriceDisplayChange}>
+            <option value="full">Full price</option>
+            <option value="rounded">Rounded price</option>
+          </select>
         </SettingRow>
       </SettingSection>
 
@@ -237,7 +306,7 @@ export default function SettingsPage() {
           {appVersion ? (
             <span className="settings-version-badge">v{appVersion}</span>
           ) : (
-            <span className="settings-version-badge" style={{ opacity: 0.5 }}>—</span>
+            <span className="settings-version-badge">—</span>
           )}
         </SettingRow>
         <SettingRow icon={Info} title="FAQ" description="Frequently asked questions." iconColor="var(--text-muted)">

@@ -6,7 +6,8 @@ import { sendError } from "../utils/response.js";
 
 export default function errorHandler(err: any, req: FastifyRequest, res: FastifyReply) {
   if (!(err instanceof AppError)) {
-    err = new AppError(err?.message || "Something went wrong.", err?.statusCode || 500);
+    req.log.error(err);
+    err = new AppError("Something went wrong. Please try again.", err?.statusCode || 500);
   }
 
   const { message, statusCode, name, stack, details } = err;

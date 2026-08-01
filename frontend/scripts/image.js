@@ -11,7 +11,7 @@ try {
 }
 
 const ICON = "public/favicon.svg";
-const SOURCE = "public/source.png";
+const SOURCE = "public/assets/source.png";
 const OUT = "public";
 
 await fs.mkdir(OUT, { recursive: true });

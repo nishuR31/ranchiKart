@@ -47,7 +47,7 @@ export async function send(
     } catch (err) {
       const errMsg = err instanceof Error ? err.message : String(err);
       console.warn(`[Resend API send error] To: ${to} | ${errMsg}`);
-      if (smtpConfigured && nodemailerTransporter) {
+      if (env.NODE_ENV !== "production" && smtpConfigured && nodemailerTransporter) {
         console.log(`[Email] Falling back to SMTP...`);
         await sendViaSmtp(to, subject, html, attachments);
         console.log(`[Email sent via SMTP (fallback)] To: ${to} | Subject: ${subject}`);

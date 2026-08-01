@@ -26,7 +26,7 @@ import {
 import { User, PasskeyCredential } from "../../prisma/generated/client/index.js";
 import { prisma } from "../config/prisma.js";
 import env from "../config/env.js";
-import { generateTotpSecret, generateTotpQrCode, verifyTotpToken } from "../utils/totp.js";
+import { generateTotpSecret, generateTotpQrCode, generateTotpUri, verifyTotpToken } from "../utils/totp.js";
 import {
   createPasskeyRegistrationOptions,
   verifyPasskeyRegistration,
@@ -38,11 +38,52 @@ import { isEmail } from "../utils/isEmail.js";
 import { safeUser, SafeUser } from "../utils/safeUser.js";
 
 const userRepo = new UserRepository();
+const passkeyChallengeFallback = new Map<string, { challenge: string; expiresAt: number }>();
+
+async function storePasskeyChallenge(key: string, challenge: string) {
+  const redis = (await import("../config/redis.js")).default;
+  if (redis) {
+    await redis.setex(key, 300, challenge);
+    return;
+  }
+  passkeyChallengeFallback.set(key, { challenge, expiresAt: Date.now() + 300_000 });
+}
+
+async function getPasskeyChallenge(key: string) {
+  const redis = (await import("../config/redis.js")).default;
+  if (redis) return redis.get(key);
+
+  const saved = passkeyChallengeFallback.get(key);
+  if (!saved) return null;
+  if (saved.expiresAt < Date.now()) {
+    passkeyChallengeFallback.delete(key);
+    return null;
+  }
+  return saved.challenge;
+}
+
+async function deletePasskeyChallenge(key: string) {
+  const redis = (await import("../config/redis.js")).default;
+  if (redis) {
+    await redis.del(key);
+    return;
+  }
+  passkeyChallengeFallback.delete(key);
+}
 
 type PublicUser = SafeUser;
 
 function publicUser(user: User): PublicUser {
   return safeUser(user)!;
+}
+
+function assertUserCanAuthenticate(user: User) {
+  if (user.isBanned) {
+    throw new ForbiddenError(user.banReason || "This account has been suspended. Please contact support.");
+  }
+  if (user.isDeleted) {
+    throw new ForbiddenError("This account has been deactivated. Please contact support to restore access.");
+  }
 }
 
 export default class AuthService {
@@ -141,19 +182,7 @@ export default class AuthService {
       if (!user) throw new UnauthorizedError("Invalid username or password.");
     }
     if (!user) throw new UnauthorizedError("Invalid email or password.");
-    if (user.isBanned) {
-      throw new ForbiddenError(
-        JSON.stringify({
-          banned: true,
-          banReason: user.banReason ?? "Your account has been suspended.",
-        }),
-      );
-    }
-    if (user.isDeleted) {
-      throw new ForbiddenError(
-        "Your account has been deactivated and is scheduled for permanent deletion after 90 days. Please contact support if you wish to restore your account.",
-      );
-    }
+    assertUserCanAuthenticate(user);
 
     if (!user.passwordHash)
       throw new UnauthorizedError(
@@ -196,8 +225,7 @@ export default class AuthService {
 
     const user = await userRepo.findById(decoded.id);
     if (!user) throw new UnauthorizedError("User not found.");
-    if (user.isBanned) throw new ForbiddenError("Account is banned.");
-    if (user.isDeleted) throw new ForbiddenError("Account has been deactivated.");
+    assertUserCanAuthenticate(user);
 
     const tokens = generateTokenPair({ id: user.id, email: user.email, role: user.role });
     await storeRefreshToken(user.id, tokens.refreshToken!);
@@ -287,6 +315,8 @@ export default class AuthService {
       await userRepo.updateLastLogin(user.id);
     }
 
+    assertUserCanAuthenticate(user);
+
     const tokens = generateTokenPair({ id: user.id, email: user.email, role: user.role });
     await storeRefreshToken(user.id, tokens.refreshToken!);
     await userRepo.updateRefreshToken(user.id, tokens.refreshToken!);
@@ -310,7 +340,7 @@ export default class AuthService {
     const decoded = await verifyAccessToken(token);
 
     const user = await userRepo.findById(decoded.id);
-    if (user.isBanned) throw new ForbiddenError("Account is banned.");
+    assertUserCanAuthenticate(user);
 
     const tokens = generateTokenPair({ id: user.id, email: user.email, role: user.role });
     await storeRefreshToken(user.id, tokens.refreshToken!);
@@ -330,7 +360,7 @@ export default class AuthService {
     const qrCode = await generateTotpQrCode(user.email, secret);
     await userRepo.updateTotpSecret(userId, secret, false);
 
-    return { secret, qrCode };
+    return { secret, manualCode: secret, otpauthUrl: generateTotpUri(user.email, secret), qrCode };
   }
 
   async verifyAndActivateTotp(userId: string, token: string) {
@@ -373,15 +403,13 @@ export default class AuthService {
     //   data: { banReason: options.challenge }, // HACK: reusing field temporarily or use Redis. Better to use Redis.
     // });
     // Wait, let's use Redis properly instead of hijacking `banReason`.
-    const redis = (await import("../config/redis.js")).default;
-    await redis?.setex(`passkey_reg_challenge:${userId}`, 300, options.challenge);
+    await storePasskeyChallenge(`passkey_reg_challenge:${userId}`, options.challenge);
 
     return options;
   }
 
   async verifyPasskeyRegistrationResponse(userId: string, response: any, origin: string) {
-    const redis = (await import("../config/redis.js")).default;
-    const expectedChallenge = await redis?.get(`passkey_reg_challenge:${userId}`);
+    const expectedChallenge = await getPasskeyChallenge(`passkey_reg_challenge:${userId}`);
     if (!expectedChallenge) throw new ValidationError("Passkey challenge expired or not found.");
 
     const verification = await verifyPasskeyRegistration(response, expectedChallenge, origin);
@@ -401,28 +429,27 @@ export default class AuthService {
       },
     });
 
-    await redis?.del(`passkey_reg_challenge:${userId}`);
+    await deletePasskeyChallenge(`passkey_reg_challenge:${userId}`);
     return true;
   }
 
   async generatePasskeyAuthenticationOptions(emailOrUsername: string, origin: string) {
     const user = await userRepo.findByEmailOrUsername(emailOrUsername.toLowerCase());
     if (!user) throw new NotFoundError("User not found.");
+    assertUserCanAuthenticate(user);
 
     const passkeys = await prisma.passkeyCredential.findMany({ where: { userId: user.id } });
     if (!passkeys.length) throw new NotFoundError("No passkeys registered for this user.");
 
     const options = await createPasskeyAuthenticationOptions(passkeys, origin);
 
-    const redis = (await import("../config/redis.js")).default;
-    await redis?.setex(`passkey_auth_challenge:${user.id}`, 300, options.challenge);
+    await storePasskeyChallenge(`passkey_auth_challenge:${user.id}`, options.challenge);
 
     return { options, userId: user.id };
   }
 
   async verifyPasskeyAuthenticationResponse(userId: string, response: any, origin: string) {
-    const redis = (await import("../config/redis.js")).default;
-    const expectedChallenge = await redis?.get(`passkey_auth_challenge:${userId}`);
+    const expectedChallenge = await getPasskeyChallenge(`passkey_auth_challenge:${userId}`);
     if (!expectedChallenge) throw new ValidationError("Passkey challenge expired or not found.");
 
     const passkey = await prisma.passkeyCredential.findUnique({
@@ -446,9 +473,10 @@ export default class AuthService {
       data: { counter: BigInt(verification.authenticationInfo.newCounter) },
     });
 
-    await redis?.del(`passkey_auth_challenge:${userId}`);
+    await deletePasskeyChallenge(`passkey_auth_challenge:${userId}`);
 
     const user = await userRepo.findById(userId);
+    assertUserCanAuthenticate(user);
     const tokens = generateTokenPair({ id: user.id, email: user.email, role: user.role });
     await storeRefreshToken(user.id, tokens.refreshToken!);
     await userRepo.updateRefreshToken(user.id, tokens.refreshToken!);
@@ -460,8 +488,12 @@ export default class AuthService {
   // === Utilities ===
 
   async getProfile(userId: string): Promise<PublicUser> {
-    const user = await userRepo.findById(userId);
-    return publicUser(user);
+    const user = await prisma.user.findUniqueOrThrow({
+      where: { id: userId },
+      include: { _count: { select: { passkeys: true } } },
+    });
+    const safe = safeUser(user);
+    return { ...safe, passkeyCount: user._count.passkeys } as PublicUser & { passkeyCount: number };
   }
 
   async changePassword(userId: string, currentPassword?: string, newPassword?: string) {

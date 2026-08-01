@@ -5,6 +5,13 @@ export const resendConfigured = Boolean(
   env.RESEND_API_KEY && env.RESEND_API_KEY.trim().length > 0
 );
 
+function resolveResendFrom() {
+  const from = (env.RESEND_FROM || "").trim();
+  if (from) return from;
+  if (env.NODE_ENV !== "production") return "onboarding@resend.dev";
+  throw new Error("RESEND_FROM is required in production. Use a sender from a verified Resend domain, for example RanchiKart <orders@yourdomain.com>.");
+}
+
 /**
  * Send transactional email via Resend HTTPS REST API.
  * Uses sender email "onboarding@resend.dev" by default.
@@ -19,7 +26,7 @@ export async function sendViaResend(
     throw new Error("Resend API key is missing. Please set RESEND_API_KEY in environment variables.");
   }
 
-  const from = env.RESEND_FROM || "onboarding@resend.dev";
+  const from = resolveResendFrom();
 
   // Format attachments for Resend if present
   const formattedAttachments = attachments?.map((att) => ({

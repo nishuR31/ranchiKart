@@ -5,6 +5,7 @@ const opts = { $refStrategy: "none" } as const;
 
 const _updateProfileZod = z.object({
   name: z.string().min(2).max(80).optional(),
+  username: z.string().min(3).max(30).regex(/^[a-zA-Z0-9_]+$/).optional(),
   phone: z.string().regex(/^\s*(?:(?:\+|0{0,2})91[\s\-]*|[0]?)?[56789](?:[\s\-]*\d){9}\s*$/, "Invalid phone number format").optional(),
   avatarUrl: z.string().url().optional(),
 });
@@ -24,8 +25,8 @@ const _addAddressZod = z.object({
 const _idParamZod = z.object({ id: z.string() });
 
 const _updatePasswordZod = z.object({
-  currentPassword: z.string().min(6),
-  newPassword: z.string().min(6),
+  currentPassword: z.string().min(6).optional(),
+  newPassword: z.string().min(8),
 });
 
 export const updateProfileSchema  = zodToJsonSchema(_updateProfileZod,  opts);

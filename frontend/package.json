@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "typecheck": "vite build",
     "preview": "vite preview",
     "img": "bun run scripts/image.js && find public -name \"*.png\" -exec optipng -o7 {} \\;",
     "docker:prod": "docker build -t prod -f Dockerfile .",
@@ -14,6 +15,7 @@
   },
   "dependencies": {
     "@simplewebauthn/browser": "^13.3.0",
+    "@tailwindcss/vite": "^4.3.3",
     "axios": "^1.7.7",
     "lucide-react": "^0.441.0",
     "react": "^18.3.1",
@@ -21,6 +23,7 @@
     "react-router-dom": "^6.26.2",
     "react-snowfall": "^2.4.0",
     "sharp": "^0.35.3",
+    "tailwindcss": "^4.3.3",
     "zustand": "^4.5.5"
   },
   "devDependencies": {

@@ -13,14 +13,18 @@ export function generateTotpSecret(): string {
  * Generate a QR code data URI for the given email and secret.
  */
 export async function generateTotpQrCode(email: string, secret: string): Promise<string> {
+  const otpauthUrl = generateTotpUri(email, secret);
+  return QRCode.toDataURL(otpauthUrl);
+}
+
+export function generateTotpUri(email: string, secret: string): string {
   const issuer = env.BUSINESS_NAME || "Ranchi Kart";
-  const otpauthUrl = generateURI({
+  return generateURI({
     issuer,
     label: email,
     secret,
     strategy: "totp",
   });
-  return QRCode.toDataURL(otpauthUrl);
 }
 
 /**

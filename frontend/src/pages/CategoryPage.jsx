@@ -34,12 +34,18 @@ export default function CategoryPage() {
   useEffect(() => {
     async function load() {
       setLoading(true);
-      const { data } = await api.get("/products", {
-        params: { category: slug, sort, page, limit: 8 },
-      });
-      setProducts(data.products ?? data ?? []);
-      setTotalPages(data.totalPages ?? data.pages ?? 1);
-      setLoading(false);
+      try {
+        const { data } = await api.get("/products", {
+          params: { category: slug, sort, page, limit: 8 },
+        });
+        setProducts(data.products ?? data ?? []);
+        setTotalPages(data.totalPages ?? data.pages ?? 1);
+      } catch {
+        setProducts([]);
+        setTotalPages(1);
+      } finally {
+        setLoading(false);
+      }
     }
     load();
   }, [slug, sort, page]);

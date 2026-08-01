@@ -1,6 +1,5 @@
-process.env.NODE_ENV = "test";
+import { config } from "dotenv";
 
-const { config } = await import("dotenv");
 config();
 config({ path: new URL("../.env", import.meta.url) });
 
@@ -17,6 +16,7 @@ function isSafeTestDatabase(url: string | undefined): boolean {
     const parsed = new URL(url);
     const host = parsed.hostname.toLowerCase();
     const database = parsed.pathname.toLowerCase();
+
     return (
       ["localhost", "127.0.0.1", "::1"].includes(host) ||
       host.endsWith(".localhost") ||
@@ -31,26 +31,8 @@ if (
   process.env.ALLOW_REMOTE_TESTS !== "true" &&
   !isSafeTestDatabase(process.env.DATABASE_URL)
 ) {
-  throw new Error(
+  console.error(
     "Refusing to run backend tests against a non-test database. Set TEST_DATABASE_URL to a local/test DB, or set ALLOW_REMOTE_TESTS=true intentionally.",
   );
+  process.exit(1);
 }
-
-const isBun = typeof process.versions.bun !== "undefined";
-const { beforeAll, afterAll } = isBun ? await import("bun:test") : await import("vitest");
-
-const { default: app } = await import("../src/config/server.js");
-const { prisma } = await import("../src/config/prisma.js");
-const { generatePerformanceReport } = await import("./utils/report.js");
-
-beforeAll(async () => {
-  // Ensure app is ready before any tests run
-  await app.ready();
-});
-
-afterAll(async () => {
-  // Close database connections and server
-  await prisma.$disconnect();
-  await app.close();
-  generatePerformanceReport();
-});

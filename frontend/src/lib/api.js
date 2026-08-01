@@ -67,12 +67,34 @@ api.interceptors.response.use(
  * Pull a human-readable message out of an axios error.
  */
 export function extractError(err, fallback = "Something went wrong") {
-  return (
-    err?.response?.data?.message ??
-    err?.response?.data?.error ??
-    err?.message ??
-    fallback
-  );
+  const serverMessage = err?.response?.data?.message ?? err?.response?.data?.error;
+  if (serverMessage) {
+    if (/prisma|tx\.|invocation|stack|record was found|failed because it depends/i.test(serverMessage)) {
+      return fallback;
+    }
+    if (serverMessage.startsWith("{")) {
+      try {
+        const parsed = JSON.parse(serverMessage);
+        return parsed.banReason || parsed.message || fallback;
+      } catch {
+        return fallback;
+      }
+    }
+    return serverMessage;
+  }
+
+  const name = err?.name || err?.cause?.name;
+  const message = String(err?.message || "");
+  if (["AbortError", "NotAllowedError", "SecurityError", "InvalidStateError"].includes(name)) {
+    if (name === "InvalidStateError") return "This passkey is already registered on this device.";
+    return "The security prompt was cancelled or timed out.";
+  }
+  if (/webauthn|credential|authenticator|publickey|notallowed|abort/i.test(message)) {
+    return "The passkey action could not be completed. Please try again.";
+  }
+  if (/network error/i.test(message)) return "Network error. Please check your connection and try again.";
+
+  return fallback;
 }
 
 export default api;

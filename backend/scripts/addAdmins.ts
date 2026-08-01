@@ -4,50 +4,36 @@ import bcrypt from "bcryptjs";
 const prisma = new PrismaClient();
 
 async function main() {
-  const adminPassword = await bcrypt.hash("Admin@31", 10);
-  const managerPassword = await bcrypt.hash("Manager@31", 10);
+  const nishantAdminPassword = await bcrypt.hash("Admin@Password", 10);
 
-  console.log("Upserting Admin...");
+  console.log("Upserting Nishant Admin...");
   await prisma.user.upsert({
-    where: { email: "nishanadmin@gmail.com" },
+    where: { email: "nishantubuntu@gmail.com" },
     update: {
-      username: "admin@31",
-      passwordHash: adminPassword,
+      username: "nishant320",
+      name: "Nishant Admin",
+      passwordHash: nishantAdminPassword,
       role: "ADMIN",
       isEmailVerified: true,
+      isBanned: false,
+      banReason: null,
+      isDeleted: false,
+      deletedAt: null,
+      scheduledHardDeleteAt: null,
       coins: 1000
     },
     create: {
-      email: "nishanadmin@gmail.com",
-      username: "admin@31",
-      name: "Nishan Admin",
-      passwordHash: adminPassword,
+      email: "nishantubuntu@gmail.com",
+      username: "nishant320",
+      name: "Nishant Admin",
+      passwordHash: nishantAdminPassword,
       role: "ADMIN",
       isEmailVerified: true,
       coins: 1000
     }
   });
 
-  console.log("Upserting Manager...");
-  await prisma.user.upsert({
-    where: { email: "nishanmanager@gmail.com" },
-    update: {
-      username: "manager@31",
-      passwordHash: managerPassword,
-      role: "MANAGER",
-      isEmailVerified: true
-    },
-    create: {
-      email: "nishanmanager@gmail.com",
-      username: "manager@31",
-      name: "Nishan Manager",
-      passwordHash: managerPassword,
-      role: "MANAGER",
-      isEmailVerified: true
-    }
-  });
-
-  console.log("Success! You can now log in with the new credentials.");
+  console.log("Success! Nishant admin is ready.");
 }
 
 main()

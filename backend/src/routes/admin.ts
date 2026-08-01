@@ -71,6 +71,11 @@ export async function adminRoutes(app: FastifyInstance) {
     schema: { params: idParamSchema },
   }, adminController.featureProduct);
 
+  app.delete("/admin/products/:id", {
+    preHandler: adminGuard,
+    schema: { params: idParamSchema },
+  }, adminController.deleteProduct);
+
   // ── Categories ───────────────────────────────────────────────────────────────
   // Same dual-mode as products: multipart (with file) or JSON (with imageUrl string).
 
@@ -108,6 +113,11 @@ export async function adminRoutes(app: FastifyInstance) {
     preHandler: adminGuard,
     schema: { params: idParamSchema },
   }, adminController.restoreUserAccount);
+
+  app.delete("/admin/users/:id/force", {
+    preHandler: adminGuard,
+    schema: { params: idParamSchema },
+  }, adminController.forceDeleteUser);
 
   // ── Coupons ──────────────────────────────────────────────────────────────────
   app.get("/admin/coupons", {
