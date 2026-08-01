@@ -7,6 +7,9 @@ import { ProductGridSkeleton, Skeleton } from "../components/Loaders";
 import useAuthStore from "../store/useAuthStore";
 import useShopStore from "../store/useShopStore";
 import Snowfall from "react-snowfall";
+
+// Filter out test/dummy categories (names containing 7+ consecutive digits)
+const isRealCategory = (cat) => !/\d{7,}/.test(cat.name ?? "");
 import {
   Smartphone, Tv, Shirt, ShoppingBasket, Sofa, Sparkles,
   BookOpen, Dumbbell, Package, Truck, ShieldCheck, RotateCcw,
@@ -82,7 +85,8 @@ export default function HomePage() {
         ]);
 
         const allCats = catRes.data.categories ?? catRes.data ?? [];
-        const topCats = allCats.filter((c) => !c.parentId);
+        // Filter out test/dummy categories before displaying
+        const topCats = allCats.filter((c) => !c.parentId && isRealCategory(c));
         setCategories(topCats);
 
         const featured = featRes.data.products ?? featRes.data ?? [];

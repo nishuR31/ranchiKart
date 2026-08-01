@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, Outlet, useNavigate } from "react-router-dom";
 import {
   Search,
@@ -22,36 +22,21 @@ import Toast from "./Toast";
 import api from "../lib/api";
 import pkg from "../../package.json";
 
-// Map ProductKind → display name for category strip
-const KIND_LABELS = {
-  ELECTRONIC: "Electronics",
-  CLOTHING: "Fashion",
-  EATABLE: "Grocery",
-  HOME: "Home & Kitchen",
-  KITCHEN: "Kitchen",
-  BEAUTY: "Beauty",
-  HEALTH: "Health",
-  STATIONERY: "Books & Stationery",
-  SPORT: "Sports",
-  SHOE: "Footwear",
-  BAG: "Bags",
-  JEWELLERY: "Jewellery",
-  ACCESSORY: "Accessories",
-  TOY: "Toys & Kids",
-  PET: "Pet Supplies",
-  GARDEN: "Garden",
-  BABY: "Baby",
-  OTHER: "More",
-};
+// ── Filter out test/dummy categories (names containing 7+ consecutive digits) ──
+function isRealCategory(cat) {
+  return !/\d{7,}/.test(cat.name ?? "");
+}
 
 export default function Layout() {
   const { user, logout, isAdmin } = useAuthStore();
-  const { cart, fetchCart, wishlist, fetchWishlist, darkMode, toggleDarkMode } = useShopStore();
+  const { cart, fetchCart, wishlist, fetchWishlist, darkMode, toggleDarkMode, showToast } = useShopStore();
   const [query, setQuery] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
   const [accountMenuOpen, setAccountMenuOpen] = useState(false);
   const [topCategories, setTopCategories] = useState([]);
   const navigate = useNavigate();
+  const closeTimerRef = useRef(null);
+  const accountMenuRef = useRef(null);
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", darkMode);
@@ -70,30 +55,57 @@ export default function Layout() {
       .then(({ data }) => {
         const all = data.categories ?? data ?? [];
         const top = all
-          .filter((c) => !c.parentId)
-          .slice(0, 10);
+          .filter((c) => !c.parentId && isRealCategory(c))
+          .slice(0, 12);
         setTopCategories(top);
       })
       .catch(() => {});
   }, []);
+
+  // Close dropdown when clicking outside on mobile
+  useEffect(() => {
+    if (!accountMenuOpen) return;
+    function handleOutsideClick(e) {
+      if (accountMenuRef.current && !accountMenuRef.current.contains(e.target)) {
+        setAccountMenuOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => document.removeEventListener("mousedown", handleOutsideClick);
+  }, [accountMenuOpen]);
+
+  function handleMouseEnterMenu() {
+    if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
+    setAccountMenuOpen(true);
+  }
+
+  function handleMouseLeaveMenu() {
+    closeTimerRef.current = setTimeout(() => setAccountMenuOpen(false), 180);
+  }
 
   function handleSearch(e) {
     e.preventDefault();
     if (query.trim()) navigate(`/search?q=${encodeURIComponent(query.trim())}`);
   }
 
-  // Fallback static categories if API returns nothing clean
+  function handleLogout() {
+    logout();
+    setAccountMenuOpen(false);
+    showToast("You have been logged out.");
+    navigate("/");
+  }
+
   const NAV_CATS = topCategories.length > 0
     ? topCategories
     : [
         { slug: "electronics", name: "Electronics" },
-        { slug: "fashion", name: "Fashion" },
-        { slug: "grocery", name: "Grocery" },
-        { slug: "home-kitchen", name: "Home & Kitchen" },
-        { slug: "beauty", name: "Beauty" },
+        { slug: "fashion", name: "Fashion & Apparel" },
+        { slug: "grocery", name: "Grocery & Gourmet Foods" },
+        { slug: "home-kitchen", name: "Home Decor" },
+        { slug: "beauty", name: "Beauty & Personal Care" },
         { slug: "books-stationery", name: "Books & Stationery" },
-        { slug: "sports-fitness", name: "Sports" },
-        { slug: "mobiles", name: "Mobiles" },
+        { slug: "sports-fitness", name: "Sports & Fitness" },
+        { slug: "mobiles", name: "Electronics & Gadgets" },
       ];
 
   return (
@@ -136,27 +148,48 @@ export default function Layout() {
               <ShoppingCart size={20} />
               {cart.count > 0 && <span className="badge">{cart.count}</span>}
             </Link>
+
             {user ? (
-              <div 
-                className={`account-menu ${accountMenuOpen ? 'open' : ''}`}
-                onMouseEnter={() => setAccountMenuOpen(true)}
-                onMouseLeave={() => setAccountMenuOpen(false)}
+              <div
+                ref={accountMenuRef}
+                className={`account-menu ${accountMenuOpen ? "open" : ""}`}
+                onMouseEnter={handleMouseEnterMenu}
+                onMouseLeave={handleMouseLeaveMenu}
               >
-                <button 
-                  className="icon-btn account-btn" 
-                  title="Account" 
-                  onClick={() => setAccountMenuOpen(v => !v)}
+                {/* Bridge element to prevent gap-triggered close */}
+                <div className="account-menu-bridge" />
+                <button
+                  className="icon-btn account-btn"
+                  title="Account"
+                  aria-expanded={accountMenuOpen}
+                  onClick={() => setAccountMenuOpen((v) => !v)}
                 >
                   <User size={20} />
-                  <ChevronDown size={14} />
+                  <ChevronDown
+                    size={14}
+                    style={{
+                      transition: "transform 0.2s ease",
+                      transform: accountMenuOpen ? "rotate(180deg)" : "rotate(0deg)",
+                    }}
+                  />
                 </button>
-                <div className="account-dropdown" onClick={() => setAccountMenuOpen(false)}>
+                <div className="account-dropdown" role="menu">
                   <div className="account-name">Hi, {user.name?.split(" ")[0] ?? "User"}</div>
-                  <Link to="/profile"><User size={14} /> Profile</Link>
-                  <Link to="/orders"><PackageCheck size={14} /> My Orders</Link>
-                  <Link to="/settings"><Settings size={14} /> Settings</Link>
-                  {isAdmin() && <Link to="/admin"><LayoutDashboard size={14} /> {user.role === "ADMIN" ? "Admin Dashboard" : "Manager Dashboard"}</Link>}
-                  <button onClick={() => { logout(); navigate("/"); }}>
+                  <Link to="/profile" role="menuitem" onClick={() => setAccountMenuOpen(false)}>
+                    <User size={14} /> Profile
+                  </Link>
+                  <Link to="/orders" role="menuitem" onClick={() => setAccountMenuOpen(false)}>
+                    <PackageCheck size={14} /> My Orders
+                  </Link>
+                  <Link to="/settings" role="menuitem" onClick={() => setAccountMenuOpen(false)}>
+                    <Settings size={14} /> Settings
+                  </Link>
+                  {isAdmin() && (
+                    <Link to="/admin" role="menuitem" onClick={() => setAccountMenuOpen(false)}>
+                      <LayoutDashboard size={14} /> {user.role === "ADMIN" ? "Admin Dashboard" : "Manager Dashboard"}
+                    </Link>
+                  )}
+                  <button role="menuitem" onClick={handleLogout}>
                     <LogOut size={14} /> Logout
                   </button>
                 </div>

@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import api, { extractError } from "../lib/api";
 import { formatINR, formatCompactINR } from "../lib/money";
-import { Skeleton } from "../components/Loaders";
+import { Skeleton, TableSkeleton } from "../components/Loaders";
 import useShopStore from "../store/useShopStore";
 import useAuthStore from "../store/useAuthStore";
 
@@ -229,7 +229,7 @@ function ProductsTab() {
           <button className="btn btn-primary btn-sm" type="submit">Save Product</button>
         </form>
       )}
-      {loading ? <div><Skeleton width="100%" height={400} /></div> :
+      {loading ? <TableSkeleton /> :
 
       <div className="table-wrapper">
           <table className="admin-table">
@@ -267,12 +267,18 @@ function ProductsTab() {
 // GET /categories  (public)
 function CategoriesTab() {
   const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [form, setForm] = useState({ name: "", slug: "", description: "", imageUrl: "", kind: "OTHER" });
   const showToast = useShopStore((s) => s.showToast);
 
   async function load() {
-    const { data } = await api.get("/categories");
-    setCategories(data.categories ?? data ?? []);
+    setLoading(true);
+    try {
+      const { data } = await api.get("/categories");
+      setCategories(data.categories ?? data ?? []);
+    } finally {
+      setLoading(false);
+    }
   }
   useEffect(() => { load(); }, []);
 
@@ -313,20 +319,22 @@ function CategoriesTab() {
           <button className="btn btn-primary btn-sm" type="submit">Add</button>
         </form>
       )}
-      <div className="table-wrapper">
+      {loading ? <TableSkeleton /> : (
+        <div className="table-wrapper">
           <table className="admin-table">
-        <thead><tr><th>Name</th><th>Slug</th><th></th></tr></thead>
-        <tbody>
-          {categories.map((c) => (
-            <tr key={c.id}>
-              <td>{c.name}</td>
-              <td>{c.slug}</td>
-              <td><button className="icon-btn" onClick={() => deleteCategory(c.id)}><Trash2 size={16} /></button></td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+            <thead><tr><th>Name</th><th>Slug</th><th></th></tr></thead>
+            <tbody>
+              {categories.map((c) => (
+                <tr key={c.id}>
+                  <td>{c.name}</td>
+                  <td>{c.slug}</td>
+                  <td><button className="icon-btn" onClick={() => deleteCategory(c.id)}><Trash2 size={16} /></button></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
+      )}
     </div>
   );
 }
@@ -361,7 +369,7 @@ function OrdersTab() {
 
   return (
     <div>
-      {loading ? <div><Skeleton width="100%" height={400} /></div> : (
+      {loading ? <TableSkeleton /> : (
         <div className="table-wrapper">
           <table className="admin-table">
             <thead><tr><th>Order #</th><th>Customer</th><th>Total</th><th>Payment</th><th>Status</th></tr></thead>
@@ -392,13 +400,19 @@ function OrdersTab() {
 // PUT /admin/coupons/:id  (update, incl. isActive)   DELETE /admin/coupons/:id
 function CouponsTab() {
   const [coupons, setCoupons] = useState([]);
+  const [loading, setLoading] = useState(true);
   // type must be "PERCENT" or "FIXED" (not "FLAT")
   const [form, setForm] = useState({ code: "", type: "PERCENT", value: 10, minOrderAmount: 0 });
   const showToast = useShopStore((s) => s.showToast);
 
   async function load() {
-    const { data } = await api.get("/admin/coupons");
-    setCoupons(data.coupons ?? data ?? []);
+    setLoading(true);
+    try {
+      const { data } = await api.get("/admin/coupons");
+      setCoupons(data.coupons ?? data ?? []);
+    } finally {
+      setLoading(false);
+    }
   }
   useEffect(() => { load(); }, []);
 
@@ -456,28 +470,30 @@ function CouponsTab() {
           <button className="btn btn-primary btn-sm" type="submit">Add</button>
         </form>
       )}
-      <div className="table-wrapper">
+      {loading ? <TableSkeleton /> : (
+        <div className="table-wrapper">
           <table className="admin-table">
-        <thead><tr><th>Code</th><th>Type</th><th>Value</th><th>Min Order</th><th>Active</th><th></th></tr></thead>
-        <tbody>
-          {coupons.map((c) => (
-            <tr key={c.id}>
-              <td>{c.code}</td>
-              <td>{c.type}</td>
-              <td>{c.type === "PERCENT" ? `${c.value}%` : formatINR(c.value)}</td>
-              <td>{c.minOrderAmount > 0 ? formatINR(c.minOrderAmount) : "—"}</td>
-              <td>
-                <button className={`btn btn-sm ${c.isActive ? "btn-primary" : "btn-outline"}`}
-                  onClick={() => toggleActive(c)}>
-                  {c.isActive ? "Active" : "Inactive"}
-                </button>
-              </td>
-              <td><button className="icon-btn" onClick={() => deleteCoupon(c.id)}><Trash2 size={16} /></button></td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+            <thead><tr><th>Code</th><th>Type</th><th>Value</th><th>Min Order</th><th>Active</th><th></th></tr></thead>
+            <tbody>
+              {coupons.map((c) => (
+                <tr key={c.id}>
+                  <td>{c.code}</td>
+                  <td>{c.type}</td>
+                  <td>{c.type === "PERCENT" ? `${c.value}%` : formatINR(c.value)}</td>
+                  <td>{c.minOrderAmount > 0 ? formatINR(c.minOrderAmount) : "—"}</td>
+                  <td>
+                    <button className={`btn btn-sm ${c.isActive ? "btn-primary" : "btn-outline"}`}
+                      onClick={() => toggleActive(c)}>
+                      {c.isActive ? "Active" : "Inactive"}
+                    </button>
+                  </td>
+                  <td><button className="icon-btn" onClick={() => deleteCoupon(c.id)}><Trash2 size={16} /></button></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
+      )}
     </div>
   );
 }
@@ -490,8 +506,13 @@ function UsersTab() {
   const showToast = useShopStore((s) => s.showToast);
 
   async function load() {
-    const { data } = await api.get("/admin/users");
-    setUsers(data.users ?? data ?? []);
+    setLoading(true);
+    try {
+      const { data } = await api.get("/admin/users");
+      setUsers(data.users ?? data ?? []);
+    } finally {
+      setLoading(false);
+    }
   }
   useEffect(() => { load(); }, []);
 
@@ -518,32 +539,34 @@ function UsersTab() {
   return (
     <div>
       <h3>Users ({users.length})</h3>
-      <div className="table-wrapper">
+      {loading ? <TableSkeleton /> : (
+        <div className="table-wrapper">
           <table className="admin-table">
-        <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Banned</th><th>Actions</th></tr></thead>
-        <tbody>
-          {users.map((u) => (
-            <tr key={u.id}>
-              <td>{u.name}</td>
-              <td>{u.email}</td>
-              <td>
-                <select value={u.role} onChange={(e) => changeRole(u.id, e.target.value)}>
-                  <option value="USER">USER</option>
-                  <option value="MANAGER">MANAGER</option>
-                  <option value="ADMIN">ADMIN</option>
-                </select>
-              </td>
-              <td>{u.isBanned ? "Yes" : "No"}</td>
-              <td>
-                <button className="btn btn-outline btn-sm" onClick={() => banUser(u.id, !u.isBanned)}>
-                  {u.isBanned ? "Unban" : "Ban"}
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+            <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Banned</th><th>Actions</th></tr></thead>
+            <tbody>
+              {users.map((u) => (
+                <tr key={u.id}>
+                  <td>{u.name}</td>
+                  <td>{u.email}</td>
+                  <td>
+                    <select value={u.role} onChange={(e) => changeRole(u.id, e.target.value)}>
+                      <option value="USER">USER</option>
+                      <option value="MANAGER">MANAGER</option>
+                      <option value="ADMIN">ADMIN</option>
+                    </select>
+                  </td>
+                  <td>{u.isBanned ? "Yes" : "No"}</td>
+                  <td>
+                    <button className="btn btn-outline btn-sm" onClick={() => banUser(u.id, !u.isBanned)}>
+                      {u.isBanned ? "Unban" : "Ban"}
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
+      )}
     </div>
   );
 }

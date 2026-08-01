@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { Trash2 } from "lucide-react";
+import { Trash2, AlertTriangle } from "lucide-react";
 import api, { extractError } from "../lib/api";
 import useAuthStore from "../store/useAuthStore";
 import useShopStore from "../store/useShopStore";
@@ -47,8 +47,10 @@ export default function ProfilePage() {
 
   async function handleRegisterPasskey() {
     try {
-      const { data: options } = await api.post("/auth/passkey/register");
+      // Step 1: GET options (backend uses GET, not POST)
+      const { data: options } = await api.get("/auth/passkey/register");
       const attestation = await startRegistration(options);
+      // Step 2: POST attestation to verify
       await api.post("/auth/passkey/register/verify", attestation);
       showToast("Passkey registered successfully!", "success");
     } catch (err) {
@@ -233,29 +235,7 @@ export default function ProfilePage() {
       </div>
 
       <h2>Danger Zone</h2>
-      <div className="profile-card" style={{ border: "1px solid #fee2e2", backgroundColor: "#fff5f5" }}>
-        <h4 style={{ color: "#dc2626", margin: "0 0 8px 0" }}>Delete Account</h4>
-        <p style={{ fontSize: "0.9rem", color: "#4b5563", marginBottom: "12px" }}>
-          Deactivating your account will immediately hide your profile. All your personal data, saved addresses, and profile info will be permanently and irreversibly purged from our database after 90 days.
-        </p>
-        <button
-          className="btn btn-sm"
-          style={{ backgroundColor: "#dc2626", color: "#fff", border: "none" }}
-          onClick={async () => {
-            if (window.confirm("Are you sure you want to delete your account? Your account will be deactivated and permanently deleted after 90 days.")) {
-              try {
-                const { data } = await api.delete("/users/me");
-                showToast(data.message || "Account scheduled for deletion in 90 days.");
-                useAuthStore.getState().logout();
-              } catch (err) {
-                showToast(extractError(err, "Could not delete account"), "error");
-              }
-            }
-          }}
-        >
-          Delete My Account
-        </button>
-      </div>
+      <DeleteAccountSection showToast={showToast} />
 
       <h2>Saved Addresses</h2>
       {addresses.length === 0 ? (
@@ -276,6 +256,72 @@ export default function ProfilePage() {
           ))}
         </div>
       )}
+    </div>
+  );
+}
+
+// ── Inline Delete Account (no browser dialogs) ─────────────────────────────
+function DeleteAccountSection({ showToast }) {
+  const [confirming, setConfirming] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  async function handleDelete() {
+    setLoading(true);
+    try {
+      const { data } = await api.delete("/users/me");
+      showToast(data.message || "Account scheduled for deletion in 90 days.", "success");
+      useAuthStore.getState().logout();
+    } catch (err) {
+      showToast(extractError(err, "Could not delete account"), "error");
+      setConfirming(false);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <div className="profile-card danger-zone-card">
+      <div style={{ display: "flex", alignItems: "flex-start", gap: "12px" }}>
+        <AlertTriangle size={20} color="var(--danger)" style={{ flexShrink: 0, marginTop: 2 }} />
+        <div>
+          <h4 style={{ color: "var(--danger)", margin: "0 0 6px 0" }}>Delete Account</h4>
+          <p style={{ fontSize: "0.875rem", color: "var(--text-muted)", margin: "0 0 12px", lineHeight: 1.55 }}>
+            Your account will be immediately deactivated and all personal data will be permanently deleted after 90 days.
+          </p>
+          {!confirming ? (
+            <button
+              className="btn btn-sm"
+              style={{ background: "transparent", color: "var(--danger)", border: "1.5px solid var(--danger)" }}
+              onClick={() => setConfirming(true)}
+            >
+              Delete My Account
+            </button>
+          ) : (
+            <div className="danger-confirm-row">
+              <span style={{ fontSize: "13.5px", fontWeight: 600, color: "var(--danger)" }}>
+                Are you absolutely sure? This cannot be undone.
+              </span>
+              <div style={{ display: "flex", gap: "8px", marginTop: "8px" }}>
+                <button
+                  className="btn btn-sm"
+                  style={{ background: "var(--danger)", color: "#fff", border: "none" }}
+                  onClick={handleDelete}
+                  disabled={loading}
+                >
+                  {loading ? "Deleting…" : "Yes, Delete My Account"}
+                </button>
+                <button
+                  className="btn btn-outline btn-sm"
+                  onClick={() => setConfirming(false)}
+                  disabled={loading}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   Moon, Sun, Snowflake, Settings, Bell, Globe, ShieldCheck,
@@ -7,6 +7,7 @@ import {
 import useSEO from "../lib/useSEO";
 import useShopStore from "../store/useShopStore";
 import useAuthStore from "../store/useAuthStore";
+import api from "../lib/api";
 
 function SettingToggle({ checked, onChange }) {
   return (
@@ -51,10 +52,9 @@ export default function SettingsPage() {
   });
 
   const navigate = useNavigate();
-  const { darkMode, toggleDarkMode, showSnowfall, toggleSnowfall, clearCart } = useShopStore();
+  const { darkMode, toggleDarkMode, showSnowfall, toggleSnowfall, clearCart, showToast } = useShopStore();
   const { user, logout } = useAuthStore();
 
-  // Local-only preferences (stored in state, persisted to localStorage manually)
   const [orderNotifs, setOrderNotifs] = useState(
     () => localStorage.getItem("rk_notif_orders") !== "false"
   );
@@ -64,39 +64,46 @@ export default function SettingsPage() {
   const [language, setLanguage] = useState(
     () => localStorage.getItem("rk_language") || "en-IN"
   );
+  const [appVersion, setAppVersion] = useState(null);
+
+  // Fetch app version from backend
+  useEffect(() => {
+    api.get("/version")
+      .then(({ data }) => setAppVersion(data.currentVersion ?? data.data?.currentVersion ?? null))
+      .catch(() => setAppVersion(null));
+  }, []);
 
   function toggleOrderNotifs() {
     const next = !orderNotifs;
     setOrderNotifs(next);
     localStorage.setItem("rk_notif_orders", String(next));
+    showToast(next ? "Order notifications enabled" : "Order notifications disabled");
   }
 
   function togglePromoNotifs() {
     const next = !promoNotifs;
     setPromoNotifs(next);
     localStorage.setItem("rk_notif_promos", String(next));
+    showToast(next ? "Promotional notifications enabled" : "Promotional notifications disabled");
   }
 
   function handleLanguageChange(e) {
     const val = e.target.value;
     setLanguage(val);
     localStorage.setItem("rk_language", val);
+    showToast("Language preference saved");
   }
 
   function handleClearData() {
-    if (window.confirm("This will clear your local cart data. Your orders and account info are safe. Continue?")) {
-      clearCart();
-      // Clear any locally cached keys
-      ["rk_cart", "rk_wishlist", "rk_recent"].forEach((k) => localStorage.removeItem(k));
-      alert("Local cart data cleared successfully.");
-    }
+    clearCart();
+    ["rk_cart", "rk_wishlist", "rk_recent"].forEach((k) => localStorage.removeItem(k));
+    showToast("Local cart data cleared successfully");
   }
 
   function handleLogout() {
-    if (window.confirm("Are you sure you want to log out?")) {
-      logout();
-      navigate("/");
-    }
+    logout();
+    showToast("You have been logged out.");
+    navigate("/");
   }
 
   return (
@@ -168,9 +175,9 @@ export default function SettingsPage() {
       {/* ── Privacy & Data ── */}
       <SettingSection title="Privacy &amp; Data">
         <SettingRow
-          icon={ShieldCheck}
-          title="Clear Local Data"
-          description="Delete your locally stored cart and wishlist."
+          icon={Trash2}
+          title="Clear Local Cart Data"
+          description="Delete your locally stored cart. Orders and account info are unaffected."
           iconColor="var(--brick)"
         >
           <button className="btn btn-outline btn-sm" onClick={handleClearData}>
@@ -208,7 +215,11 @@ export default function SettingsPage() {
             description="Log out from your RanchiKart account."
             iconColor="var(--danger)"
           >
-            <button className="btn btn-outline btn-sm" style={{ color: "var(--danger)", borderColor: "var(--danger)" }} onClick={handleLogout}>
+            <button
+              className="btn btn-outline btn-sm"
+              style={{ color: "var(--danger)", borderColor: "var(--danger)" }}
+              onClick={handleLogout}
+            >
               Sign Out
             </button>
           </SettingRow>
@@ -217,8 +228,17 @@ export default function SettingsPage() {
 
       {/* ── About ── */}
       <SettingSection title="About">
-        <SettingRow icon={Info} title="RanchiKart" description="Version 1.0.0 — Ranchi's own online store." iconColor="var(--text-muted)">
-          <span className="settings-version-badge">v1.0</span>
+        <SettingRow
+          icon={Info}
+          title="RanchiKart"
+          description={appVersion ? `Version ${appVersion} — Ranchi's own online store.` : "Ranchi's own online store."}
+          iconColor="var(--text-muted)"
+        >
+          {appVersion ? (
+            <span className="settings-version-badge">v{appVersion}</span>
+          ) : (
+            <span className="settings-version-badge" style={{ opacity: 0.5 }}>—</span>
+          )}
         </SettingRow>
         <SettingRow icon={Info} title="FAQ" description="Frequently asked questions." iconColor="var(--text-muted)">
           <Link to="/faq" className="btn btn-outline btn-sm">

@@ -46,6 +46,34 @@ export function ProductGridSkeleton({ n = 8 }) {
   );
 }
 
+// ── Table skeleton for Admin dashboard ─────────────────────────────────────
+export function TableSkeleton({ rows = 5 }) {
+  return (
+    <div className="table-wrapper">
+      <table className="admin-table">
+        <thead>
+          <tr>
+            <th><Skeleton height={14} width="40%" /></th>
+            <th><Skeleton height={14} width="60%" /></th>
+            <th><Skeleton height={14} width="30%" /></th>
+            <th><Skeleton height={14} width="30%" /></th>
+          </tr>
+        </thead>
+        <tbody>
+          {Array.from({ length: rows }).map((_, i) => (
+            <tr key={i}>
+              <td><Skeleton height={14} width="50%" /></td>
+              <td><Skeleton height={14} width="80%" /></td>
+              <td><Skeleton height={14} width="40%" /></td>
+              <td><Skeleton height={28} width={60} style={{ borderRadius: 6 }} /></td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
 // ── Full-page spinner ──────────────────────────────────────────────────────
 export function PageLoader({ text = "Loading…" }) {
   return (
