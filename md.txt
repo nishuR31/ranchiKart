@@ -1,2 +1,0 @@
-when payin usin upi,card,netbanking, this is error
-body/address/phone must match pattern "^(?:(?:\+|0{0,2})91(\s*[\-]\s*)?|[0]?)?[6789]\d{9}$",
