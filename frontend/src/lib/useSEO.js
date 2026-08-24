@@ -6,8 +6,8 @@
  *   useSEO({ title: "Product Name", description: "…", image: "…", type: "product" })
  */
 
-const SITE_NAME = "RanchiKart";
-const SITE_URL  = "https://ranchikart.vercel.app";
+const SITE_NAME = "UrbanRanchi";
+const SITE_URL  = "https://urbanranchi.vercel.app";
 const DEFAULT_DESC = "Shop mobiles, fashion, grocery, home essentials and more — delivered fast across Ranchi & Jharkhand.";
 const DEFAULT_IMG  = `${SITE_URL}/og-image.png`;
 

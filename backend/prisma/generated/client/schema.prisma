@@ -111,6 +111,8 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  store Store?
+
   @@index([email, username])
   @@index([isDeleted, scheduledHardDeleteAt])
 }
@@ -127,6 +129,38 @@ model PasskeyCredential {
   updatedAt           DateTime @updatedAt
 
   @@index([userId])
+}
+
+model Store {
+  id          String   @id @default(cuid())
+  ownerId     String   @unique
+  owner       User     @relation(fields: [ownerId], references: [id])
+  name        String
+  slug        String   @unique
+  description String?
+  logoUrl     String?
+  bannerUrl   String?
+  isActive    Boolean  @default(true)
+  isVerified  Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  products    Product[]
+  storeOrders StoreOrder[]
+  payouts     Payout[]
+}
+
+model Payout {
+  id          String   @id @default(cuid())
+  storeId     String
+  store       Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  amount      Int
+  status      String   @default("PENDING") // PENDING, COMPLETED, FAILED
+  referenceId String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([storeId])
 }
 
 model Category {
@@ -150,6 +184,8 @@ model Category {
 
 model Product {
   id              String           @id @default(cuid())
+  storeId         String
+  store           Store            @relation(fields: [storeId], references: [id], onDelete: Cascade)
   categoryId      String
   category        Category         @relation(fields: [categoryId], references: [id])
   slug            String           @unique
@@ -187,6 +223,7 @@ model Product {
   updatedAt       DateTime         @updatedAt
 
   @@index([slug])
+  @@index([storeId])
   @@index([categoryId])
   @@index([isActive])
   @@index([isFeatured])
@@ -303,12 +340,13 @@ model Order {
   notes          String?
   reviews        Review[]
 
-  couponId  String?
-  coupon    Coupon?     @relation(fields: [couponId], references: [id])
-  items     OrderItem[]
-  payments  Payment[]
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
+  couponId    String?
+  coupon      Coupon?      @relation(fields: [couponId], references: [id])
+  items       OrderItem[]
+  storeOrders StoreOrder[]
+  payments    Payment[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
 
   @@index([userId])
   @@index([status])
@@ -316,10 +354,31 @@ model Order {
   @@index([couponId])
 }
 
+model StoreOrder {
+  id          String      @id @default(cuid())
+  orderId     String
+  order       Order       @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  storeId     String
+  store       Store       @relation(fields: [storeId], references: [id])
+  status      OrderStatus @default(PENDING_PAYMENT)
+  subtotal    Int
+  shippingFee Int         @default(0)
+  total       Int
+  trackingId  String?
+  items       OrderItem[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@index([orderId])
+  @@index([storeId])
+}
+
 model OrderItem {
   id             String          @id @default(cuid())
   orderId        String
   order          Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  storeOrderId   String?
+  storeOrder     StoreOrder?     @relation(fields: [storeOrderId], references: [id], onDelete: Cascade)
   productId      String
   product        Product         @relation(fields: [productId], references: [id])
   variantId      String?

@@ -159,6 +159,30 @@ exports.Prisma.PasskeyCredentialScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.StoreScalarFieldEnum = {
+  id: 'id',
+  ownerId: 'ownerId',
+  name: 'name',
+  slug: 'slug',
+  description: 'description',
+  logoUrl: 'logoUrl',
+  bannerUrl: 'bannerUrl',
+  isActive: 'isActive',
+  isVerified: 'isVerified',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.PayoutScalarFieldEnum = {
+  id: 'id',
+  storeId: 'storeId',
+  amount: 'amount',
+  status: 'status',
+  referenceId: 'referenceId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.CategoryScalarFieldEnum = {
   id: 'id',
   slug: 'slug',
@@ -173,6 +197,7 @@ exports.Prisma.CategoryScalarFieldEnum = {
 
 exports.Prisma.ProductScalarFieldEnum = {
   id: 'id',
+  storeId: 'storeId',
   categoryId: 'categoryId',
   slug: 'slug',
   name: 'name',
@@ -287,9 +312,23 @@ exports.Prisma.OrderScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.StoreOrderScalarFieldEnum = {
+  id: 'id',
+  orderId: 'orderId',
+  storeId: 'storeId',
+  status: 'status',
+  subtotal: 'subtotal',
+  shippingFee: 'shippingFee',
+  total: 'total',
+  trackingId: 'trackingId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.OrderItemScalarFieldEnum = {
   id: 'id',
   orderId: 'orderId',
+  storeOrderId: 'storeOrderId',
   productId: 'productId',
   variantId: 'variantId',
   quantity: 'quantity',
@@ -424,6 +463,8 @@ exports.PaymentStatus = exports.$Enums.PaymentStatus = {
 exports.Prisma.ModelName = {
   User: 'User',
   PasskeyCredential: 'PasskeyCredential',
+  Store: 'Store',
+  Payout: 'Payout',
   Category: 'Category',
   Product: 'Product',
   ProductVariant: 'ProductVariant',
@@ -432,6 +473,7 @@ exports.Prisma.ModelName = {
   Coupon: 'Coupon',
   SavedAddress: 'SavedAddress',
   Order: 'Order',
+  StoreOrder: 'StoreOrder',
   OrderItem: 'OrderItem',
   Payment: 'Payment',
   AdminLog: 'AdminLog'

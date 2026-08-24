@@ -1,4 +1,5 @@
 import { adminRoutes } from "./admin.js";
+import { vendorRoutes } from "./vendor.js";
 import { authRoutes } from "./auth.js";
 import { catalogRoutes } from "./catalog.js";
 import { healthRoutes } from "./health.js";
@@ -15,6 +16,7 @@ import { version } from "./version.js";
 
 function routes(app: FastifyInstance) {
   app.register(adminRoutes);
+  app.register(vendorRoutes, { prefix: "/vendor" });
   app.register(authRoutes);
   app.register(catalogRoutes);
   app.register(healthRoutes);

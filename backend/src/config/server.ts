@@ -106,7 +106,7 @@ await app.register(swagger, {
     },
     servers: [
       { url: `http://localhost:${env.API_PORT}`, description: "Development" },
-      { url: `https://ranchikart.onrender.com`, description: "Production" }
+      { url: `https://urbanranchi.onrender.com`, description: "Production" }
     ],
     components: {
       securitySchemes: { bearerAuth: { type: "http", scheme: "bearer", bearerFormat: "JWT" } },

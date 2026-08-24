@@ -30,6 +30,25 @@ export default class AdminService {
       },
     });
 
+    // Ensure a store exists for the placeholder product
+    let store = await tx.store.findFirst();
+    if (!store) {
+      const adminUser = await tx.user.findFirst({ where: { role: "ADMIN" } });
+      const ownerId = adminUser?.id ?? (await tx.user.findFirst())?.id;
+      if (!ownerId) {
+        throw new Error("No owner found for placeholder store");
+      }
+      store = await tx.store.create({
+        data: {
+          ownerId: ownerId,
+          name: "Placeholder Store",
+          slug: "placeholder-store",
+          isActive: true,
+          isVerified: false,
+        },
+      });
+    }
+
     return tx.product.upsert({
       where: { slug: "deleted-product-placeholder" },
       update: { isActive: false, categoryId: category.id },
@@ -39,6 +58,7 @@ export default class AdminService {
         description: "This product was removed from the catalog. Order history is preserved for records.",
         kind: ProductKind.OTHER,
         categoryId: category.id,
+        storeId: store.id,
         imageUrl: "/assets/source.png",
         gallery: [],
         basePrice: 0,
@@ -48,7 +68,7 @@ export default class AdminService {
         isFeatured: false,
         tags: ["archived"],
         highlights: [],
-        specifications: { Brand: "RanchiKart" },
+        specifications: { Brand: "UrbanRanchi" },
       },
     });
   }
@@ -140,11 +160,11 @@ export default class AdminService {
       status: options.status,
       ...(options.from || options.to
         ? {
-            createdAt: {
-              ...(options.from ? { gte: new Date(options.from) } : {}),
-              ...(options.to ? { lte: new Date(options.to) } : {}),
-            },
-          }
+          createdAt: {
+            ...(options.from ? { gte: new Date(options.from) } : {}),
+            ...(options.to ? { lte: new Date(options.to) } : {}),
+          },
+        }
         : {}),
     };
 
@@ -614,7 +634,7 @@ export default class AdminService {
     }
 
     const updated = await prisma.category.update({ where: { id }, data });
-    
+
     await prisma.adminLog.create({
       data: {
         adminId,
@@ -776,5 +796,49 @@ export default class AdminService {
     });
 
     return { deletedUserId: userId };
+  }
+
+  async getStores() {
+    return prisma.store.findMany({
+      include: {
+        owner: { select: { name: true, email: true } },
+        _count: { select: { products: true, storeOrders: true } },
+      },
+      orderBy: { createdAt: "desc" },
+    });
+  }
+
+  async verifyStore(storeId: string, isVerified: boolean) {
+    const store = await prisma.store.findUnique({ where: { id: storeId } });
+    if (!store) throw new NotFoundError("Store not found");
+
+    return prisma.store.update({
+      where: { id: storeId },
+      data: { isVerified },
+    });
+  }
+
+  async deleteStore(adminId: string, storeId: string) {
+    const store = await prisma.store.findUnique({
+      where: { id: storeId },
+      include: { owner: true }
+    });
+    if (!store) throw new NotFoundError("Store not found");
+
+    await prisma.$transaction(async (tx) => {
+      await tx.storeOrder.deleteMany({ where: { storeId } });
+      await tx.product.deleteMany({ where: { storeId } });
+      await tx.store.delete({ where: { id: storeId } });
+
+      await tx.adminLog.create({
+        data: {
+          adminId,
+          action: "DELETE_STORE",
+          entity: "Store",
+          entityId: storeId,
+          meta: { storeName: store.name, ownerEmail: store.owner.email },
+        }
+      });
+    });
   }
 }

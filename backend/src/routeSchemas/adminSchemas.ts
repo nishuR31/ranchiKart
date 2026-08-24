@@ -91,6 +91,10 @@ const _getLogsZod = z.object({
   action: z.string().optional(),
 });
 
+const _verifyStoreZod = z.object({
+  isVerified: z.boolean(),
+});
+
 const _getOrdersZod = z.object({
   status: z.nativeEnum(OrderStatus).optional(),
   search: z.string().optional(),
@@ -147,3 +151,4 @@ export const getProductsSchema      = zodToJsonSchema(_getProductsZod,      opts
 export const getUsersSchema         = zodToJsonSchema(_getUsersZod,         opts);
 export const getCouponsSchema       = zodToJsonSchema(_getCouponsZod,       opts);
 export const updateOrderStatusSchema = zodToJsonSchema(_updateOrderStatusZod, opts);
+export const verifyStoreSchema      = zodToJsonSchema(_verifyStoreZod,      opts);

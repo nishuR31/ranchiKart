@@ -15,6 +15,7 @@ import {
   LayoutDashboard,
   ChevronDown,
   Settings,
+  Store,
 } from "lucide-react";
 import useAuthStore from "../store/useAuthStore";
 import useShopStore from "../store/useShopStore";
@@ -138,7 +139,7 @@ export default function Layout() {
           </button>
 
           <Link to="/" className="logo">
-            Ranchi<span>Kart</span>
+            Urban<span>Ranchi</span>
           </Link>
 
           <form className="search-bar" onSubmit={handleSearch}>
@@ -206,6 +207,9 @@ export default function Layout() {
                       <LayoutDashboard size={14} /> {user.role === "ADMIN" ? "Admin Dashboard" : "Manager Dashboard"}
                     </Link>
                   )}
+                  <Link to="/seller" role="menuitem" onClick={() => setAccountMenuOpen(false)}>
+                    <Store size={14} /> My Store / Sell
+                  </Link>
                   <button role="menuitem" onClick={handleLogout}>
                     <LogOut size={14} /> Logout
                   </button>
@@ -225,6 +229,7 @@ export default function Layout() {
             <Link to="/wishlist" onClick={() => setMenuOpen(false)}>Wishlist</Link>
             <Link to="/profile" onClick={() => setMenuOpen(false)}>Profile</Link>
             <Link to="/settings" onClick={() => setMenuOpen(false)}>Settings</Link>
+            <Link to="/seller" onClick={() => setMenuOpen(false)}>My Store / Sell</Link>
             <hr className="mobile-nav-divider" />
           </div>
           {NAV_CATS.map((cat) => (
@@ -246,7 +251,7 @@ export default function Layout() {
       <footer className="footer">
         <div className="footer-grid">
           <div>
-            <div className="logo footer-logo">Ranchi<span>Kart</span></div>
+            <div className="logo footer-logo">Urban<span>Ranchi</span></div>
             <p>Ranchi's own online store — fast local delivery across every locality in the city.</p>
           </div>
           <div>
@@ -260,6 +265,7 @@ export default function Layout() {
             <Link to="/orders">Orders</Link>
             <Link to="/wishlist">Wishlist</Link>
             <Link to="/profile">Profile</Link>
+            <Link to="/seller">My Store / Sell</Link>
           </div>
           <div>
             <h4>Company</h4>
@@ -270,7 +276,7 @@ export default function Layout() {
             <span>Ranchi, Jharkhand 834001</span>
           </div>
         </div>
-        <div className="footer-bottom">© {new Date().getFullYear()} RanchiKart (v{pkg.version}). All rights reserved.</div>
+        <div className="footer-bottom">© {new Date().getFullYear()} UrbanRanchi (v{pkg.version}). All rights reserved.</div>
       </footer>
       <Toast />
     </div>

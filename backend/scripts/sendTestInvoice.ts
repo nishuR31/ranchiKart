@@ -73,7 +73,7 @@ console.log(`   Total: ₹${(mockInvoice.total / 100).toFixed(2)}\n`);
 try {
   await sendInvoiceEmail(TO, NAME, mockInvoice, undefined, pdfBuffer);
   console.log(`✅ Invoice email sent successfully to ${TO}`);
-  console.log("   Check your inbox for the RanchiKart invoice with attached PDF.\n");
+  console.log("   Check your inbox for the UrbanRanchi invoice with attached PDF.\n");
 } catch (err) {
   console.error("❌ Failed to send invoice email:", err);
   process.exit(1);

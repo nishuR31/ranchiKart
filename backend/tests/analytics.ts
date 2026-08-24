@@ -16,7 +16,7 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import { execSync } from "node:child_process";
 
-const url: string = process.argv[2] ?? "https://ranchikart.vercel.app";
+const url: string = process.argv[2] ?? "https://urbanranchi.vercel.app";
 const key: string | undefined = process.env.PAGESPEED_KEY;
 const ts: string = new Date().toISOString().replace(/[:.]/g, "-");
 const out: string = `analytics-report/${ts}`;
@@ -93,7 +93,7 @@ const html = `<!doctype html>
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Analytics Report - RanchiKart</title>
+  <title>Analytics Report - UrbanRanchi</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -341,7 +341,7 @@ const html = `<!doctype html>
     <header>
       <div class="logo-container">
         <div class="logo-icon">RK</div>
-        <span style="font-weight:700; font-size: 1.25rem; tracking: -0.025em; color: var(--text-main);">RanchiKart</span>
+        <span style="font-weight:700; font-size: 1.25rem; tracking: -0.025em; color: var(--text-main);">UrbanRanchi</span>
       </div>
       <h1>Analytics Report</h1>
       <div class="target-url">
@@ -434,7 +434,7 @@ const html = `<!doctype html>
     </div>
 
     <footer>
-      Report generated at \${new Date().toUTCString()} &bull; Powered by RanchiKart Analytics Engine
+      Report generated at \${new Date().toUTCString()} &bull; Powered by UrbanRanchi Analytics Engine
     </footer>
   </div>
 </body>

@@ -15,7 +15,7 @@ const envSchema = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
   API_PORT: z.coerce.number().int().positive().default(3000),
   WEB_ORIGIN: z.string().url().default("http://localhost:5173"),
-  BUSINESS_NAME: z.string().default("RanchiKart"),
+  BUSINESS_NAME: z.string().default("UrbanRanchi"),
   // Database
   DATABASE_URL: z.string().min(1),
   DIRECT_URL: z.string().optional(),
@@ -47,7 +47,7 @@ const envSchema = z.object({
   SMTP_PASS: z.string().optional().or(z.literal("")),
   SMTP_FROM: z
     .string()
-    .default(`${process.env.BUSINESS_NAME || "RanchiKart"} <${process.env.SMTP_USER || process.env.GMAIL_USER || ""}>`),
+    .default(`${process.env.BUSINESS_NAME || "UrbanRanchi"} <${process.env.SMTP_USER || process.env.GMAIL_USER || ""}>`),
 
   // Email Sending Provider Preference ("auto" | "resend" | "gmail" | "smtp")
   EMAIL_TRANSPORT: z.enum(["auto", "resend", "gmail", "smtp"]).default("auto"),

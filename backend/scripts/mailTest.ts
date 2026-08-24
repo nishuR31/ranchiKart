@@ -9,7 +9,7 @@ import {
 } from "../src/config/email.js";
 
 const TO = "dreamgf691@gmail.com";
-const TO2 = TO ?? "technicaladityarathore@gmail.com";
+const TO2 = TO ?? "nishanicfai@gmail.com";
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -110,7 +110,7 @@ const emailBatchJobs: EmailTask[] = [
         type: "magic-link",
         to: TO2,
         name: "Aditya",
-        link: "https://ranchikart.vercel.app/auth/magic-link?token=abcdefghijklmnopqrstuvwxyz123456789",
+        link: "https://urbanranchi.vercel.app/auth/magic-link?token=abcdefghijklmnopqrstuvwxyz123456789",
         expiresInMinutes: 15,
     },
 

@@ -19,6 +19,7 @@ import {
   getCouponsSchema,
   idParamSchema,
   deleteCouponSchema,
+  verifyStoreSchema,
 } from "../routeSchemas/adminSchemas.js";
 
 export async function adminRoutes(app: FastifyInstance) {
@@ -145,4 +146,19 @@ export async function adminRoutes(app: FastifyInstance) {
     preHandler: managerGuard,
     schema: { querystring: getLogsSchema },
   }, adminController.getLogs);
+
+  // ── Stores ───────────────────────────────────────────────────────────────────
+  app.get("/admin/stores", {
+    preHandler: managerGuard,
+  }, adminController.getStores);
+
+  app.patch("/admin/stores/:id/verify", {
+    preHandler: adminGuard,
+    schema: { params: idParamSchema, body: verifyStoreSchema },
+  }, adminController.verifyStore);
+
+  app.delete("/admin/stores/:id", {
+    preHandler: adminGuard,
+    schema: { params: idParamSchema },
+  }, adminController.deleteStore);
 }

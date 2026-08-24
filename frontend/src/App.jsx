@@ -20,6 +20,8 @@ import PrivacyPage from "./pages/PrivacyPage";
 import FAQPage from "./pages/FAQPage";
 import AdminPage from "./pages/AdminPage";
 import SettingsPage from "./pages/SettingsPage";
+import SellerPage from "./pages/SellerPage";
+import StorePage from "./pages/StorePage";
 import NotFoundPage from "./pages/NotFoundPage";
 
 export default function App() {
@@ -36,6 +38,7 @@ export default function App() {
         <Route path="/category/:slug" element={<CategoryPage />} />
         <Route path="/search" element={<SearchPage />} />
         <Route path="/product/:slug" element={<ProductPage />} />
+        <Route path="/store/:slug" element={<StorePage />} />
         <Route path="/auth" element={<AuthPage />} />
         <Route path="/terms" element={<TermsPage />} />
         <Route path="/privacy" element={<PrivacyPage />} />
@@ -89,6 +92,14 @@ export default function App() {
             <RequireAdmin>
               <AdminPage />
             </RequireAdmin>
+          }
+        />
+        <Route
+          path="/seller/*"
+          element={
+            <RequireAuth>
+              <SellerPage />
+            </RequireAuth>
           }
         />
         <Route path="*" element={<NotFoundPage />} />

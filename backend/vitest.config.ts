@@ -7,7 +7,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: path.resolve(__dirname, ".env") });
 dotenv.config();
 
-const databaseUrl = process.env.DATABASE_URL || "postgresql://postgres:postgres@localhost:5432/ranchikart_test";
+const databaseUrl = process.env.DATABASE_URL || "postgresql://postgres:postgres@localhost:5432/urbanranchi_test";
 
 export default defineConfig({
   test: {

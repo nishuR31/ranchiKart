@@ -11,7 +11,7 @@ import useSEO from "../lib/useSEO";
 export default function CartPage() {
   useSEO({
     title: "My Cart",
-    description: "View your shopping cart and proceed to checkout at RanchiKart.",
+    description: "View your shopping cart and proceed to checkout at UrbanRanchi.",
     noindex: true,
   });
 

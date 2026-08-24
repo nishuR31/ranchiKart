@@ -1,4 +1,4 @@
-# RanchiKart Robots.txt
+# UrbanRanchi Robots.txt
 
 User-agent: *
 Allow: /
@@ -27,7 +27,7 @@ Allow: /manifest.webmanifest
 Allow: /sitemap.xml
 
 # Sitemap
-Sitemap: https://ranchikart.vercel.app/sitemap.xml
+Sitemap: https://urbanranchi.vercel.app/sitemap.xml
 
 # Optional crawl delay (ignored by Google)
 Crawl-delay: 1

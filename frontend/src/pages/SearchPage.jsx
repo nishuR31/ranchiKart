@@ -13,7 +13,7 @@ export default function SearchPage() {
 
   useSEO({
     title: q ? `Search: ${q}` : "All Products",
-    description: q ? `Search results for ${q} at RanchiKart.` : "Browse all products at RanchiKart.",
+    description: q ? `Search results for ${q} at UrbanRanchi.` : "Browse all products at UrbanRanchi.",
   });
 
   useEffect(() => {

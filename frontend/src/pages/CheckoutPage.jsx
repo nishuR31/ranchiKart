@@ -25,7 +25,7 @@ const INDIAN_PHONE_RE = /^[6-9]\d{9}$/;
 export default function CheckoutPage() {
   useSEO({
     title: "Checkout",
-    description: "Complete your order securely at RanchiKart.",
+    description: "Complete your order securely at UrbanRanchi.",
     noindex: true,
   });
 
@@ -192,7 +192,7 @@ export default function CheckoutPage() {
         key: keyId,
         amount: amount,
         currency: currency,
-        name: "RanchiKart",
+        name: "UrbanRanchi",
         description: `Order ${order.orderNumber || order.id}`,
         order_id: razorpayOrderId,
         handler: async function (response) {

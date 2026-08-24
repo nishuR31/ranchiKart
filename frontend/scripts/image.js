@@ -132,8 +132,8 @@ await fs.writeFile(
     `${OUT}/manifest.webmanifest`,
     JSON.stringify(
         {
-            name: "RanchiKart",
-            short_name: "RanchiKart",
+            name: "UrbanRanchi",
+            short_name: "UrbanRanchi",
             theme_color: "#F97316",
             background_color: "#ffffff",
             display: "standalone",

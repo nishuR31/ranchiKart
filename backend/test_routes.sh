@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# RanchiKart API — ALL Routes, ALL Methods & ALL Services Curl Test Suite
+# UrbanRanchi API — ALL Routes, ALL Methods & ALL Services Curl Test Suite
 # Usage: ./test_routes.sh [BASE_URL]
 # Default BASE_URL: http://localhost:3000
 # ==============================================================================
@@ -9,8 +9,8 @@
 set +e
 
 BASE_URL="${1:-"http://localhost:3000"}"
-USER_COOKIE_JAR=$(mktemp /tmp/ranchikart_user_cookies.XXXXXX)
-ADMIN_COOKIE_JAR=$(mktemp /tmp/ranchikart_admin_cookies.XXXXXX)
+USER_COOKIE_JAR=$(mktemp /tmp/urbanranchi_user_cookies.XXXXXX)
+ADMIN_COOKIE_JAR=$(mktemp /tmp/urbanranchi_admin_cookies.XXXXXX)
 
 # Color codes
 GREEN='\033[0;32m'
@@ -74,7 +74,7 @@ log_test() {
 }
 
 echo -e "${BLUE}====================================================================${NC}"
-echo -e "${BLUE} RanchiKart API — Comprehensive ALL Routes & ALL Methods Test Suite ${NC}"
+echo -e "${BLUE} UrbanRanchi API — Comprehensive ALL Routes & ALL Methods Test Suite ${NC}"
 echo -e "${BLUE} Target URL:       ${CYAN}$BASE_URL${NC}"
 echo -e "${BLUE} User Cookie Jar:  ${CYAN}$USER_COOKIE_JAR${NC}"
 echo -e "${BLUE} Admin Cookie Jar: ${CYAN}$ADMIN_COOKIE_JAR${NC}"
@@ -455,7 +455,7 @@ fi
 
 # Create Category as Admin
 NEW_CAT_SLUG="cat-test-$RANDOM_NUM"
-NEW_CAT_PAYLOAD="{\"name\": \"Test Category $RANDOM_NUM\", \"slug\": \"$NEW_CAT_SLUG\", \"description\": \"Test category description for ranchikart\", \"kind\": \"STATIONERY\", \"imageUrl\": \"https://example.com/category.jpg\"}"
+NEW_CAT_PAYLOAD="{\"name\": \"Test Category $RANDOM_NUM\", \"slug\": \"$NEW_CAT_SLUG\", \"description\": \"Test category description for urbanranchi\", \"kind\": \"STATIONERY\", \"imageUrl\": \"https://example.com/category.jpg\"}"
 RAW=$(curl -s -w "\n%{http_code}" -X POST "$BASE_URL/api/v1/admin/categories" \
   -b "$ADMIN_COOKIE_JAR" -H "Content-Type: application/json" -d "$NEW_CAT_PAYLOAD")
 STATUS=$(echo "$RAW" | tail -n1)

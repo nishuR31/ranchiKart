@@ -14,7 +14,7 @@
 
 
 // // RP (Relying Party) settings
-// const rpName = env.BUSINESS_NAME || "RanchiKart";
+// const rpName = env.BUSINESS_NAME || "UrbanRanchi";
 // // In production, this should be your actual domain (e.g., 'mudrakart.in')
 // // Since WEB_ORIGIN could be 'http://localhost:5173', we extract the hostname.
 // const rpID = new URL(env.WEB_ORIGIN).hostname;
@@ -127,7 +127,7 @@ export async function createPasskeyRegistrationOptions(
   }[],
   origin: string,
 ) {
-  const rpName = env.BUSINESS_NAME || "RanchiKart";
+  const rpName = env.BUSINESS_NAME || "UrbanRanchi";
   const rpID = new URL(origin).hostname;
 
   return generateRegistrationOptions({

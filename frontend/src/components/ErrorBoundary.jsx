@@ -17,7 +17,7 @@ export class ErrorBoundary extends React.Component {
   handleReset = () => {
     // Clear all potentially corrupted persisted state
     try {
-      localStorage.removeItem("ranchikart-auth");
+      localStorage.removeItem("urbanranchi-auth");
       localStorage.removeItem("rk_cart");
     } catch {
       // ignore
@@ -37,7 +37,7 @@ export class ErrorBoundary extends React.Component {
         }}>
           <h1 style={{ fontSize: 28, marginBottom: 12 }}>Something went wrong</h1>
           <p style={{ color: "#94a3b8", maxWidth: 480, marginBottom: 24 }}>
-            RanchiKart encountered an unexpected error. This is often caused by
+            UrbanRanchi encountered an unexpected error. This is often caused by
             stale data in your browser. Click the button below to clear it and reload.
           </p>
           <button

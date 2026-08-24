@@ -9,5 +9,6 @@ export async function catalogRoutes(app: FastifyInstance) {
   app.get("/products", { schema: { querystring: productQuerySchema } }, catalogController.getProducts);
   app.get("/search", { schema: { querystring: searchProductsQuerySchema } }, catalogController.searchProducts);
   app.get("/products/:slug", { schema: { params: getProductsSchema } }, catalogController.getProduct);
+  app.get("/stores/:slug", { schema: { params: getProductsSchema } }, catalogController.getStore);
   app.delete("/catalog/cache", { preHandler: authenticate }, catalogController.invalidateCache);
 }

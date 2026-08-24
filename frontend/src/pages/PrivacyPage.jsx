@@ -8,7 +8,7 @@ export default function PrivacyPage() {
       
       <h3>1. Information We Collect</h3>
       <p>
-        When you use RanchiKart, we collect certain personal information to provide and improve our services.
+        When you use UrbanRanchi, we collect certain personal information to provide and improve our services.
         If you sign up or log in using Google OAuth, we collect your name, email address, and profile picture provided by Google.
         We also collect information you provide directly, such as your delivery addresses, phone numbers, and order history.
       </p>
@@ -48,7 +48,7 @@ export default function PrivacyPage() {
 
       <h3>7. Contact Us</h3>
       <p>
-        If you have any questions or concerns about this Privacy Policy or our data practices, please contact us at <strong>{import.meta.env.VITE_EMAIL || 'support@ranchikart.in'}</strong>.
+        If you have any questions or concerns about this Privacy Policy or our data practices, please contact us at <strong>{import.meta.env.VITE_EMAIL || 'support@urbanranchi.in'}</strong>.
       </p>
     </div>
   );

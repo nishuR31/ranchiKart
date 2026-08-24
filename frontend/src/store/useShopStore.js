@@ -67,11 +67,19 @@ const useShopStore = create((set, get) => ({
 
   showToast: (message, type = "success") => {
     set({ toast: { message, type, id: Date.now() } });
-    setTimeout(
-      () => set((s) => (s.toast?.message === message ? { toast: null } : {})),
-      2500
-    );
+    if (type !== 'confirm') {
+      setTimeout(
+        () => set((s) => (s.toast?.message === message ? { toast: null } : {})),
+        2500
+      );
+    }
   },
+
+  showConfirmToast: (message, onConfirm, onCancel) => {
+    set({ toast: { message, type: 'confirm', id: Date.now(), onConfirm, onCancel } });
+  },
+
+  clearToast: () => set({ toast: null }),
 
   toggleDarkMode: () => {
     const next = !get().darkMode;

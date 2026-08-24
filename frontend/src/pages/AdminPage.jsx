@@ -9,6 +9,7 @@ import {
   Plus,
   Users,
   Star,
+  Store,
 } from "lucide-react";
 import api, { extractError } from "../lib/api";
 import { formatINR, formatCompactINR } from "../lib/money";
@@ -47,6 +48,7 @@ export default function AdminPage() {
     { key: "categories", label: "Categories", icon: FolderTree },
     { key: "orders", label: "Orders", icon: ClipboardList },
     { key: "coupons", label: "Coupons", icon: TagIcon },
+    { key: "stores", label: "Stores", icon: Store },
     ...(user?.role === "ADMIN" ? [{ key: "users", label: "Users", icon: Users }] : []),
   ];
 
@@ -66,9 +68,10 @@ export default function AdminPage() {
       {tab === "dashboard" && <DashboardTab />}
       {tab === "products" && <ProductsTab />}
       {tab === "categories" && <CategoriesTab />}
-      {tab === "orders" && <OrdersTab />}
-      {tab === "coupons" && <CouponsTab />}
-      {tab === "users" && user?.role === "ADMIN" && <UsersTab />}
+      { tab === "orders" && <OrdersTab /> }
+      { tab === "coupons" && <CouponsTab /> }
+      { tab === "stores" && <StoresTab /> }
+      { tab === "users" && user?.role === "ADMIN" && <UsersTab /> }
     </div>
   );
 }
@@ -140,7 +143,7 @@ function ProductsTab() {
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({
     name: "", slug: "", description: "", basePrice: "", stock: 50,
-    brand: "RanchiKart", categoryId: "", imageUrl: "", isFeatured: false, kind: "OTHER",
+    brand: "UrbanRanchi", categoryId: "", imageUrl: "", isFeatured: false, kind: "OTHER",
   });
   const showToast = useShopStore((s) => s.showToast);
 
@@ -630,6 +633,98 @@ function UsersTab() {
                     <button className={`icon-btn danger-icon-btn ${pendingDeleteId === u.id ? "armed" : ""}`} onClick={() => forceDeleteUser(u.id)} title={pendingDeleteId === u.id ? "Click again to confirm" : "Force delete user"}>
                       <Trash2 size={16} />
                     </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Stores ──────────────────────────────────────────────────────────────────
+function StoresTab() {
+  const [stores, setStores] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const showToast = useShopStore((s) => s.showToast);
+  const user = useAuthStore((s) => s.user);
+
+  async function load() {
+    setLoading(true);
+    try {
+      const { data } = await api.get("/admin/stores");
+      setStores(asList(data, "stores") || data);
+    } catch (err) {
+      console.error(err);
+      showToast("Could not load stores", "error");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => { load(); }, []);
+
+  async function verifyStore(id, isVerified) {
+    try {
+      const { data } = await api.patch(`/admin/stores/${id}/verify`, { isVerified });
+      showToast("Store verification updated");
+      if (data.store) setStores((prev) => prev.map((s) => s.id === id ? { ...s, ...data.store } : s));
+    } catch (err) {
+      showToast(extractError(err, "Could not update store"), "error");
+    }
+  }
+
+  async function deleteStore(id) {
+    useShopStore.getState().showConfirmToast(
+      "Are you sure you want to delete this store and all its products?",
+      async () => {
+        try {
+          await api.delete(`/admin/stores/${id}`);
+          showToast("Store deleted");
+          setStores((prev) => prev.filter((s) => s.id !== id));
+        } catch (err) {
+          showToast(extractError(err, "Could not delete store"), "error");
+        }
+      }
+    );
+  }
+
+  return (
+    <div>
+      <div className="admin-section-header">
+        <h3>Stores ({stores.length})</h3>
+      </div>
+      {loading ? <TableSkeleton /> : (
+        <div className="table-wrapper">
+          <table className="admin-table">
+            <thead><tr><th>Store Name</th><th>Owner</th><th>Products</th><th>Orders</th><th>Verified</th><th></th></tr></thead>
+            <tbody>
+              {stores.map((s) => (
+                <tr key={s.id}>
+                  <td>
+                    <strong>{s.name}</strong><br />
+                    <small>{s.slug}</small>
+                  </td>
+                  <td>
+                    {s.owner?.name}<br />
+                    <small>{s.owner?.email}</small>
+                  </td>
+                  <td>{s._count?.products || 0}</td>
+                  <td>{s._count?.orders || 0}</td>
+                  <td>
+                    <button className={`btn btn-sm ${s.isVerified ? "btn-primary" : "btn-outline"}`}
+                      onClick={() => verifyStore(s.id, !s.isVerified)}>
+                      {s.isVerified ? "Yes" : "No"}
+                    </button>
+                  </td>
+                  <td>
+                    {user?.role === "ADMIN" && (
+                      <button className="icon-btn danger-icon-btn" onClick={() => deleteStore(s.id)} title="Delete Store">
+                        <Trash2 size={16} />
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))}

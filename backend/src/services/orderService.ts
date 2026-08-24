@@ -100,7 +100,7 @@ type CheckoutData = {
 
 export default class OrderService {
   async createOrder(userId: string, data: CheckoutData) {
-    const orderItems: Prisma.OrderItemUncheckedCreateWithoutOrderInput[] = [];
+    const orderItemsByStore = new Map<string, Prisma.OrderItemUncheckedCreateWithoutOrderInput[]>();
     const itemCategoryIds = new Set<string>();
 
     for (const item of data.items) {
@@ -120,8 +120,13 @@ export default class OrderService {
         throw new BadRequestError(`Invalid variant for ${product.name}`);
 
       const price = unitPrice(product, variant, item.customWidthMm, item.customHeightMm);
+      const storeId = (product as any).storeId;
 
-      orderItems.push({
+      if (!orderItemsByStore.has(storeId)) {
+        orderItemsByStore.set(storeId, []);
+      }
+
+      orderItemsByStore.get(storeId)!.push({
         productId: product.id,
         ...(variant?.id ? { variantId: variant.id } : {}),
         quantity: item.quantity,
@@ -134,7 +139,8 @@ export default class OrderService {
       });
     }
 
-    const subtotal = orderItems.reduce((sum, item) => sum + item.total, 0);
+    const flatOrderItems = Array.from(orderItemsByStore.values()).flat();
+    const subtotal = flatOrderItems.reduce((sum, item) => sum + (item.total as number), 0);
     // Shipping fee is intentionally calculated on the pre-discount subtotal
     const shippingFee = subtotal > 99900 ? 0 : 6900;
 
@@ -212,9 +218,22 @@ export default class OrderService {
             address: data.address,
             notes: data.notes,
             ...(couponId ? { couponId } : {}),
-            items: { create: orderItems },
-          },
-          include: { items: { include: { product: true, variant: true } }, coupon: true },
+            storeOrders: {
+              create: Array.from(orderItemsByStore.entries()).map(([storeId, items]) => {
+                const storeSubtotal = items.reduce((sum, item) => sum + (item.total as number), 0);
+                const storeShippingFee = storeSubtotal > 99900 ? 0 : 6900;
+                return {
+                  storeId,
+                  status: data.paymentMethod === "COD" ? OrderStatus.PROCESSING : OrderStatus.PENDING_PAYMENT,
+                  subtotal: storeSubtotal,
+                  shippingFee: storeShippingFee,
+                  total: storeSubtotal + storeShippingFee,
+                  items: { create: items }
+                } as any;
+              })
+            }
+          } as any,
+          include: { storeOrders: { include: { items: { include: { product: true, variant: true } } } }, coupon: true } as any,
         });
 
         if (couponId) {

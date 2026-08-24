@@ -47,7 +47,7 @@ function SettingSection({ title, children }) {
 export default function SettingsPage() {
   useSEO({
     title: "Settings",
-    description: "Manage your preferences on RanchiKart.",
+    description: "Manage your preferences on UrbanRanchi.",
     noindex: true,
   });
 
@@ -258,7 +258,7 @@ export default function SettingsPage() {
             View <ChevronRight size={14} />
           </Link>
         </SettingRow>
-        <SettingRow icon={ShieldCheck} title="Terms of Service" description="Rules governing your use of RanchiKart." iconColor="var(--brand)">
+        <SettingRow icon={ShieldCheck} title="Terms of Service" description="Rules governing your use of UrbanRanchi." iconColor="var(--brand)">
           <Link to="/terms" className="btn btn-outline btn-sm">
             View <ChevronRight size={14} />
           </Link>
@@ -281,7 +281,7 @@ export default function SettingsPage() {
           <SettingRow
             icon={LogOut}
             title="Sign Out"
-            description="Log out from your RanchiKart account."
+            description="Log out from your UrbanRanchi account."
             iconColor="var(--danger)"
           >
             <button
@@ -299,7 +299,7 @@ export default function SettingsPage() {
       <SettingSection title="About">
         <SettingRow
           icon={Info}
-          title="RanchiKart"
+          title="UrbanRanchi"
           description={appVersion ? `Version ${appVersion} — Ranchi's own online store.` : "Ranchi's own online store."}
           iconColor="var(--text-muted)"
         >

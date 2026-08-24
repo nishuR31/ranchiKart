@@ -143,6 +143,7 @@ export default class CatalogService {
           where: { slug },
           include: {
             category: true,
+            store: { select: { name: true, slug: true } },
             variants: { orderBy: { priceDelta: "asc" } },
             reviews: {
               include: { user: { select: { id: true, name: true, avatarUrl: true } } },
@@ -168,5 +169,26 @@ export default class CatalogService {
 
   async invalidateCache(): Promise<void> {
     await invalidate("catalog:*");
+  }
+
+  async getStore(slug: string) {
+    const result = await getOrSet(`catalog:store:${slug}`, 120, async () => {
+      const store = await withRetry(() =>
+        prisma.store.findUnique({
+          where: { slug },
+          include: {
+            products: {
+              where: { isActive: true },
+              include: { category: true, variants: { orderBy: { priceDelta: "asc" } } },
+              orderBy: { createdAt: "desc" },
+            },
+          },
+        })
+      );
+      if (!store || !store.isActive) return null;
+      return { store };
+    });
+    if (!result) throw new NotFoundError("Store not found");
+    return result;
   }
 }

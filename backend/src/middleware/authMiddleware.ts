@@ -42,3 +42,15 @@ export const authenticate = asyncHandler(async (req: FastifyRequest, res: Fastif
     throw new UnauthorizedError("Access denied. Invalid or expired token.");
   }
 });
+
+export const authorize = (...roles: string[]) => {
+  return asyncHandler(async (req: FastifyRequest, res: FastifyReply) => {
+    if (!req.user) {
+      throw new UnauthorizedError("You must be logged in to perform this action.");
+    }
+    
+    if (!roles.includes(req.user.role)) {
+      throw new ForbiddenError("You do not have permission to perform this action.");
+    }
+  });
+};

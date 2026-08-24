@@ -20,7 +20,7 @@ import { generateInvoicePdf } from "../../src/utils/invoicePdf.js";
 
 
 // ──────────────────────────────────────────────────────────
-// Mock invoice data — realistic RanchiKart order
+// Mock invoice data — realistic UrbanRanchi order
 // ──────────────────────────────────────────────────────────
 const MOCK_INVOICE: InvoiceData = {
   orderId: "cly8xk2ab0000abc12345mock",

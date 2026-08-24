@@ -1,0 +1,27 @@
+# UrbanRanchi Project Context
+
+This file contains the core context of the UrbanRanchi full-stack e-commerce application.
+
+## Tech Stack
+- **Backend:** Node.js, Fastify, TypeScript, Prisma (PostgreSQL), Zod for validation.
+- **Frontend:** React (Vite), React Router, Zustand for state management, Lucide React for icons.
+- **Styling:** CSS Variables, standard CSS files with a focus on responsive and modern UI.
+
+## Recent Architectural Changes
+- **Admin Management:**
+  - Added full Store/Vendor management under the Admin Dashboard.
+  - Endpoints: `GET /admin/stores`, `PATCH /admin/stores/:id/verify`, `DELETE /admin/stores/:id`.
+  - Frontend: `StoresTab` in `AdminPage.jsx` allows admins to verify and delete stores.
+- **Vendor/Store System:**
+  - `Store` models are linked to `User` (owners) and `Product`.
+  - Slug generation for stores is streamlined to prevent duplicate or trailing dash issues (handled in `vendorService.ts`).
+  - Catalog lookup by store slug re-enabled via `GET /stores/:slug` in `catalog.ts` and `catalogController.ts`.
+- **Admin Logs & Caching:**
+  - All admin operations log to `AdminLog` to provide an audit trail.
+  - Catalog operations automatically invalidate the Redis/In-memory cache layer (`catalog:*`).
+
+## Best Practices & Guidelines
+1. **API Handling:** Use the global `api` axios instance in `frontend/src/lib/api.js` for all authenticated and unauthenticated requests. Use `extractError` for unified error parsing.
+2. **State Management:** `useAuthStore` handles auth tokens and user object, while `useShopStore` handles cart, wishlist, UI toasts, etc.
+3. **Component Structure:** Keep pages in `frontend/src/pages/` and reusable blocks (e.g., Loaders, Modals) in `frontend/src/components/`.
+4. **Zod Validation:** All fastify routes must validate `req.body`, `req.query`, and `req.params` via schemas defined in `backend/src/routeSchemas/`.

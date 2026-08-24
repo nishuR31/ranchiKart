@@ -8,7 +8,7 @@ import path from "path";
 
 const APP_PATH = path.resolve("src", "App.jsx");
 const SITEMAP_PATH = path.resolve("public", "sitemap.xml");
-const BASE_URL = "https://ranchikart.vercel.app"; // Adjust if needed
+const BASE_URL = "https://urbanranchi.vercel.app"; // Adjust if needed
 
 // Regex to capture path="..." within JSX Route elements
 const routePathRegex = /path\s*=\s*"([^\"]+)"/g;

@@ -7,10 +7,10 @@ import tailwindcss from "@tailwindcss/vite";
 //   DEV  (bun run dev / npm run dev):
 //     → proxy /api to http://localhost:3000  (local backend)
 //     → if VITE_API_URL is set in .env.local, use that instead
-//     → fallback: https://ranchikart.onrender.com (production backend)
+//     → fallback: https://urbanranchi.onrender.com (production backend)
 //
 //   PROD (build output served on Vercel):
-//     → vercel.json rewrites handle /api → https://ranchikart.onrender.com
+//     → vercel.json rewrites handle /api → https://urbanranchi.onrender.com
 //     → no proxy needed
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -19,7 +19,7 @@ export default defineConfig(({ mode }) => {
 
   // In dev: prefer local backend, fall back to remote if not running
   const localBackend = "http://localhost:3000";
-  const remoteBackend = env.VITE_API_URL || "https://ranchikart.onrender.com";
+  const remoteBackend = env.VITE_API_URL || "https://urbanranchi.onrender.com";
   const isDev = mode === "development";
 
   // Use local backend in dev by default.

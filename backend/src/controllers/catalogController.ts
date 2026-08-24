@@ -71,6 +71,16 @@ export const getProduct = asyncHandler(async (req: FastifyRequest, res: FastifyR
   }
 });
 
+export const getStore = asyncHandler(async (req: FastifyRequest, res: FastifyReply) => {
+  const { slug } = z.object({ slug: z.string() }).parse(req.params);
+  try {
+    const data = await catalogService.getStore(slug);
+    return sendSuccess(res, "Store fetched", code("ok") as number, data);
+  } catch (err: any) {
+    return handleError(err, res);
+  }
+});
+
 export const invalidateCache = asyncHandler(async (req: FastifyRequest, res: FastifyReply) => {
   if (req.user?.role !== "ADMIN") return forbiddenError(res, "Admin access required");
   await catalogService.invalidateCache();

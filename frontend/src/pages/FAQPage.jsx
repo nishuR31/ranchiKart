@@ -8,7 +8,7 @@ export default function FAQPage() {
       
       <h3>How does delivery work?</h3>
       <p>
-        RanchiKart offers fast, local delivery across all localities in Ranchi. Most orders in central Ranchi are delivered on the same day or the next business day. For other areas in Jharkhand, delivery typically takes 3-5 business days. Delivery is free for orders above ₹499!
+        UrbanRanchi offers fast, local delivery across all localities in Ranchi. Most orders in central Ranchi are delivered on the same day or the next business day. For other areas in Jharkhand, delivery typically takes 3-5 business days. Delivery is free for orders above ₹499!
       </p>
 
       <h3>What payment methods do you accept?</h3>
@@ -38,7 +38,7 @@ export default function FAQPage() {
 
       <h3>I have another question. How do I contact you?</h3>
       <p>
-        We'd love to help! Please email us at <strong>{import.meta.env.VITE_EMAIL || 'support@ranchikart.in'}</strong> and our support team will get back to you shortly.
+        We'd love to help! Please email us at <strong>{import.meta.env.VITE_EMAIL || 'support@urbanranchi.in'}</strong> and our support team will get back to you shortly.
       </p>
     </div>
   );

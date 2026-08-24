@@ -24,7 +24,7 @@ export default function CategoryPage() {
 
   useSEO({
     title: title,
-    description: `Shop products in ${title} at RanchiKart.`,
+    description: `Shop products in ${title} at UrbanRanchi.`,
   });
 
   useEffect(() => {

@@ -78,7 +78,7 @@ export function TableSkeleton({ rows = 5 }) {
 export function PageLoader({ text = "Loading…" }) {
   return (
     <div className="page-loader" style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "50vh", padding: "2rem" }}>
-      <img src="/logo.png" alt="RanchiKart" style={{ width: 140, marginBottom: 24, animation: "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite" }} />
+      <img src="/logo.png" alt="UrbanRanchi" style={{ width: 140, marginBottom: 24, animation: "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite" }} />
       <span className="spinner" />
       {text && <p style={{ marginTop: 12, color: "var(--text-muted)" }}>{text}</p>}
     </div>

@@ -9,7 +9,7 @@ function resolveResendFrom() {
   const from = (env.RESEND_FROM || "").trim();
   if (from) return from;
   if (env.NODE_ENV !== "production") return "onboarding@resend.dev";
-  throw new Error("RESEND_FROM is required in production. Use a sender from a verified Resend domain, for example RanchiKart <orders@yourdomain.com>.");
+  throw new Error("RESEND_FROM is required in production. Use a sender from a verified Resend domain, for example UrbanRanchi <orders@yourdomain.com>.");
 }
 
 /**

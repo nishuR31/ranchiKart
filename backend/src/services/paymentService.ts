@@ -39,7 +39,7 @@ export default class PaymentService {
     }
 
     const client = getRazorpayClient();
-    const receipt = `ranchikart_${order.id.slice(0, 15)}`;
+    const receipt = `urbanranchi_${order.id.slice(0, 15)}`;
 
     if (!client && env.NODE_ENV === "production") {
       throw new InternalServerError("Razorpay keys are not configured");
@@ -77,8 +77,8 @@ export default class PaymentService {
         providerOrderId: gatewayOrder.id,
         rawResponse: {
           ...(gatewayOrder as Prisma.InputJsonObject),
-          ranchikartKeyMode: keys?.mode ?? "mock",
-          ranchikartKeyId: keys?.key_id ?? null,
+          urbanranchiKeyMode: keys?.mode ?? "mock",
+          urbanranchiKeyId: keys?.key_id ?? null,
         },
       },
     });

@@ -153,7 +153,7 @@ export const createProduct = asyncHandler(async (req: FastifyRequest, res: Fasti
       ...data,
       description: data.description && data.description.length >= 10
         ? data.description
-        : `${data.name} available on RanchiKart.`,
+        : `${data.name} available on UrbanRanchi.`,
       imageUrl: data.imageUrl ?? DEFAULT_PRODUCT_IMAGE,
     }))
     .parse(req.body);
@@ -342,7 +342,7 @@ export const createCategory = asyncHandler(async (req: FastifyRequest, res: Fast
       ...data,
       description: data.description && data.description.length >= 10
         ? data.description
-        : `${data.name} products on RanchiKart.`,
+        : `${data.name} products on UrbanRanchi.`,
       imageUrl: data.imageUrl ?? DEFAULT_CATEGORY_IMAGE,
     }))
     .parse(req.body);
@@ -405,6 +405,33 @@ export const forceDeleteUser = asyncHandler(async (req: FastifyRequest, res: Fas
   try {
     const result = await adminService.forceDeleteUser(req.user!.id, id);
     return sendSuccess(res, "User permanently deleted", code("ok") as number, result);
+  } catch (err: any) {
+    return handleError(err, res);
+  }
+});
+
+export const getStores = asyncHandler(async (req: FastifyRequest, res: FastifyReply) => {
+  const data = await adminService.getStores();
+  return sendSuccess(res, "Stores fetched", code("ok") as number, data);
+});
+
+export const verifyStore = asyncHandler(async (req: FastifyRequest, res: FastifyReply) => {
+  const { id } = z.object({ id: z.string() }).parse(req.params);
+  const body = z.object({ isVerified: z.boolean() }).parse(req.body);
+
+  try {
+    const store = await adminService.verifyStore(id, body.isVerified);
+    return sendSuccess(res, "Store verification toggled", code("ok") as number, { store });
+  } catch (err: any) {
+    return handleError(err, res);
+  }
+});
+
+export const deleteStore = asyncHandler(async (req: FastifyRequest, res: FastifyReply) => {
+  const { id } = z.object({ id: z.string() }).parse(req.params);
+  try {
+    await adminService.deleteStore(req.user!.id, id);
+    return sendSuccess(res, "Store deleted", code("ok") as number, null);
   } catch (err: any) {
     return handleError(err, res);
   }

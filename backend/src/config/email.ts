@@ -203,7 +203,7 @@ export async function sendWelcomeEmail(to: string, name: string, transport?: Ema
   const title = `Welcome to ${env.BUSINESS_NAME}!`;
   const body = `
     <h1 style="margin: 0 0 16px 0; color: #0f172a; font-size: 24px; font-weight: 700; letter-spacing: -0.5px;text-align:center;">
-      Welcome to RanchiKart
+      Welcome to UrbanRanchi
     </h1>
     <h2 style="margin: 0 0 16px 0; color: #0f172a; font-size: 24px; font-weight: 700; letter-spacing: -0.5px;text-align:center;">${name}!
     </h2>

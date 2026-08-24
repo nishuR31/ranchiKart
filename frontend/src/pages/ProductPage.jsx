@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { Heart, ShoppingCart, Zap } from "lucide-react";
 import api, { extractError } from "../lib/api";
 import { formatINR, discountPercent } from "../lib/money";
@@ -150,7 +150,15 @@ export default function ProductPage() {
         </div>
 
         <div className="product-info">
-          <div className="product-brand">{product.specifications?.brand || "RanchiKart"}</div>
+          <div className="product-brand">
+            {product.store ? (
+              <span className="store-badge">
+                Sold by <Link to={`/store/${product.store.slug}`} style={{ color: "inherit" }}><strong>{product.store.name}</strong></Link>
+              </span>
+            ) : (
+              <span>{product.specifications?.brand || "UrbanRanchi"}</span>
+            )}
+          </div>
           <h1>{product.name}</h1>
           <StarRating rating={product.rating} numReviews={product.reviewCount} size={16} />
 

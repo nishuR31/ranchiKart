@@ -83,7 +83,7 @@ const useAuthStore = create(
       },
     }),
     {
-      name: "ranchikart-auth",
+      name: "urbanranchi-auth",
 
       version: 1,
 
@@ -96,7 +96,7 @@ const useAuthStore = create(
 
       onRehydrateStorage: () => (_, error) => {
         if (error) {
-          localStorage.removeItem("ranchikart-auth");
+          localStorage.removeItem("urbanranchi-auth");
         }
       },
 

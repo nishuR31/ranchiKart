@@ -18,7 +18,7 @@ const randDate = (start: Date, end: Date) => new Date(start.getTime() + Math.ran
 const adjectives = ["Premium", "Essential", "Deluxe", "Classic", "Modern", "Vintage", "Sleek", "Rugged", "Elegant", "Basic", "Pro", "Ultra", "Max", "Compact", "Heavy-Duty", "Smart", "Eco-Friendly", "Luxury", "Handcrafted", "Minimalist"];
 const colors = ["Black", "White", "Silver", "Gold", "Blue", "Red", "Green", "Yellow", "Grey", "Navy", "Pink", "Purple", "Multicolor"];
 const materials = ["Cotton", "Leather", "Steel", "Aluminum", "Plastic", "Wood", "Glass", "Ceramic", "Silicone", "Nylon", "Carbon Fiber", "Bamboo"];
-const localBrands = ["RanchiKart Basics", "Jharkhand Select", "Main Road Mart", "Kanke Supply Co.", "Morabadi Goods"];
+const localBrands = ["UrbanRanchi Basics", "Jharkhand Select", "Main Road Mart", "Kanke Supply Co.", "Morabadi Goods"];
 
 const kindToNames: Record<string, string[]> = {
   EATABLE: ["Snack Pack", "Organic Coffee", "Green Tea", "Chocolate Box", "Protein Bars", "Dry Fruits", "Spices Set", "Honey", "Cookies", "Oats"],
@@ -67,15 +67,15 @@ const kindToPriceRange: Record<string, [number, number]> = {
 };
 
 const kindToBrands: Record<string, string[]> = {
-  ELECTRONIC: ["RanchiKart Tech", "VoltEdge", "BluePeak", "Kanke Supply Co."],
-  BEAUTY: ["GlowLocal", "RanchiKart Care", "Morabadi Naturals", "Cica & Care"],
+  ELECTRONIC: ["UrbanRanchi Tech", "VoltEdge", "BluePeak", "Kanke Supply Co."],
+  BEAUTY: ["GlowLocal", "UrbanRanchi Care", "Morabadi Naturals", "Cica & Care"],
   EATABLE: ["Jharkhand Select", "Fresh Ranchi", "Daily Bazaar", "Main Road Mart"],
-  CLOTHING: ["Urban Ranchi", "RanchiKart Basics", "ThreadHouse", "BluePeak"],
-  SHOE: ["StreetStep", "BluePeak", "RanchiKart Basics", "TrailMate"],
+  CLOTHING: ["Urban Ranchi", "UrbanRanchi Basics", "ThreadHouse", "BluePeak"],
+  SHOE: ["StreetStep", "BluePeak", "UrbanRanchi Basics", "TrailMate"],
   BAG: ["CarryCraft", "Urban Ranchi", "Main Road Mart", "TrailMate"],
-  JEWELLERY: ["Golden Leaf", "Morabadi Craft", "Jharkhand Select", "RanchiKart Luxe"],
-  STAMP: ["StampWorks Ranchi", "OfficeMate", "Kanke Supply Co.", "RanchiKart Print"],
-  BOARD: ["SignCraft Ranchi", "OfficeMate", "RanchiKart Print", "Main Road Mart"],
+  JEWELLERY: ["Golden Leaf", "Morabadi Craft", "Jharkhand Select", "UrbanRanchi Luxe"],
+  STAMP: ["StampWorks Ranchi", "OfficeMate", "Kanke Supply Co.", "UrbanRanchi Print"],
+  BOARD: ["SignCraft Ranchi", "OfficeMate", "UrbanRanchi Print", "Main Road Mart"],
 };
 
 const indianFirstNames = ["Aarav", "Vihaan", "Aditya", "Arjun", "Sai", "Reyansh", "Ayaan", "Krishna", "Ishaan", "Shaurya", "Ananya", "Diya", "Saanvi", "Priya", "Neha", "Riya", "Aadhya", "Kavya", "Sneha", "Pooja", "Rahul", "Rohit", "Vikram", "Suresh", "Ramesh", "Kiran", "Amit", "Sumit"];
@@ -256,6 +256,7 @@ async function main() {
         description: `This ${adjective.toLowerCase()} ${baseName.toLowerCase()} is crafted from high-quality ${material.toLowerCase()}. Perfect for everyday use, offering great durability and style.`,
         kind,
         categoryId: category!.id,
+        
         imageUrl: `https://loremflickr.com/800/800/${safeKey}?random=${rand(1, 10000)}`,
         gallery: [
           `https://loremflickr.com/800/800/${safeKey}?random=${rand(1, 10000)}`,
@@ -293,7 +294,7 @@ async function main() {
   const productIds = new Map<string, string>(); // slug -> id
   for (let i = 0; i < productsList.length; i += 100) {
     const batch = productsList.slice(i, i + 100);
-    await prisma.product.createMany({ data: batch, skipDuplicates: true });
+    // Removed updateMany; storeId handled during product creation
 
     // fetch back to get IDs
     const slugs = batch.map(p => p.slug);
@@ -332,7 +333,7 @@ async function main() {
   const includeDemoUsers = process.env.SEED_DEMO_USERS === "true";
   console.log(includeDemoUsers ? "👥 Generating 300 Users and Addresses..." : "👥 Preparing whitelisted user accounts and addresses...");
   const usersList: any[] = [];
-  const defaultPasswordHash = await bcrypt.hash("User@RanchiKart#2025", 10);
+  const defaultPasswordHash = await bcrypt.hash("User@UrbanRanchi#2025", 10);
 
   usersList.push({ email: "nishantubuntu@gmail.com", username: "nishant320", name: "Nishant Admin", role: "ADMIN", isEmailVerified: true, passwordHash: await bcrypt.hash("Admin@Password", 10), coins: 1000 });
   usersList.push({ email: "nishanicfai@gmail.com", username: "nishanicfai", name: "Nishan Icfai", role: "USER", isEmailVerified: true, passwordHash: defaultPasswordHash, coins: 500 });
@@ -360,6 +361,24 @@ async function main() {
   const allUsers = await prisma.user.findMany({ select: { id: true, email: true, name: true, phone: true } });
 
   // Addresses
+
+    // ── Create a default store for seeded products ────────────────────────────────
+    const adminUser = allUsers.find(u => u.role === "ADMIN");
+    const storeOwnerId = adminUser ? adminUser.id : allUsers[0].id;
+    const defaultStore = await prisma.store.create({
+      data: {
+        ownerId: storeOwnerId,
+        name: "UrbanRanchi Main Store",
+        slug: "urbanranchi-main-store",
+        description: "Primary store for seeded products",
+        isActive: true,
+        isVerified: false
+      }
+    });
+    console.log(`✅ Created default store with id ${defaultStore.id}`);
+
+    // Now proceed with product creation using this store
+
   const addressList: any[] = [];
   for (const u of allUsers) {
     const numAddr = rand(1, 3);

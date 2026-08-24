@@ -33,9 +33,9 @@ export async function generateInvoicePdf(invoice: InvoiceData): Promise<Buffer> 
       margin: 40,
       info: {
         Title: `Invoice #${invoice.orderId.slice(-8).toUpperCase()}`,
-        Author: "RanchiKart",
+        Author: "UrbanRanchi",
         Subject: "Purchase Invoice",
-        Keywords: "invoice, receipt, ranchikart",
+        Keywords: "invoice, receipt, urbanranchi",
       },
     });
 
@@ -313,7 +313,7 @@ export async function generateInvoicePdf(invoice: InvoiceData): Promise<Buffer> 
       .font("Helvetica")
       .fontSize(9)
       .text(
-        "Thank you for shopping with RanchiKart! This is a computer-generated invoice and does not require a signature.",
+        "Thank you for shopping with UrbanRanchi! This is a computer-generated invoice and does not require a signature.",
         40,
         y,
         { width: pageWidth, align: "center" },
@@ -331,7 +331,7 @@ export async function generateInvoicePdf(invoice: InvoiceData): Promise<Buffer> 
       .font("Helvetica")
       .fontSize(8)
       .text(
-        "RanchiKart  •  Ranchi, Jharkhand, India  •  ranchikart.vercel.app",
+        "UrbanRanchi  •  Ranchi, Jharkhand, India  •  urbanranchi.vercel.app",
         40,
         footerY + 8,
         { width: pageWidth, align: "center" },

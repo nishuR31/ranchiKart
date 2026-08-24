@@ -7,6 +7,6 @@ import { sendSuccess } from "../utils/response.js";
 export async function healthRoutes(app: FastifyInstance) {
   app.get("/health", async (req, res) => {
     await prisma.$queryRaw`SELECT 1`;
-    return sendSuccess(res, "Health OK", 200, { service: env.BUSINESS_NAME || "RanchiKart", version: currentVersion });
+    return sendSuccess(res, "Health OK", 200, { service: env.BUSINESS_NAME || "UrbanRanchi", version: currentVersion });
   });
 }

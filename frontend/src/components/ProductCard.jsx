@@ -43,7 +43,7 @@ export default function ProductCard({ product }) {
         {outOfStock && <div className="oos-overlay">Out of stock</div>}
       </div>
       <div className="product-card-body">
-        <div className="product-brand">{product.specifications?.brand || "RanchiKart"}</div>
+        <div className="product-brand">{product.specifications?.brand || "UrbanRanchi"}</div>
         <div className="product-title" title={product.name}>{product.name}</div>
         <StarRating rating={product.rating} numReviews={product.reviewCount} />
         <div className="product-price-row">

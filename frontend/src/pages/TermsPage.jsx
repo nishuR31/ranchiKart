@@ -8,12 +8,12 @@ export default function TermsPage() {
       
       <h3>1. Acceptance of Terms</h3>
       <p>
-        By accessing and using the RanchiKart application and website, you accept and agree to be bound by the terms and provision of this agreement.
+        By accessing and using the UrbanRanchi application and website, you accept and agree to be bound by the terms and provision of this agreement.
       </p>
 
       <h3>2. Description of Service</h3>
       <p>
-        RanchiKart is a local e-commerce and delivery platform that connects consumers with retail goods, fashion, and groceries within Ranchi and the state of Jharkhand. We provide the technology platform to browse, purchase, and track the delivery of these goods.
+        UrbanRanchi is a local e-commerce and delivery platform that connects consumers with retail goods, fashion, and groceries within Ranchi and the state of Jharkhand. We provide the technology platform to browse, purchase, and track the delivery of these goods.
       </p>
 
       <h3>3. User Accounts and Security</h3>
@@ -38,12 +38,12 @@ export default function TermsPage() {
 
       <h3>7. Intellectual Property</h3>
       <p>
-        All content included on the RanchiKart platform, such as text, graphics, logos, images, and software, is the property of RanchiKart or its content suppliers and protected by copyright and intellectual property laws.
+        All content included on the UrbanRanchi platform, such as text, graphics, logos, images, and software, is the property of UrbanRanchi or its content suppliers and protected by copyright and intellectual property laws.
       </p>
 
       <h3>8. Limitation of Liability</h3>
       <p>
-        RanchiKart shall not be liable for any indirect, incidental, special, consequential or punitive damages, or any loss of profits or revenues, whether incurred directly or indirectly, or any loss of data, use, goodwill, or other intangible losses, resulting from your access to or use of or inability to access or use the services.
+        UrbanRanchi shall not be liable for any indirect, incidental, special, consequential or punitive damages, or any loss of profits or revenues, whether incurred directly or indirectly, or any loss of data, use, goodwill, or other intangible losses, resulting from your access to or use of or inability to access or use the services.
       </p>
 
       <h3>9. Changes to Terms</h3>

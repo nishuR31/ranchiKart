@@ -1,6 +1,6 @@
-# RanchiKart Backend Features
+# UrbanRanchi Backend Features
 
-This document provides a catalogue of the major features implemented in the RanchiKart backend.
+This document provides a catalogue of the major features implemented in the UrbanRanchi backend.
 
 ## 1. Authentication & Authorization
 * **Email & Password Login:** Secure registration and login with bcrypt hashing.

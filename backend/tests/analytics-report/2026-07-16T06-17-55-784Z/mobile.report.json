@@ -1,9 +1,9 @@
 {
   "lighthouseVersion": "13.4.0",
-  "requestedUrl": "https://ranchikart.vercel.app/",
-  "mainDocumentUrl": "https://ranchikart.vercel.app/",
-  "finalDisplayedUrl": "https://ranchikart.vercel.app/",
-  "finalUrl": "https://ranchikart.vercel.app/",
+  "requestedUrl": "https://urbanranchi.vercel.app/",
+  "mainDocumentUrl": "https://urbanranchi.vercel.app/",
+  "finalDisplayedUrl": "https://urbanranchi.vercel.app/",
+  "finalUrl": "https://urbanranchi.vercel.app/",
   "fetchTime": "2026-07-16T06:18:27.395Z",
   "gatherMode": "navigation",
   "runWarnings": [],
@@ -258,7 +258,7 @@
         ],
         "items": [
           {
-            "url": "https://ranchikart.vercel.app/",
+            "url": "https://urbanranchi.vercel.app/",
             "responseTime": 76
           }
         ],
@@ -556,7 +556,7 @@
         ],
         "items": [
           {
-            "url": "https://ranchikart.vercel.app/",
+            "url": "https://urbanranchi.vercel.app/",
             "total": 1277.484,
             "scripting": 5.312,
             "scriptParseCompile": 0.668
@@ -568,7 +568,7 @@
             "scriptParseCompile": 0
           },
           {
-            "url": "https://ranchikart.vercel.app/assets/index-BlougiWu.js",
+            "url": "https://urbanranchi.vercel.app/assets/index-BlougiWu.js",
             "total": 496.4200000000001,
             "scripting": 469.9240000000001,
             "scriptParseCompile": 2.004
@@ -677,7 +677,7 @@
         ],
         "items": [
           {
-            "url": "https://ranchikart.vercel.app/",
+            "url": "https://urbanranchi.vercel.app/",
             "sessionTargetType": "page",
             "protocol": "h2",
             "cache": "none",
@@ -695,7 +695,7 @@
             "entity": "vercel.app"
           },
           {
-            "url": "https://ranchikart.vercel.app/assets/index-BlougiWu.js",
+            "url": "https://urbanranchi.vercel.app/assets/index-BlougiWu.js",
             "sessionTargetType": "page",
             "protocol": "h2",
             "cache": "none",
@@ -713,7 +713,7 @@
             "entity": "vercel.app"
           },
           {
-            "url": "https://ranchikart.vercel.app/assets/index-Dxopgc-7.css",
+            "url": "https://urbanranchi.vercel.app/assets/index-Dxopgc-7.css",
             "sessionTargetType": "page",
             "protocol": "h2",
             "cache": "none",
@@ -731,7 +731,7 @@
             "entity": "vercel.app"
           },
           {
-            "url": "https://ranchikart.vercel.app/manifest.webmanifest",
+            "url": "https://urbanranchi.vercel.app/manifest.webmanifest",
             "sessionTargetType": "page",
             "protocol": "h2",
             "cache": "none",
@@ -749,7 +749,7 @@
             "entity": "vercel.app"
           },
           {
-            "url": "https://ranchikart.onrender.com/api/v1/categories",
+            "url": "https://urbanranchi.onrender.com/api/v1/categories",
             "sessionTargetType": "page",
             "protocol": "h2",
             "cache": "none",
@@ -767,7 +767,7 @@
             "entity": "onrender.com"
           },
           {
-            "url": "https://ranchikart.onrender.com/api/v1/products?featured=true&limit=8",
+            "url": "https://urbanranchi.onrender.com/api/v1/products?featured=true&limit=8",
             "sessionTargetType": "page",
             "protocol": "h2",
             "cache": "none",
@@ -785,7 +785,7 @@
             "entity": "onrender.com"
           },
           {
-            "url": "https://ranchikart.onrender.com/api/v1/products?sort=rating&limit=8",
+            "url": "https://urbanranchi.onrender.com/api/v1/products?sort=rating&limit=8",
             "sessionTargetType": "page",
             "protocol": "h2",
             "cache": "none",
@@ -803,7 +803,7 @@
             "entity": "onrender.com"
           },
           {
-            "url": "https://ranchikart.vercel.app/favicon.ico",
+            "url": "https://urbanranchi.vercel.app/favicon.ico",
             "sessionTargetType": "page",
             "protocol": "h2",
             "cache": "none",
@@ -821,7 +821,7 @@
             "entity": "vercel.app"
           },
           {
-            "url": "https://ranchikart.vercel.app/android-chrome-192x192.png",
+            "url": "https://urbanranchi.vercel.app/android-chrome-192x192.png",
             "sessionTargetType": "page",
             "protocol": "h2",
             "cache": "none",
@@ -839,7 +839,7 @@
             "entity": "vercel.app"
           },
           {
-            "url": "https://ranchikart.vercel.app/favicon.svg",
+            "url": "https://urbanranchi.vercel.app/favicon.svg",
             "sessionTargetType": "page",
             "protocol": "h2",
             "cache": "none",
@@ -863,19 +863,19 @@
           "initiators": [
             {
               "type": "parser",
-              "url": "https://ranchikart.vercel.app/",
+              "url": "https://urbanranchi.vercel.app/",
               "lineNumber": 125,
               "columnNumber": 70
             },
             {
               "type": "parser",
-              "url": "https://ranchikart.vercel.app/",
+              "url": "https://urbanranchi.vercel.app/",
               "lineNumber": 126,
               "columnNumber": 73
             },
             {
               "type": "parser",
-              "url": "https://ranchikart.vercel.app/",
+              "url": "https://urbanranchi.vercel.app/",
               "lineNumber": 133,
               "columnNumber": 1
             }
@@ -909,11 +909,11 @@
         ],
         "items": [
           {
-            "origin": "https://ranchikart.onrender.com",
+            "origin": "https://urbanranchi.onrender.com",
             "rtt": 38.191
           },
           {
-            "origin": "https://ranchikart.vercel.app",
+            "origin": "https://urbanranchi.vercel.app",
             "rtt": 35.831
           }
         ],
@@ -948,11 +948,11 @@
         ],
         "items": [
           {
-            "origin": "https://ranchikart.onrender.com",
+            "origin": "https://urbanranchi.onrender.com",
             "serverResponseTime": 3955.442
           },
           {
-            "origin": "https://ranchikart.vercel.app",
+            "origin": "https://urbanranchi.vercel.app",
             "serverResponseTime": 321.68899999999996
           }
         ],
@@ -1259,17 +1259,17 @@
         ],
         "items": [
           {
-            "url": "https://ranchikart.vercel.app/",
+            "url": "https://urbanranchi.vercel.app/",
             "duration": 383,
             "startTime": 1568.6889999999999
           },
           {
-            "url": "https://ranchikart.vercel.app/",
+            "url": "https://urbanranchi.vercel.app/",
             "duration": 312,
             "startTime": 1133.6889999999999
           },
           {
-            "url": "https://ranchikart.vercel.app/assets/index-BlougiWu.js",
+            "url": "https://urbanranchi.vercel.app/assets/index-BlougiWu.js",
             "duration": 293,
             "startTime": 2391.689
           },
@@ -1279,12 +1279,12 @@
             "startTime": 2121.689
           },
           {
-            "url": "https://ranchikart.vercel.app/assets/index-BlougiWu.js",
+            "url": "https://urbanranchi.vercel.app/assets/index-BlougiWu.js",
             "duration": 111,
             "startTime": 1951.6889999999999
           },
           {
-            "url": "https://ranchikart.vercel.app/",
+            "url": "https://urbanranchi.vercel.app/",
             "duration": 88,
             "startTime": 2684.689
           },
@@ -1299,7 +1299,7 @@
             "startTime": 1071.6889999999999
           },
           {
-            "url": "https://ranchikart.vercel.app/assets/index-BlougiWu.js",
+            "url": "https://urbanranchi.vercel.app/assets/index-BlougiWu.js",
             "duration": 59,
             "startTime": 2062.689
           }
@@ -1313,8 +1313,8 @@
         "debugData": {
           "type": "debugdata",
           "urls": [
-            "https://ranchikart.vercel.app/",
-            "https://ranchikart.vercel.app/assets/index-BlougiWu.js",
+            "https://urbanranchi.vercel.app/",
+            "https://urbanranchi.vercel.app/assets/index-BlougiWu.js",
             "Unattributable"
           ],
           "tasks": [
@@ -1661,7 +1661,7 @@
         "type": "treemap-data",
         "nodes": [
           {
-            "name": "https://ranchikart.vercel.app/assets/index-BlougiWu.js",
+            "name": "https://urbanranchi.vercel.app/assets/index-BlougiWu.js",
             "resourceBytes": 274699,
             "encodedBytes": 90209,
             "unusedBytes": 124887
@@ -2791,8 +2791,8 @@
                       "width": 372,
                       "height": 15
                     },
-                    "snippet": "<a href=\"mailto:ranchikartecom@gmail.com\">",
-                    "nodeLabel": "ranchikartecom@gmail.com"
+                    "snippet": "<a href=\"mailto:urbanranchiecom@gmail.com\">",
+                    "nodeLabel": "urbanranchiecom@gmail.com"
                   }
                 }
               ]
@@ -2812,8 +2812,8 @@
                 "width": 372,
                 "height": 15
               },
-              "snippet": "<a href=\"mailto:ranchikartecom@gmail.com\">",
-              "nodeLabel": "ranchikartecom@gmail.com",
+              "snippet": "<a href=\"mailto:urbanranchiecom@gmail.com\">",
+              "nodeLabel": "urbanranchiecom@gmail.com",
               "explanation": "Fix any of the following:\n  Target has insufficient size (372px by 15px, should be at least 24px by 24px)\n  Target has insufficient space to its closest neighbors. Safe clickable space has a diameter of 22px instead of at least 24px."
             },
             "subItems": {
@@ -3003,43 +3003,43 @@
         ],
         "items": [
           {
-            "url": "https://ranchikart.vercel.app/assets/index-BlougiWu.js",
+            "url": "https://urbanranchi.vercel.app/assets/index-BlougiWu.js",
             "totalBytes": 90392
           },
           {
-            "url": "https://ranchikart.vercel.app/favicon.ico",
+            "url": "https://urbanranchi.vercel.app/favicon.ico",
             "totalBytes": 6829
           },
           {
-            "url": "https://ranchikart.onrender.com/api/v1/categories",
+            "url": "https://urbanranchi.onrender.com/api/v1/categories",
             "totalBytes": 6227
           },
           {
-            "url": "https://ranchikart.vercel.app/assets/index-Dxopgc-7.css",
+            "url": "https://urbanranchi.vercel.app/assets/index-Dxopgc-7.css",
             "totalBytes": 4348
           },
           {
-            "url": "https://ranchikart.onrender.com/api/v1/products?sort=rating&limit=8",
+            "url": "https://urbanranchi.onrender.com/api/v1/products?sort=rating&limit=8",
             "totalBytes": 3274
           },
           {
-            "url": "https://ranchikart.onrender.com/api/v1/products?featured=true&limit=8",
+            "url": "https://urbanranchi.onrender.com/api/v1/products?featured=true&limit=8",
             "totalBytes": 2730
           },
           {
-            "url": "https://ranchikart.vercel.app/android-chrome-192x192.png",
+            "url": "https://urbanranchi.vercel.app/android-chrome-192x192.png",
             "totalBytes": 2577
           },
           {
-            "url": "https://ranchikart.vercel.app/",
+            "url": "https://urbanranchi.vercel.app/",
             "totalBytes": 2045
           },
           {
-            "url": "https://ranchikart.vercel.app/manifest.webmanifest",
+            "url": "https://urbanranchi.vercel.app/manifest.webmanifest",
             "totalBytes": 699
           },
           {
-            "url": "https://ranchikart.vercel.app/favicon.svg",
+            "url": "https://urbanranchi.vercel.app/favicon.svg",
             "totalBytes": 439
           }
         ],
@@ -3190,7 +3190,7 @@
         ],
         "items": [
           {
-            "url": "https://ranchikart.vercel.app/assets/index-BlougiWu.js",
+            "url": "https://urbanranchi.vercel.app/assets/index-BlougiWu.js",
             "totalBytes": 90191,
             "wastedBytes": 41004,
             "wastedPercent": 45.463216101987996
@@ -3347,7 +3347,7 @@
             },
             "source": {
               "type": "source-location",
-              "url": "https://ranchikart.vercel.app/",
+              "url": "https://urbanranchi.vercel.app/",
               "urlProvider": "network",
               "line": -2,
               "column": -2
@@ -3366,7 +3366,7 @@
             },
             "source": {
               "type": "source-location",
-              "url": "https://ranchikart.vercel.app/",
+              "url": "https://urbanranchi.vercel.app/",
               "urlProvider": "network",
               "line": -2,
               "column": -2
@@ -3385,7 +3385,7 @@
             },
             "source": {
               "type": "source-location",
-              "url": "https://ranchikart.vercel.app/",
+              "url": "https://urbanranchi.vercel.app/",
               "urlProvider": "network",
               "line": -2,
               "column": -2
@@ -3404,7 +3404,7 @@
             },
             "source": {
               "type": "source-location",
-              "url": "https://ranchikart.vercel.app/",
+              "url": "https://urbanranchi.vercel.app/",
               "urlProvider": "network",
               "line": -2,
               "column": -2
@@ -3423,7 +3423,7 @@
             },
             "source": {
               "type": "source-location",
-              "url": "https://ranchikart.vercel.app/",
+              "url": "https://urbanranchi.vercel.app/",
               "urlProvider": "network",
               "line": 0,
               "column": 0
@@ -3442,7 +3442,7 @@
             },
             "source": {
               "type": "source-location",
-              "url": "https://ranchikart.vercel.app/",
+              "url": "https://urbanranchi.vercel.app/",
               "urlProvider": "network",
               "line": 0,
               "column": 0
@@ -3461,7 +3461,7 @@
             },
             "source": {
               "type": "source-location",
-              "url": "https://ranchikart.vercel.app/",
+              "url": "https://urbanranchi.vercel.app/",
               "urlProvider": "network",
               "line": -2,
               "column": -2
@@ -3480,7 +3480,7 @@
             },
             "source": {
               "type": "source-location",
-              "url": "https://ranchikart.vercel.app/",
+              "url": "https://urbanranchi.vercel.app/",
               "urlProvider": "network",
               "line": -2,
               "column": -2
@@ -3499,7 +3499,7 @@
             },
             "source": {
               "type": "source-location",
-              "url": "https://ranchikart.vercel.app/",
+              "url": "https://urbanranchi.vercel.app/",
               "urlProvider": "network",
               "line": -2,
               "column": -2
@@ -3518,7 +3518,7 @@
             },
             "source": {
               "type": "source-location",
-              "url": "https://ranchikart.vercel.app/",
+              "url": "https://urbanranchi.vercel.app/",
               "urlProvider": "network",
               "line": -2,
               "column": -2
@@ -4264,32 +4264,32 @@
               "type": "network-tree",
               "chains": {
                 "A88BA7C0DF4642645AA65134C114743D": {
-                  "url": "https://ranchikart.vercel.app/",
+                  "url": "https://urbanranchi.vercel.app/",
                   "navStartToEndTime": 796,
                   "transferSize": 2045,
                   "isLongest": true,
                   "children": {
                     "59633.2": {
-                      "url": "https://ranchikart.vercel.app/assets/index-BlougiWu.js",
+                      "url": "https://urbanranchi.vercel.app/assets/index-BlougiWu.js",
                       "navStartToEndTime": 1302,
                       "transferSize": 90392,
                       "isLongest": true,
                       "children": {
                         "59633.9": {
-                          "url": "https://ranchikart.onrender.com/api/v1/products?sort=rating&limit=8",
+                          "url": "https://urbanranchi.onrender.com/api/v1/products?sort=rating&limit=8",
                           "navStartToEndTime": 5816,
                           "transferSize": 3274,
                           "isLongest": true,
                           "children": {}
                         },
                         "59633.8": {
-                          "url": "https://ranchikart.onrender.com/api/v1/products?featured=true&limit=8",
+                          "url": "https://urbanranchi.onrender.com/api/v1/products?featured=true&limit=8",
                           "navStartToEndTime": 5813,
                           "transferSize": 2730,
                           "children": {}
                         },
                         "59633.7": {
-                          "url": "https://ranchikart.onrender.com/api/v1/categories",
+                          "url": "https://urbanranchi.onrender.com/api/v1/categories",
                           "navStartToEndTime": 4989,
                           "transferSize": 6227,
                           "children": {}
@@ -4297,13 +4297,13 @@
                       }
                     },
                     "59633.6": {
-                      "url": "https://ranchikart.vercel.app/manifest.webmanifest",
+                      "url": "https://urbanranchi.vercel.app/manifest.webmanifest",
                       "navStartToEndTime": 1337,
                       "transferSize": 699,
                       "children": {}
                     },
                     "59633.3": {
-                      "url": "https://ranchikart.vercel.app/assets/index-Dxopgc-7.css",
+                      "url": "https://urbanranchi.vercel.app/assets/index-Dxopgc-7.css",
                       "navStartToEndTime": 1156,
                       "transferSize": 4348,
                       "children": {}
@@ -4439,7 +4439,7 @@
         ],
         "items": [
           {
-            "url": "https://ranchikart.vercel.app/assets/index-Dxopgc-7.css",
+            "url": "https://urbanranchi.vercel.app/assets/index-Dxopgc-7.css",
             "totalBytes": 4348
           }
         ]
@@ -4492,17 +4492,17 @@
               "type": "subitems",
               "items": [
                 {
-                  "url": "https://ranchikart.onrender.com/api/v1/products?sort=rating&limit=8",
+                  "url": "https://urbanranchi.onrender.com/api/v1/products?sort=rating&limit=8",
                   "mainThreadTime": 0.6920000007376075,
                   "transferSize": 3274
                 },
                 {
-                  "url": "https://ranchikart.onrender.com/api/v1/categories",
+                  "url": "https://urbanranchi.onrender.com/api/v1/categories",
                   "mainThreadTime": 0.19300000090152025,
                   "transferSize": 6227
                 },
                 {
-                  "url": "https://ranchikart.onrender.com/api/v1/products?featured=true&limit=8",
+                  "url": "https://urbanranchi.onrender.com/api/v1/products?featured=true&limit=8",
                   "mainThreadTime": 0.09599999897181988,
                   "transferSize": 2730
                 }
@@ -5570,7 +5570,7 @@
     {
       "name": "vercel.app",
       "origins": [
-        "https://ranchikart.vercel.app"
+        "https://urbanranchi.vercel.app"
       ],
       "isFirstParty": true,
       "isUnrecognized": true
@@ -5578,7 +5578,7 @@
     {
       "name": "onrender.com",
       "origins": [
-        "https://ranchikart.onrender.com"
+        "https://urbanranchi.onrender.com"
       ],
       "isUnrecognized": true
     }

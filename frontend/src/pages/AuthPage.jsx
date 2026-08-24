@@ -54,7 +54,7 @@ function EyeIcon({ open }) {
 }
 
 export default function AuthPage() {
-  useSEO({ title: "Login or Sign Up", description: "Sign in to your RanchiKart account." });
+  useSEO({ title: "Login or Sign Up", description: "Sign in to your UrbanRanchi account." });
 
   const [mode, setMode] = useState("login");   // "login" | "register" | "magic"
   const [form, setForm] = useState({ name: "", emailOrUsername: "", password: "", phone: "" });
@@ -160,7 +160,7 @@ export default function AuthPage() {
           password: form.password,
           phone: form.phone || undefined,
         });
-        showToast("Account created! Welcome to RanchiKart");
+        showToast("Account created! Welcome to UrbanRanchi");
       }
       navigate(location.state?.from || "/");
     } catch (err) {
@@ -213,7 +213,7 @@ export default function AuthPage() {
             ? "Sign in with Magic Link"
             : isRegister
             ? "Create your account"
-            : "Sign in to RanchiKart"}
+            : "Sign in to UrbanRanchi"}
         </h1>
 
         {/* ── Social / Passkey buttons ── */}
@@ -391,7 +391,7 @@ export default function AuthPage() {
             </p>
           ) : (
             <p>
-              New to RanchiKart?{" "}
+              New to UrbanRanchi?{" "}
               <button className="auth-link" onClick={() => setMode("register")}>Create account</button>
             </p>
           )}
