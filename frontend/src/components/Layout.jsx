@@ -139,7 +139,7 @@ export default function Layout() {
           </button>
 
           <Link to="/" className="logo">
-            Urban<span>Ranchi</span>
+            Ranchi<span>Kart</span>
           </Link>
 
           <form className="search-bar" onSubmit={handleSearch}>
@@ -251,7 +251,7 @@ export default function Layout() {
       <footer className="footer">
         <div className="footer-grid">
           <div>
-            <div className="logo footer-logo">Urban<span>Ranchi</span></div>
+            <div className="logo footer-logo">Ranchi<span>Kart</span></div>
             <p>Ranchi's own online store — fast local delivery across every locality in the city.</p>
           </div>
           <div>
@@ -276,7 +276,7 @@ export default function Layout() {
             <span>Ranchi, Jharkhand 834001</span>
           </div>
         </div>
-        <div className="footer-bottom">© {new Date().getFullYear()} UrbanRanchi (v{pkg.version}). All rights reserved.</div>
+        <div className="footer-bottom">© {new Date().getFullYear()} RanchiKart (v{pkg.version}). All rights reserved.</div>
       </footer>
       <Toast />
     </div>

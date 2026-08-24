@@ -1,73 +1,183 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+  <!-- ── Core Public Pages ─────────────────────────────────────── -->
   <url>
-    <loc>https://urbanranchi.vercel.app/</loc>
+    <loc>https://ranchikart.vercel.app/</loc>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <!-- ── Search & Browse ───────────────────────────────────────── -->
+  <url>
+    <loc>https://ranchikart.vercel.app/search</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://ranchikart.vercel.app/category/electronics-gadgets</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://ranchikart.vercel.app/category/fashion-apparel</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://ranchikart.vercel.app/category/grocery-gourmet-foods</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://ranchikart.vercel.app/category/beauty-personal-care</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://ranchikart.vercel.app/category/home-decor</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://urbanranchi.vercel.app/category/sample-slug</loc>
+    <loc>https://ranchikart.vercel.app/category/books-stationery</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://urbanranchi.vercel.app/search</loc>
+    <loc>https://ranchikart.vercel.app/category/sports-fitness</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://urbanranchi.vercel.app/product/sample-slug</loc>
+    <loc>https://ranchikart.vercel.app/category/bags-luggage</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://urbanranchi.vercel.app/auth</loc>
+    <loc>https://ranchikart.vercel.app/category/footwear</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://urbanranchi.vercel.app/terms</loc>
+    <loc>https://ranchikart.vercel.app/category/jewellery</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://urbanranchi.vercel.app/cart</loc>
+    <loc>https://ranchikart.vercel.app/category/health-wellness</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://urbanranchi.vercel.app/checkout</loc>
+    <loc>https://ranchikart.vercel.app/category/toys-games</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://ranchikart.vercel.app/category/kitchen-dining</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://ranchikart.vercel.app/category/baby-products</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://ranchikart.vercel.app/category/pet-supplies</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://ranchikart.vercel.app/category/garden-outdoors</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://ranchikart.vercel.app/category/stamps-seals</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://ranchikart.vercel.app/category/boards-signs</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://ranchikart.vercel.app/category/accessories</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://urbanranchi.vercel.app/orders</loc>
+    <loc>https://ranchikart.vercel.app/category/miscellaneous</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.4</priority>
+  </url>
+
+  <!-- ── Product Page (representative pattern) ─────────────────── -->
+  <url>
+    <loc>https://ranchikart.vercel.app/product/sample-slug</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- ── Store Pages ────────────────────────────────────────────── -->
+  <url>
+    <loc>https://ranchikart.vercel.app/store/sample-store</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
+  </url>
+
+  <!-- ── Seller Portal (public landing, not dashboard) ─────────── -->
+  <url>
+    <loc>https://ranchikart.vercel.app/seller</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <!-- ── User Account Pages (auth-gated, lower priority) ───────── -->
+  <url>
+    <loc>https://ranchikart.vercel.app/cart</loc>
+    <changefreq>always</changefreq>
+    <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://urbanranchi.vercel.app/orders/sample-id</loc>
+    <loc>https://ranchikart.vercel.app/wishlist</loc>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.4</priority>
   </url>
   <url>
-    <loc>https://urbanranchi.vercel.app/profile</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <loc>https://ranchikart.vercel.app/orders</loc>
+    <changefreq>always</changefreq>
+    <priority>0.4</priority>
   </url>
   <url>
-    <loc>https://urbanranchi.vercel.app/wishlist</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <loc>https://ranchikart.vercel.app/profile</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.3</priority>
   </url>
   <url>
-    <loc>https://urbanranchi.vercel.app/admin/sample</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <loc>https://ranchikart.vercel.app/settings</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <!-- ── Legal & Support ───────────────────────────────────────── -->
+  <url>
+    <loc>https://ranchikart.vercel.app/terms</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
   </url>
   <url>
-    <loc>https://urbanranchi.vercel.app/sample</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <loc>https://ranchikart.vercel.app/privacy</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
   </url>
+  <url>
+    <loc>https://ranchikart.vercel.app/faq</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
 </urlset>

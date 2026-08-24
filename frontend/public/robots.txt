@@ -1,19 +1,43 @@
-# UrbanRanchi Robots.txt
+# RanchiKart — robots.txt
 
 User-agent: *
 Allow: /
 
-# Block internal/system paths
+# ── Block private / server-side paths ────────────────────────────
 Disallow: /api/
 Disallow: /admin/
 Disallow: /dashboard/
-Disallow: /auth/
 Disallow: /private/
 Disallow: /_next/
 Disallow: /.well-known/
-Disallow: /*?
 
-# Allow assets
+# ── Block auth-gated user pages (no value for crawlers) ──────────
+Disallow: /auth
+Disallow: /auth/
+Disallow: /checkout
+Disallow: /checkout/
+Disallow: /orders
+Disallow: /orders/
+Disallow: /profile
+Disallow: /profile/
+Disallow: /settings
+Disallow: /settings/
+Disallow: /wishlist
+Disallow: /wishlist/
+Disallow: /cart
+Disallow: /cart/
+
+# ── Block seller dashboard (private), allow seller landing ────────
+Disallow: /seller/dashboard
+Disallow: /seller/dashboard/
+
+# ── Block noisy query strings ─────────────────────────────────────
+Disallow: /*?*page=
+Disallow: /*?*sort=
+Disallow: /*?*token=
+Disallow: /*?*code=
+
+# ── Explicitly allow public static assets ─────────────────────────
 Allow: /favicon.ico
 Allow: /favicon.svg
 Allow: /favicon-16x16.png
@@ -22,12 +46,17 @@ Allow: /apple-touch-icon.png
 Allow: /android-chrome-192x192.png
 Allow: /android-chrome-512x512.png
 Allow: /logo.png
+Allow: /logo.webp
+Allow: /logo.avif
+Allow: /og-image.png
+Allow: /og-image.webp
+Allow: /og-image.avif
 Allow: /robots.txt
-Allow: /manifest.webmanifest
 Allow: /sitemap.xml
+Allow: /manifest.webmanifest
 
-# Sitemap
-Sitemap: https://urbanranchi.vercel.app/sitemap.xml
+# ── Sitemap ───────────────────────────────────────────────────────
+Sitemap: https://ranchiKart.vercel.app/sitemap.xml
 
-# Optional crawl delay (ignored by Google)
+# Optional crawl delay (ignored by Google, respected by others)
 Crawl-delay: 1
