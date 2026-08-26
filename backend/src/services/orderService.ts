@@ -98,9 +98,23 @@ type CheckoutData = {
   items: CheckoutItem[];
 };
 
+// Per-store line items (before orderId/storeOrderId are known)
+type PendingOrderItem = {
+  productId: string;
+  variantId?: string;
+  quantity: number;
+  unitPrice: number;
+  total: number;
+  customWidthMm?: number;
+  customHeightMm?: number;
+  customText?: string;
+  customization: Prisma.InputJsonObject;
+};
+
 export default class OrderService {
   async createOrder(userId: string, data: CheckoutData) {
-    const orderItemsByStore = new Map<string, Prisma.OrderItemUncheckedCreateWithoutOrderInput[]>();
+    // ── Step 1: Resolve products, prices, and group items by store ──────────
+    const orderItemsByStore = new Map<string, PendingOrderItem[]>();
     const itemCategoryIds = new Set<string>();
 
     for (const item of data.items) {
@@ -120,28 +134,30 @@ export default class OrderService {
         throw new BadRequestError(`Invalid variant for ${product.name}`);
 
       const price = unitPrice(product, variant, item.customWidthMm, item.customHeightMm);
-      const storeId = (product as any).storeId;
+      const storeId = product.storeId;
 
       if (!orderItemsByStore.has(storeId)) {
         orderItemsByStore.set(storeId, []);
       }
 
-      orderItemsByStore.get(storeId)!.push({
+      const pendingItem: PendingOrderItem = {
         productId: product.id,
-        ...(variant?.id ? { variantId: variant.id } : {}),
         quantity: item.quantity,
         unitPrice: price,
         total: price * item.quantity,
-        ...(item.customWidthMm ? { customWidthMm: item.customWidthMm } : {}),
-        ...(item.customHeightMm ? { customHeightMm: item.customHeightMm } : {}),
-        ...(item.customText ? { customText: item.customText } : {}),
-        customization: item.customization as Prisma.InputJsonObject,
-      });
+        customization: (item.customization ?? {}) as Prisma.InputJsonObject,
+      };
+      if (variant?.id) pendingItem.variantId = variant.id;
+      if (item.customWidthMm) pendingItem.customWidthMm = item.customWidthMm;
+      if (item.customHeightMm) pendingItem.customHeightMm = item.customHeightMm;
+      if (item.customText) pendingItem.customText = item.customText;
+
+      orderItemsByStore.get(storeId)!.push(pendingItem);
     }
 
+    // ── Step 2: Compute totals ───────────────────────────────────────────────
     const flatOrderItems = Array.from(orderItemsByStore.values()).flat();
-    const subtotal = flatOrderItems.reduce((sum, item) => sum + (item.total as number), 0);
-    // Shipping fee is intentionally calculated on the pre-discount subtotal
+    const subtotal = flatOrderItems.reduce((sum, item) => sum + item.total, 0);
     const shippingFee = subtotal > 99900 ? 0 : 6900;
 
     let discountAmount = 0;
@@ -170,12 +186,13 @@ export default class OrderService {
     }
 
     const total = subtotal + shippingFee - discountAmount;
+    const isCod = data.paymentMethod === "COD";
+    const initialStatus = isCod ? OrderStatus.PROCESSING : OrderStatus.PENDING_PAYMENT;
 
-    // Wrap order creation, stock reduction + coupon increment in a transaction to prevent
-    // race conditions and ensure atomicity
+    // ── Step 3: Transactional create (two-phase to satisfy Prisma constraints)
     const order = await prisma.$transaction(
       async (tx) => {
-        // Re-check coupon availability inside the transaction to prevent races
+        // Re-check coupon availability inside the transaction
         if (couponId) {
           const coupon = await tx.coupon.findUnique({ where: { id: couponId } });
           if (!coupon || (coupon.maxUses !== null && coupon.usedCount >= coupon.maxUses)) {
@@ -183,7 +200,7 @@ export default class OrderService {
           }
         }
 
-        // Validate and reduce stock for each product/variant
+        // Reduce stock (validate + decrement)
         for (const item of data.items) {
           if (item.variantId) {
             const variant = await tx.productVariant.findUnique({ where: { id: item.variantId } });
@@ -206,36 +223,64 @@ export default class OrderService {
           }
         }
 
-        const created = await tx.order.create({
+        // ── Phase 1: Create Order + StoreOrders (no items yet) ──────────────
+        const createdOrder = await tx.order.create({
           data: {
             userId,
             paymentMethod: data.paymentMethod,
-            status: data.paymentMethod === "COD" ? OrderStatus.PROCESSING : OrderStatus.PENDING_PAYMENT,
+            status: initialStatus,
             subtotal,
             shippingFee,
             discountAmount,
             total,
-            address: data.address,
-            notes: data.notes,
+            address: data.address as Prisma.InputJsonObject,
+            ...(data.notes ? { notes: data.notes } : {}),
             ...(couponId ? { couponId } : {}),
             storeOrders: {
               create: Array.from(orderItemsByStore.entries()).map(([storeId, items]) => {
-                const storeSubtotal = items.reduce((sum, item) => sum + (item.total as number), 0);
+                const storeSubtotal = items.reduce((sum, i) => sum + i.total, 0);
                 const storeShippingFee = storeSubtotal > 99900 ? 0 : 6900;
                 return {
                   storeId,
-                  status: data.paymentMethod === "COD" ? OrderStatus.PROCESSING : OrderStatus.PENDING_PAYMENT,
+                  status: initialStatus,
                   subtotal: storeSubtotal,
                   shippingFee: storeShippingFee,
                   total: storeSubtotal + storeShippingFee,
-                  items: { create: items }
-                } as any;
-              })
-            }
-          } as any,
-          include: { storeOrders: { include: { items: { include: { product: true, variant: true } } } }, coupon: true } as any,
+                };
+              }),
+            },
+          },
+          include: { storeOrders: true },
         });
 
+        // ── Phase 2: Create OrderItems with both orderId + storeOrderId ──────
+        // OrderItem requires orderId (non-nullable) AND storeOrderId.
+        // Prisma cannot resolve orderId when nesting items → storeOrders → order,
+        // so we use createMany after both IDs are known.
+        const orderItemsToCreate: Prisma.OrderItemCreateManyInput[] = [];
+
+        for (const storeOrder of createdOrder.storeOrders) {
+          const items = orderItemsByStore.get(storeOrder.storeId) ?? [];
+          for (const item of items) {
+            orderItemsToCreate.push({
+              orderId: createdOrder.id,
+              storeOrderId: storeOrder.id,
+              productId: item.productId,
+              ...(item.variantId ? { variantId: item.variantId } : {}),
+              quantity: item.quantity,
+              unitPrice: item.unitPrice,
+              total: item.total,
+              customization: item.customization,
+              ...(item.customWidthMm ? { customWidthMm: item.customWidthMm } : {}),
+              ...(item.customHeightMm ? { customHeightMm: item.customHeightMm } : {}),
+              ...(item.customText ? { customText: item.customText } : {}),
+            });
+          }
+        }
+
+        await tx.orderItem.createMany({ data: orderItemsToCreate });
+
+        // Increment coupon usage
         if (couponId) {
           await tx.coupon.update({
             where: { id: couponId },
@@ -243,14 +288,26 @@ export default class OrderService {
           });
         }
 
-        return created;
-      }, { maxWait: 15000, timeout: 30000 });
+        // Return the fully-hydrated order
+        return tx.order.findUniqueOrThrow({
+          where: { id: createdOrder.id },
+          include: {
+            storeOrders: {
+              include: {
+                items: { include: { product: true, variant: true } },
+              },
+            },
+            coupon: true,
+          },
+        });
+      },
+      { maxWait: 15000, timeout: 30000 },
+    );
 
-    // Send invoice email (fire-and-forget — non-critical)
+    // ── Step 4: Fire-and-forget confirmation email ───────────────────────────
     const user = await prisma.user.findUnique({ where: { id: userId } });
     if (user) {
-      await sendOrderConfirmation(user.email, user.name ?? "User", order.id, order.total).catch(console.error);
-      // await sendOrderInvoiceEmail(order.id).catch(console.error);
+      sendOrderConfirmation(user.email, user.name ?? "User", order.id, order.total).catch(console.error);
     }
 
     return order;

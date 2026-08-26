@@ -164,11 +164,13 @@ const useShopStore = create((set, get) => ({
     const product = typeof productOrId === "object" ? productOrId : null;
     const current = get().wishlist.items || [];
     const existing = current.find((i) => (i.productId ?? i.product?.id ?? i.id) === productId);
+    const isWishlisted = !!existing;
 
+    // Optimistic UI update
     set({
       wishlist: {
         ...get().wishlist,
-        items: existing
+        items: isWishlisted
           ? current.filter((i) => (i.productId ?? i.product?.id ?? i.id) !== productId)
           : [...current, { id: `optimistic-${productId}`, productId, product }],
       },
@@ -176,19 +178,36 @@ const useShopStore = create((set, get) => ({
 
     try {
       const { data } = await api.post("/wishlist/toggle", { productId });
-      const items = get().wishlist.items || [];
-      set({
-        wishlist: {
-          ...get().wishlist,
-          items: data.inWishlist
-            ? items.map((i) => (i.productId === productId && i.id.startsWith?.("optimistic-") ? { ...i, id: data.id ?? i.id } : i))
-            : items.filter((i) => (i.productId ?? i.product?.id ?? i.id) !== productId),
-        },
+      // Sync with the backend's truth
+      set((state) => {
+        const items = state.wishlist.items || [];
+        return {
+          wishlist: {
+            ...state.wishlist,
+            items: data.wishlisted
+              ? (items.some((i) => (i.productId ?? i.product?.id ?? i.id) === productId)
+                  ? items.map(i => ((i.productId ?? i.product?.id ?? i.id) === productId ? { ...i, id: data.id ?? i.id } : i))
+                  : [...items, { id: data.id ?? `optimistic-${productId}`, productId, product }])
+              : items.filter((i) => (i.productId ?? i.product?.id ?? i.id) !== productId),
+          },
+        };
       });
-      get().showToast(data.inWishlist ? "Added to wishlist" : "Removed from wishlist");
-      return data.inWishlist;
+      get().showToast(data.wishlisted ? "Added to wishlist" : "Removed from wishlist");
+      return data.wishlisted;
     } catch (err) {
-      set({ wishlist: { ...get().wishlist, items: current } });
+      // Revert optimistic change and refetch to ensure consistency
+      set((state) => {
+        const items = state.wishlist.items || [];
+        return {
+          wishlist: {
+            ...state.wishlist,
+            items: isWishlisted
+              ? [...items.filter((i) => (i.productId ?? i.product?.id ?? i.id) !== productId), existing]
+              : items.filter((i) => (i.productId ?? i.product?.id ?? i.id) !== productId),
+          },
+        };
+      });
+      get().fetchWishlist();
       get().showToast(extractError(err, "Could not update wishlist"), "error");
       throw err;
     }

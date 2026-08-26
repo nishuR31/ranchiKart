@@ -19,6 +19,10 @@ This file contains the core context of the UrbanRanchi full-stack e-commerce app
 - **Admin Logs & Caching:**
   - All admin operations log to `AdminLog` to provide an audit trail.
   - Catalog operations automatically invalidate the Redis/In-memory cache layer (`catalog:*`).
+- **Wishlist & Payments (Recent Fixes):**
+  - **Wishlist:** Resolved a race condition in `useShopStore.js` where rapid toggling of wishlist items caused the local state to fall out of sync with backend database constraints. The optimistic update mechanism now accurately reverts to the previous backend-verified state upon error and fetches the definitive state automatically.
+  - **Payments:** Fixed silent failures in Razorpay checkout flows in `CheckoutPage.jsx`. Placed the verification POST request in a `try/catch` block and bound the `payment.failed` event listener on `rzp` to surface transaction errors gracefully via `showToast` without crashing the checkout session.
+  - **Order Creation (Critical Fix):** Resolved `Prisma: Argument 'order' is missing` in `orderService.ts`. Root cause: `OrderItem.orderId` is required/non-nullable, but Prisma cannot auto-resolve it when items are nested three levels deep (`order → storeOrders → items`). Fix: **two-phase approach** inside the transaction — Phase 1 creates `Order` + `StoreOrder`s (no items nested), Phase 2 calls `tx.orderItem.createMany()` with explicit `orderId` + `storeOrderId` on each row after both IDs are available.
 
 ## Best Practices & Guidelines
 1. **API Handling:** Use the global `api` axios instance in `frontend/src/lib/api.js` for all authenticated and unauthenticated requests. Use `extractError` for unified error parsing.

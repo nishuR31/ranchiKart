@@ -196,18 +196,27 @@ export default function CheckoutPage() {
         description: `Order ${order.orderNumber || order.id}`,
         order_id: razorpayOrderId,
         handler: async function (response) {
-          await api.post("/payments/razorpay/verify", {
-            orderId: order.id,
-            razorpay_order_id: response.razorpay_order_id,
-            razorpay_payment_id: response.razorpay_payment_id,
-            razorpay_signature: response.razorpay_signature,
-          });
-          clearCart();
-          showToast("Payment successful!");
-          navigate(`/orders/${order.id}`);
+          try {
+            await api.post("/payments/razorpay/verify", {
+              orderId: order.id,
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+            });
+            clearCart();
+            showToast("Payment successful!");
+            navigate(`/orders/${order.id}`);
+          } catch (err) {
+            showToast(extractError(err, "Payment verification failed"), "error");
+          }
         },
         theme: { color: "#2563eb" },
       });
+      
+      rzp.on("payment.failed", function (response) {
+        showToast(response.error?.description || "Payment failed", "error");
+      });
+      
       rzp.open();
     } catch (err) {
       showToast(extractError(err, "Could not place order"), "error");
